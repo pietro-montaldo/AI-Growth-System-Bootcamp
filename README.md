@@ -7,6 +7,7 @@ Claude skills from the AI Growth Systems Bootcamp by [Pietro Montaldo](https://w
 | Skill | What it does |
 |---|---|
 | [voice-miner](skills/voice-miner) | Learns your real voice from your sent emails and sales calls, and builds you a personal skill that writes emails, cold outreach and LinkedIn posts that sound like you, not like AI. |
+| [GTM context](#gtm-context) (plugin) | Builds your go-to-market context layer with you: what you sell, your ideal customer, competitors, how your buyers talk, objections and shareable customers. It reads what you already have first, then asks only about gaps. Lives in Notion or in your own GitHub repo. |
 
 ---
 
@@ -86,6 +87,96 @@ skills/voice-miner/
 │   └── ai-tells.md               # sourced catalog of AI writing tells
 └── assets/voice-skill-template/  # the personal skill it fills in for you
 ```
+
+---
+
+## GTM context
+
+Every system you build with Claude (outbound, inbound, content) needs to know what you sell, who it's for, and how your buyers talk. Good context is the difference between an agent that writes "Hi {first_name}, I help companies grow" and one that sounds like you talking to your best customer.
+
+This plugin builds that context with you. Most people already have a lot of it somewhere: a sales page, a CRM, a course platform, a few docs, months of calls and email. So it starts by asking where things live, reads them, and drafts. You only answer what your sources can't.
+
+### Pick your version
+
+| | Notion + GitHub | GitHub only |
+|---|---|---|
+| Your context lives in | Notion, under one GTM Hub page | Markdown pages and CSV tables in your own private repo |
+| Good if | your team already works in Notion | you don't use Notion, or want everything in one place |
+| You need | a Notion connector in Claude | a GitHub repo (private) |
+| Plugin | `gtm-context-notion` | `gtm-context-github` |
+
+Both work the same way and produce the same six sections. Only where the result is stored differs.
+
+### Install
+
+In Claude Code, add this repo as a plugin marketplace once:
+
+```
+/plugin marketplace add pietro-montaldo/AI-Growth-System-Bootcamp
+```
+
+Then install your version and start it:
+
+| Notion + GitHub | GitHub only |
+|---|---|
+| `/plugin install gtm-context-notion@ai-growth-system-bootcamp` | `/plugin install gtm-context-github@ai-growth-system-bootcamp` |
+| `/gtm-context-notion:build-gtm-context` | `/gtm-context-github:build-gtm-context` |
+
+### What happens when you run it
+
+About 30 minutes of your time, less if a lot already exists. You can stop at any step and pick up later.
+
+1. **Tell Claude where things already live.** Your website, a Notion page, your CRM, your course or payment platform, your call recorder, your inbox. A rough pointer is enough. Where there's no connector (for example a Maven or Stripe dashboard), Claude says so and offers to browse there read-only with Claude in Chrome, or to read an export.
+2. **Set up where it lives.** In Notion, one GTM Hub page that links to everything. In GitHub, a `gtm/` folder, checked to be private first. Customer and objection lists you already keep somewhere connected are linked, not copied.
+3. **Claude reads everything at once,** with parallel agents, then shows you what it found per section.
+4. **Product & offer,** drafted from your pages and docs.
+5. **Customers.** For long lists or B2C, "best customers" come from behaviour you choose (bought again, came back for more, left reviews) instead of picking names.
+6. **Competitors,** optional. Claude researches each one in parallel.
+7. **ICP,** built from your best customers, or from your competitors' customers if you have none yet. Signals are ones you can check in public company and profile data (headcount growth, job postings, time in role), so your outbound agent can score people before you talk to them.
+8. **Customer language.** With your OK, Claude reads recent calls, webinars, emails and DMs and pulls out how buyers describe the problem in their own words.
+9. **Objections,** grouped by theme with the answers that work.
+10. **Logo permission:** which customers you may show publicly. Only the ones that said yes.
+
+You see every draft before anything is written. Nothing is ever sent, and in the GitHub version nothing is committed or pushed without asking. You can also run any section on its own later, for example `/gtm-context-github:gtm-objections` to refresh objections from last month's calls.
+
+### How it's organised
+
+```
+Notion version                      GitHub version
+GTM Hub (page)                      gtm/
+├── Product & offer                 ├── README.md       the hub
+├── ICP                             ├── product.md
+├── Messaging & customer language   ├── icp.md
+├── Competitors (+ database)        ├── messaging.md
+├── Objections bank (database)      ├── competitors.md + .csv
+└── Customers (database)            ├── objections.csv
+                                    └── customers.csv
+```
+
+Three rules keep it fast and cheap for agents to read:
+
+1. **One hub links to everything.** Skills open the exact page they need by link and never search.
+2. **Short pages, summary at the top.** One or two screens each, long examples further down.
+3. **Query banks, don't read them whole.** Objections, competitors and customers are databases or CSV files, read with filters. The GitHub version ships a small helper script for that, so you never edit the CSV files by hand.
+
+### Privacy
+
+- Claude reads your email, calls and DMs only if you choose those sources, and only for this build.
+- Quotes are saved with role and company type ("Founder, 8-person agency"), never names, emails or profile links.
+- Customer logos are marked shareable only when you confirm the customer gave permission.
+- In the GitHub version, raw exports go in `gtm/.private/`, which git ignores, and are deleted once read.
+
+### Structure
+
+```
+.claude-plugin/marketplace.json   # the plugin marketplace for this repo
+plugins/gtm-context-notion/       # Notion + GitHub version
+plugins/gtm-context-github/       # GitHub-only version
+shared/                           # text, agents and the CSV helper both versions use
+scripts/sync-shared.sh            # copies shared/ into the plugins
+```
+
+Inspired by Corey Haines' [product-marketing skill](https://github.com/coreyhaines31/marketingskills/tree/main/skills/product-marketing) and Lenny's [defining-icp skill](https://github.com/RefoundAI/lenny-skills/tree/main/skills/defining-icp).
 
 ## License
 

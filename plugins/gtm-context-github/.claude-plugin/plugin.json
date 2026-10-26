@@ -1,0 +1,10 @@
+{
+  "name": "gtm-context-github",
+  "displayName": "GTM Context (GitHub only)",
+  "version": "0.2.0",
+  "description": "Build your go-to-market context layer in your own GitHub repo, no Notion needed. It first finds and reads where your GTM information already lives, then drafts product and offer, ICP, competitors, customer language, objections and shareable customers, asking you only about gaps. Short markdown pages plus CSV banks that agents query instead of reading whole. From the NotLinear AI Growth Systems Bootcamp.",
+  "author": { "name": "NotLinear", "url": "https://www.notlinear.ai" },
+  "homepage": "https://maven.com/pietro-montaldo/ai-growth-system-bootcamp-claude",
+  "license": "MIT",
+  "keywords": ["gtm", "icp", "positioning", "messaging", "objections", "github", "course"]
+}
