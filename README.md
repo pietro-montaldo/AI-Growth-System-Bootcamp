@@ -86,3 +86,7 @@ skills/voice-miner/
 │   └── ai-tells.md               # sourced catalog of AI writing tells
 └── assets/voice-skill-template/  # the personal skill it fills in for you
 ```
+
+## License
+
+MIT. Use it, adapt it, share it. See [LICENSE](LICENSE).
