@@ -2,3 +2,6 @@
 __pycache__/
 *.pyc
 voice-mining/
+# Students' own GTM context, if they test the kit inside this repo
+gtm-hub.md
+gtm/
