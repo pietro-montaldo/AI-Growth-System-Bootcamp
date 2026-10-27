@@ -4,10 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-The public repo for students of the AI Growth Systems Bootcamp (https://maven.com/pietro-montaldo/ai-growth-system-bootcamp-claude). It holds two kinds of things:
+The public repo for students of the AI Growth Systems Bootcamp (https://maven.com/pietro-montaldo/ai-growth-system-bootcamp-claude). It's a Claude Code plugin marketplace named `ai-growth-system-bootcamp` (`.claude-plugin/marketplace.json`, `plugins/`, `shared/`, `scripts/`). A skill only shows up for students once it's inside a plugin listed in `marketplace.json`. Today it ships two things:
 
-- `skills/`: standalone skills students copy into Claude (for example `skills/voice-miner`). Each documents itself in its own SKILL.md and in the README.
-- A Claude Code plugin marketplace named `ai-growth-system-bootcamp` (`.claude-plugin/marketplace.json`, `plugins/`, `shared/`, `scripts/`). Today it ships the GTM context kit, which helps students build a go-to-market context layer: product, ICP, competitors, customer language, objections, shareable customers. Later course systems (outbound and inbound agents) read that context first.
+- `plugins/voice-miner`: a standalone plugin with one skill. See "voice-miner" below.
+- The GTM context kit, which helps students build a go-to-market context layer: product, ICP, competitors, customer language, objections, shareable customers. Later course systems (outbound and inbound agents) read that context first.
 
 The GTM context kit has two plugins with the same skill and agent names. Only the storage steps differ:
 
@@ -63,4 +63,4 @@ Students are non-technical (founders, consultants, operators). Write in plain la
 
 ## voice-miner
 
-`skills/voice-miner` is a standalone skill, not part of the GTM context plugins and not in the marketplace. Its script (`scripts/voice_mine.py`) is standard-library Python. Students' raw mailbox and transcript data go in a `voice-mining/` working folder, which is gitignored.
+`plugins/voice-miner` is its own plugin in the marketplace, separate from the GTM context plugins. It doesn't use `shared/` or `sync-shared.sh`. Its script (`scripts/voice_mine.py`) is standard-library Python. Students' raw mailbox and transcript data go in a `voice-mining/` working folder, which is gitignored.

@@ -6,7 +6,7 @@ Claude skills from the AI Growth Systems Bootcamp by [Pietro Montaldo](https://w
 
 | Skill | What it does |
 |---|---|
-| [voice-miner](skills/voice-miner) | Learns your real voice from your sent emails and sales calls, and builds you a personal skill that writes emails, cold outreach and LinkedIn posts that sound like you, not like AI. |
+| [voice-miner](plugins/voice-miner/skills/voice-miner) (plugin) | Learns your real voice from your sent emails and sales calls, and builds you a personal skill that writes emails, cold outreach and LinkedIn posts that sound like you, not like AI. |
 | [GTM context](#gtm-context) (plugin) | Builds your go-to-market context layer with you: what you sell, your ideal customer, competitors, how your buyers talk, objections and shareable customers. It reads what you already have first, then asks only about gaps. Lives in Notion or in your own GitHub repo. |
 
 ---
@@ -40,17 +40,19 @@ The check flags AI tells and anything off your own numbers. For example: "68 wor
 
 ### Install
 
-**Claude app (Cowork):** download this repo, zip the `skills/voice-miner` folder, then upload it under Settings > Capabilities > Skills.
+voice-miner is a plugin in this repo's marketplace.
 
-**Claude Code:**
+**Claude Code:** add this repo as a plugin marketplace once, then install it:
 
-```bash
-git clone https://github.com/pietro-montaldo/AI-Growth-System-Bootcamp.git
+```
+/plugin marketplace add pietro-montaldo/AI-Growth-System-Bootcamp
 ```
 
-```bash
-cp -R AI-Growth-System-Bootcamp/skills/voice-miner ~/.claude/skills/
 ```
+/plugin install voice-miner@ai-growth-system-bootcamp
+```
+
+**Claude app (Cowork):** add `pietro-montaldo/AI-Growth-System-Bootcamp` as a plugin marketplace in the app's plugin settings, then install Voice Miner from it. If you'd rather upload just the skill: download this repo, zip the `plugins/voice-miner/skills/voice-miner` folder, and upload it under Settings > Capabilities > Skills.
 
 Then ask Claude: "Learn my voice from my sent emails and sales calls."
 
@@ -68,7 +70,7 @@ Then ask Claude: "Learn my voice from my sent emails and sales calls."
 
 ### The AI tells list
 
-`skills/voice-miner/references/ai-tells.md` is a sourced catalog of what makes text read as AI-written, as of October 2026. It draws on Wikipedia's "Signs of AI writing", corpus studies, model-by-model analyses and cold email practitioners. Two findings shaped the skill:
+`plugins/voice-miner/skills/voice-miner/references/ai-tells.md` is a sourced catalog of what makes text read as AI-written, as of October 2026. It draws on Wikipedia's "Signs of AI writing", corpus studies, model-by-model analyses and cold email practitioners. Two findings shaped the skill:
 
 - **Em dashes are no longer a reliable tell.** Wikipedia moved them to "historical indicators". The newer tells are contrast reframes ("rather than merely"), salience flags ("this matters because"), mannered metaphors ("load-bearing", "earns its keep") and fake-candor adverbs ("honestly", "quietly").
 - **Overcorrecting is its own tell.** Text with zero dashes, zero contractions and choppy fragments reads like a different model. That's why the skill anchors on your real samples, not on a ban list.
@@ -78,14 +80,16 @@ These tells change with every model release. The skill tells Claude to refresh t
 ### Structure
 
 ```
-skills/voice-miner/
-├── SKILL.md                      # the mining workflow
-├── scripts/voice_mine.py         # clean, score, fingerprint, transcript, check
-├── references/
-│   ├── sources.md                # how to pull email and calls per tool
-│   ├── analysis-guide.md         # what to read for in emails and calls
-│   └── ai-tells.md               # sourced catalog of AI writing tells
-└── assets/voice-skill-template/  # the personal skill it fills in for you
+plugins/voice-miner/
+├── .claude-plugin/plugin.json        # plugin manifest
+└── skills/voice-miner/
+    ├── SKILL.md                      # the mining workflow
+    ├── scripts/voice_mine.py         # clean, score, fingerprint, transcript, check
+    ├── references/
+    │   ├── sources.md                # how to pull email and calls per tool
+    │   ├── analysis-guide.md         # what to read for in emails and calls
+    │   └── ai-tells.md               # sourced catalog of AI writing tells
+    └── assets/voice-skill-template/  # the personal skill it fills in for you
 ```
 
 ---
