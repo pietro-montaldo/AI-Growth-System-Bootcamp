@@ -31,3 +31,5 @@ Every later system (outbound, inbound, content) reads these six sections before 
 - Product, ICP, competitors, messaging: monthly, or after a big launch or pricing change.
 - Objections: every few weeks, from new calls and emails.
 - Customers: whenever someone new buys or gives logo permission.
+
+The refresh-gtm-context skill does this on a schedule: banks every week, a full check of offers and pages once a month. A section older than its rhythm shows up as "stale" in the refresh report.

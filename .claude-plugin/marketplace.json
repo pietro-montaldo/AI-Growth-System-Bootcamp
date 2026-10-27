@@ -12,14 +12,14 @@
     {
       "name": "gtm-context-notion",
       "source": "./plugins/gtm-context-notion",
-      "description": "GTM context that lives in Notion: one GTM Hub page, short context pages and queryable databases for competitors, objections and customers.",
-      "version": "0.2.0"
+      "description": "GTM context that lives in Notion: one GTM Hub page, short context pages and queryable databases for competitors, objections and customers. Includes a scheduled refresh that keeps it current.",
+      "version": "0.3.0"
     },
     {
       "name": "gtm-context-github",
       "source": "./plugins/gtm-context-github",
-      "description": "GTM context that lives in your own GitHub repo: a gtm/ folder with short markdown pages and CSV banks for competitors, objections and customers.",
-      "version": "0.2.0"
+      "description": "GTM context that lives in your own GitHub repo: a gtm/ folder with short markdown pages and CSV banks for competitors, objections and customers. Includes a scheduled refresh that keeps it current.",
+      "version": "0.3.0"
     },
     {
       "name": "voice-miner",

@@ -12,6 +12,7 @@ gtm/
 ├── competitors.csv    bank
 ├── objections.csv     bank
 ├── customers.csv      bank
+├── updates/           one report per refresh run (added by refresh-gtm-context)
 └── .private/          raw exports while you work (gitignored, delete when done)
 ```
 
@@ -26,7 +27,7 @@ Create a CSV bank when the data has no other home, or lives only in a platform w
 1. Check this is a git repository (`git rev-parse --is-inside-work-tree`). If not, explain in one line and offer to run `git init`.
 2. Check the remote, if there is one (`gh repo view --json visibility -q .visibility`). "No git remotes found" just means the repo is local for now: fine, and when they create the GitHub repo later, it should be private. If it's `PUBLIC`, stop and say so: customer and objection data shouldn't go in a public repository. Offer to make it private (the user confirms the command) or to keep the banks out of git.
 3. Create `gtm/` and the files below. Add `gtm/.private/` to `.gitignore`.
-4. Never commit or push without the user's OK. At the end, offer one commit with a message like `gtm: build context layer` and ask before pushing.
+4. Never commit or push without the user's OK. At the end, offer one commit with a message like `gtm: build context layer` and ask before pushing. Scheduled refreshes commit or push only as the user allowed in refresh-gtm-context setup (recorded in the Refresh block).
 
 ## gtm/README.md (the hub)
 
@@ -36,6 +37,7 @@ Create a CSV bank when the data has no other home, or lives only in a platform w
 > **In short:** <what we sell, in one sentence>
 > **Primary ICP:** <one sentence>
 > **Say this:** "<one line>"
+> **Last refreshed:** <date> · <n> new customers, <n> objections, <n> quotes · <n> updates to review   (added once a refresh is scheduled)
 
 Agents: open only the file you need from the table below. Query the CSV banks with the helper script (filters, counts), never read them whole. Don't copy this content anywhere else.
 
@@ -54,6 +56,15 @@ Where the context was built from, and how to get back in. Refreshes reread these
 
 ## Best-customer rule
 <for example: "came back for more, or left 2+ reviews">
+
+## Refresh
+Added by refresh-gtm-context setup. Settings only, no content.
+- Runs: <app scheduled task gtm-refresh | cloud routine <name> on branch gtm-refresh> · <cadence, for example every Monday 08:00>
+- Full check: first run of each month
+- Alert: <email to your own address | Slack DM to your member ID>
+- Git: commit <yes|no> · push <yes|no>
+- Reports: [updates/](updates/)
+- Last run: customers <date> · conversations <date> · full check <date>
 
 Last updated: <YYYY-MM-DD>
 ```

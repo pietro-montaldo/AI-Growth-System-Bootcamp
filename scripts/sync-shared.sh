@@ -27,6 +27,10 @@ source-map.md:gtm-customers
 source-map.md:gtm-competitors
 source-map.md:gtm-messaging
 source-map.md:gtm-objections
+source-map.md:refresh-gtm-context
+mining-playbook.md:refresh-gtm-context
+sections.md:refresh-gtm-context
+refresh-playbook.md:refresh-gtm-context
 "
 
 # shared script : skill that needs it (GitHub plugin only: its banks are CSV files)
@@ -36,6 +40,7 @@ gtm_csv.py:gtm-customers
 gtm_csv.py:gtm-competitors
 gtm_csv.py:gtm-icp
 gtm_csv.py:gtm-objections
+gtm_csv.py:refresh-gtm-context
 "
 
 check=0
@@ -55,7 +60,7 @@ sync() {
   fi
 }
 
-for plugin in plugins/*/; do
+for plugin in plugins/gtm-context-*/; do
   for pair in $REFERENCES; do
     skill="${pair##*:}"
     [ -d "${plugin}skills/${skill}" ] || continue
@@ -75,4 +80,4 @@ if [ "$check" = 1 ]; then
   [ "$stale" = 0 ] && echo "all shared files in sync"
   exit "$stale"
 fi
-echo "synced shared files into $(ls -d plugins/*/ | wc -l | tr -d ' ') plugin(s)"
+echo "synced shared files into $(ls -d plugins/gtm-context-*/ | wc -l | tr -d ' ') plugin(s)"

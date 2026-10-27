@@ -9,7 +9,8 @@ GTM Hub (page)
 ├── Messaging & customer language (page)
 ├── Competitors (page: summary on top, then the Competitors database inline)
 ├── Objections bank (database)
-└── Customers (database)
+├── Customers (database)
+└── Updates to review (page, added by refresh-gtm-context: one child page per refresh report)
 ```
 
 ## Reuse before you create
@@ -41,14 +42,14 @@ Tool names vary slightly by connector version. Use the matching tool:
 
 Editing tips that save a failed call:
 - Read `notion://docs/notion-flavored-markdown-spec` once (with `notion-fetch`) before the first write.
-- Before a targeted edit of the Hub links table, fetch the Hub page and copy the row exactly. Notion stores bold as `<b>` tags, turns domains like `Acme.AI` into links, and rewrites a mention when its target moves to Trash.
+- Before a targeted edit of the Hub links table, fetch the Hub page and copy the row exactly. Notion stores bold as `<b>` tags, turns domains like `Acme.AI` into links, and rewrites a mention when its target moves to Trash. Mentions of databases often don't match even when copied from a fetch, so anchor the edit on the plain text after the mention (for example `Linked, not copied | 2026-10-26 |`), adding the start of the next row when that text appears twice.
 - Fetching a database schema returns a lot of text. Fetch it once per run and reuse what you learned.
 
 ## Hub page
 
 Title: `GTM Hub`. Content, in this order:
 
-1. A callout with the summary: what the business sells in one sentence, the primary ICP in one sentence, and the "say this" line. Updated by the guide at the end of each run.
+1. A callout with the summary: what the business sells in one sentence, the primary ICP in one sentence, and the "say this" line. Updated by the guide at the end of each run. Once a refresh is scheduled, it ends with one more line, kept current by refresh-gtm-context: `Last refreshed: <date> · <n> new customers, <n> objections, <n> quotes · <n> updates to review`.
 2. A short paragraph: "Agents: read the page you need by its link below. Query the databases with a filter. Don't copy this content anywhere else."
 3. A table: `Section | Link | One-line summary | Last updated`. One row per child page and database. A new section shows "Not started" in the summary column.
 
@@ -129,6 +130,14 @@ Only links live here. The context itself lives in Notion. Skills read pages by t
 ## Sources
 Where the context was built from, and how to get back in. Refreshes reread these instead of asking again.
 - <bucket>: <link or tool> | via: <connector name | Claude in Chrome | built-in browser | export file | pasted>
+
+## Refresh
+Added by refresh-gtm-context setup. Settings only, no content.
+- Runs: <app scheduled task gtm-refresh | cloud routine <name>> · <cadence, for example every Monday 08:00>
+- Full check: first run of each month
+- Alert: <email to your own address | Slack DM to your member ID>
+- Updates to review: <url>
+- Last run: customers <date> · conversations <date> · full check <date>
 
 Last updated: <YYYY-MM-DD>
 ```
