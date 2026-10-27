@@ -81,7 +81,11 @@ When the sources already answered most of product, ICP and messaging, draft thos
 2. Show the Hub link and a short status:
    - Sections done and skipped, and which sources each one came from.
    - How many items are still marked `(guess, confirm)` or `draft`, and where they are.
-3. Tell them what comes next, in two lines: later course systems read `gtm-hub.md` first and fetch only the pages they need. Refresh objections every few weeks with gtm-objections, and the rest monthly. Refreshes reuse the saved sources.
+3. Tell them in one line that later course systems read `gtm-hub.md` first and fetch only the pages they need.
+
+## Step 12. Keep it fresh
+
+The context goes stale within weeks: prices change, new customers buy, new objections show up. Explain that in one sentence, then ask: "Set up a weekly automatic refresh now? It takes about 3 minutes." On yes, run the refresh-gtm-context skill in setup mode. It reuses the sources from this build and only asks the user to confirm them, pick when it runs, and choose email or Slack for alerts. On no, say they can start it later by saying "set up automatic updates".
 
 ## Rules
 

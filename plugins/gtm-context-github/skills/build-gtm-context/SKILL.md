@@ -81,7 +81,11 @@ When the sources already answered most of product, ICP and messaging, draft thos
    - Sections done and skipped, and which sources each came from.
    - How many items are still marked `(guess, confirm)` or `draft`, and where they are.
 3. Run `git status` and show what changed. Ask once: "Commit this to your repo?" On yes, commit with `gtm: build context layer`. Then ask separately before pushing.
-4. Tell them what comes next, in two lines: later course systems read `gtm/README.md` first and open only the files they need. Refresh objections every few weeks with gtm-objections, and the rest monthly. Refreshes reuse the saved sources.
+4. Tell them in one line that later course systems read `gtm/README.md` first and open only the files they need.
+
+## Step 12. Keep it fresh
+
+The context goes stale within weeks: prices change, new customers buy, new objections show up. Explain that in one sentence, then ask: "Set up a weekly automatic refresh now? It takes about 3 minutes." On yes, run the refresh-gtm-context skill in setup mode. It reuses the sources from this build and only asks the user to confirm them, pick when it runs, choose email or Slack for alerts, and say whether runs may commit. On no, say they can start it later by saying "set up automatic updates".
 
 ## Rules
 

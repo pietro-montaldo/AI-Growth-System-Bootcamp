@@ -143,6 +143,23 @@ About 30 minutes of your time, less if a lot already exists. You can stop at any
 
 You see every draft before anything is written. Nothing is ever sent, and in the GitHub version nothing is committed or pushed without asking. You can also run any section on its own later, for example `/gtm-context-github:gtm-objections` to refresh objections from last month's calls.
 
+### Keep it fresh
+
+Context goes stale within weeks: prices change, new customers buy, new objections show up. At the end of the build, Claude offers to set up a scheduled refresh (`refresh-gtm-context`). It takes about 3 minutes:
+
+1. **Confirm the sources.** It reuses the ones from your build. You add or remove any, so it looks in the right places.
+2. **Pick where it runs.** A Claude app scheduled task (on your computer while the app is open, can use Claude in Chrome for dashboards like Maven) or a cloud routine (runs even when your computer is off, connectors only).
+3. **Pick when.** Weekly by default, every Monday morning.
+4. **Pick how you hear about it:** an email or a Slack message to yourself.
+
+Every run:
+- **Adds what's new to your banks on its own:** new customers, new and repeat objections, and new buyer quotes on the messaging page.
+- **Once a month, checks your offers, prices and website** against your Product & offer page, and whether new customers still match your ICP.
+- **Never rewrites your pages.** Anything that needs a decision becomes a numbered "proposed update" in a report.
+- **Sends you a short alert** with what changed and a link to the report.
+
+To go through the proposed updates, say "review GTM updates": you approve, edit or reject each one, then confirm new objection answers and logo permissions. You can also run a refresh any time by saying "refresh my GTM context".
+
 ### How it's organised
 
 ```
@@ -153,8 +170,9 @@ GTM Hub (page)                      gtm/
 ├── Messaging & customer language   ├── icp.md
 ├── Competitors (+ database)        ├── messaging.md
 ├── Objections bank (database)      ├── competitors.md + .csv
-└── Customers (database)            ├── objections.csv
-                                    └── customers.csv
+├── Customers (database)            ├── objections.csv
+└── Updates to review (refresh)     ├── customers.csv
+                                    └── updates/          refresh reports
 ```
 
 Three rules keep it fast and cheap for agents to read:
