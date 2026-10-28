@@ -1,6 +1,6 @@
 # GTM Hub structure (Notion)
 
-One GTM Hub page links to everything. Four short pages and three databases sit under it. The student's project folder holds only `gtm-hub.md`, a list of links, so skills never search Notion.
+One GTM Hub page links to everything. Four short pages and three databases sit under it. The links file `~/gtm-context/gtm-hub.md` (one fixed place for every student, see `context-home.md`) holds only links, so skills never search Notion.
 
 ```
 GTM Hub (page)
@@ -111,7 +111,7 @@ Create only the ones the user doesn't already have (see "Reuse before you create
 
 ## gtm-hub.md
 
-Saved in the project folder. Links and IDs only, never content.
+Saved at `~/gtm-context/gtm-hub.md`, never in a project folder and never asked. Links and IDs only, never content.
 
 ```markdown
 # GTM Hub links

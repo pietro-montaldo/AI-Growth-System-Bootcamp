@@ -3,9 +3,9 @@
 # Installed plugins can't read files outside their own folder, so each skill
 # carries its own copy. Edit shared/ only, then run this script.
 #
-#   shared/references/*  -> the skills listed in REFERENCES, in every plugin
-#   shared/agents/*      -> agents/ in every plugin
-#   shared/scripts/*     -> the skills listed in SCRIPTS, GitHub plugin only
+#   shared/references/*  -> the skills listed in REFERENCES, in both GTM plugins
+#   shared/agents/*      -> agents/ in both GTM plugins (not voice-miner)
+#   shared/scripts/*     -> the skills listed in SCRIPTS_ALL (every GTM plugin) and SCRIPTS (GitHub only)
 #
 #   scripts/sync-shared.sh          copy
 #   scripts/sync-shared.sh --check  exit 1 if any copy is out of date
@@ -31,6 +31,14 @@ source-map.md:refresh-gtm-context
 mining-playbook.md:refresh-gtm-context
 sections.md:refresh-gtm-context
 refresh-playbook.md:refresh-gtm-context
+context-home.md:build-gtm-context
+context-home.md:refresh-gtm-context
+"
+
+# shared script : skill that needs it, in every GTM plugin
+SCRIPTS_ALL="
+gtm_home.py:build-gtm-context
+gtm_home.py:refresh-gtm-context
 "
 
 # shared script : skill that needs it (GitHub plugin only: its banks are CSV files)
@@ -68,6 +76,9 @@ for plugin in plugins/gtm-context-*/; do
   done
   for agent in shared/agents/*.md; do
     sync "$agent" "${plugin}agents"
+  done
+  for pair in $SCRIPTS_ALL; do
+    sync "shared/scripts/${pair%%:*}" "${plugin}skills/${pair##*:}/scripts"
   done
 done
 

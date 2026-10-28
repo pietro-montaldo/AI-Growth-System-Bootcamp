@@ -17,7 +17,7 @@ It has two parts. Run both when used on its own. Inside build-gtm-context, part 
 
 ## Before starting
 
-1. Read `gtm-hub.md` in the project folder. If it's missing, run the build-gtm-context skill first, which sets up the Hub.
+1. Read `~/gtm-context/gtm-hub.md`, the links file. It always lives there, whatever project you are in. If it's missing, run the build-gtm-context skill first, which sets up the Hub.
 2. Fetch the Customers database by its link once, to read its columns and select options. Don't read its rows yet.
 
 ## Part A. Collect customers
@@ -28,7 +28,7 @@ It has two parts. Run both when used on its own. Inside build-gtm-context, part 
 
 **On its own:** ask where customers live today, and read them using the access order in `references/source-map.md`:
 - **A CRM or database** (Notion, Airtable, HubSpot, Attio, Pipedrive): read won deals or customer records only. If it's a Notion database, link it instead of copying (see "Reuse before you create" in build-gtm-context's `hub-structure.md`). Add only the missing columns (Best customer, Logo shareable, Permission note) with the user's OK, and use its existing segment or persona column as the ICP segment.
-- **A course, shop or payment platform** (Maven, Stripe, Shopify, Kajabi, Teachable, Gumroad): there's usually no connector, so say so. Offer to browse the customer or student list with Claude in Chrome (the user is already signed in there), or ask for a CSV export into the project folder.
+- **A course, shop or payment platform** (Maven, Stripe, Shopify, Kajabi, Teachable, Gumroad): there's usually no connector, so say so. Offer to browse the customer or student list with Claude in Chrome (the user is already signed in there), or ask for a CSV export into `~/gtm-context/.private/`.
 - **A list or spreadsheet**: they paste it or upload it.
 - **Only in their head**: they name them.
 - **No customers yet**: stop here and say the ICP will be inferred from competitors instead.

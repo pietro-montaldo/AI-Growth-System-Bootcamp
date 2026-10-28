@@ -18,7 +18,7 @@ The ICP is what every outbound and inbound agent checks a person against. It has
 
 ## Before starting
 
-1. Read `gtm/README.md`. If it's missing, run the build-gtm-context skill first, which sets up the folder.
+1. Read `~/gtm-context/gtm/README.md`. Every `gtm/` path in this skill is inside `~/gtm-context/`, the student's private gtm-context repo, whatever project they are in. If it's missing, run the build-gtm-context skill first, which sets up the folder.
 2. Read `gtm/product.md` and `gtm/icp.md`. If the ICP page has content, summarise it and ask what to change.
 
 ## Steps

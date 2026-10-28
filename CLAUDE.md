@@ -11,8 +11,10 @@ The public repo for students of the AI Growth Systems Bootcamp (https://maven.co
 
 The GTM context kit has two plugins with the same skill and agent names. Only the storage steps differ:
 
-- `plugins/gtm-context-notion`: context lives in Notion under one GTM Hub page. The student's project holds only `gtm-hub.md`, a list of links and data source IDs.
-- `plugins/gtm-context-github`: context lives as markdown pages and CSV banks in a `gtm/` folder of the student's own (private) repo.
+- `plugins/gtm-context-notion`: context lives in Notion under one GTM Hub page. Locally there's only `~/gtm-context/gtm-hub.md`, a list of links and data source IDs.
+- `plugins/gtm-context-github`: context lives as markdown pages and CSV banks in `gtm/`, inside a private `gtm-context` repo cloned at `~/gtm-context`.
+
+Either way the local part has one fixed home, `~/gtm-context`, outside any project, and is never asked about. A pointer block in the student's `~/.claude/CLAUDE.md` (between `gtm-context:start` and `gtm-context:end` markers) tells every session where it is. See `shared/references/context-home.md`. Skills must never write the links file or `gtm/` into the current project folder.
 
 The skills are content, not code: SKILL.md files, agent files and reference markdown. There is no build step and no test suite.
 
@@ -37,6 +39,7 @@ The README is the student-facing page for everything in the repo: one row per sk
   - `shared/references/` (`sections.md`, `icp-checks.md`, `mining-playbook.md`, `source-map.md`) go into each skill's `references/`.
   - `shared/agents/` go into each plugin's `agents/`. The agents are storage-agnostic, so both plugins share them.
   - `shared/scripts/gtm_csv.py` goes into the GitHub plugin's skills that touch a CSV bank (`scripts/`). It is standard-library Python: `init`, `query`, `count`, `upsert`. Skills call it by full path from the skill folder.
+  - `shared/scripts/gtm_home.py` goes into both plugins' `build-gtm-context` and `refresh-gtm-context`. It handles `~/gtm-context`: `status`, `init`, `pointer` (idempotent memory block), `allow` (adds the folder to `permissions.additionalDirectories` in `~/.claude/settings.json`, with a backup) and `migrate` (moves an old links file, never overwrites). `GTM_CONTEXT_HOME` and `CLAUDE_CONFIG_DIR` override the paths, for testing.
 - `build-gtm-context` is the guide. It works in three moves: map where the user's GTM information already lives (`source-map.md`), read it all, then run the six section skills (`gtm-product`, `gtm-customers`, `gtm-competitors`, `gtm-icp`, `gtm-messaging`, `gtm-objections`). Each section drafts from what was found and asks only about gaps. Each section skill also works on its own, and then asks where its bucket lives first.
 - `refresh-gtm-context` keeps the context current, in three modes:
   - **Setup:** the build's last step hands over to it. It confirms sources, picks an app scheduled task or a cloud routine, sets the cadence, and records the email or Slack alert.

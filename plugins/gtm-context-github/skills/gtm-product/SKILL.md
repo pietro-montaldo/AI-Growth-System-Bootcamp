@@ -17,7 +17,7 @@ Every other section builds on this page: the ICP says who it's for, messaging sa
 
 ## Before starting
 
-1. Read `gtm/README.md`. If it's missing, the folder isn't set up yet: run the build-gtm-context skill first, which sets it up and then continues here.
+1. Read `~/gtm-context/gtm/README.md`. Every `gtm/` path in this skill is inside `~/gtm-context/`, the student's private gtm-context repo, whatever project they are in. If it's missing, the folder isn't set up yet: run the build-gtm-context skill first, which sets it up and then continues here.
 2. Read `gtm/product.md`. If it already has content, summarise it in three lines and ask what changed, then update only that part.
 
 ## Steps

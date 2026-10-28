@@ -16,7 +16,7 @@ A competitor here is someone who sells the same result to the same or similar bu
 
 ## Before starting
 
-1. Read `gtm/README.md`. If it's missing, run the build-gtm-context skill first, which sets up the folder.
+1. Read `~/gtm-context/gtm/README.md`. Every `gtm/` path in this skill is inside `~/gtm-context/`, the student's private gtm-context repo, whatever project they are in. If it's missing, run the build-gtm-context skill first, which sets up the folder.
 2. You need the product summary (the first lines of `gtm/product.md`).
 
 ## Steps

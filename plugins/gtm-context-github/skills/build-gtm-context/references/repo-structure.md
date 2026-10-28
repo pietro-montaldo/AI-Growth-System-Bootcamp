@@ -1,6 +1,6 @@
 # The gtm/ folder (GitHub only)
 
-All the context lives in a `gtm/` folder in the student's own repository. `gtm/README.md` is the hub: it links to everything, so skills open the exact file they need and never search. The repository should be private, because the banks hold customer and objection data.
+All the context lives in a `gtm/` folder inside a private repository called `gtm-context` on the student's GitHub, cloned at `~/gtm-context`. It's one fixed place, outside any project, decided for the student and never asked (see `context-home.md`). `gtm/README.md` is the hub: it links to everything, so skills open the exact file they need and never search. The repository must be private, because the banks hold customer and objection data. All `gtm/` paths in the skills are inside `~/gtm-context/`.
 
 ```
 gtm/
@@ -24,10 +24,13 @@ Create a CSV bank when the data has no other home, or lives only in a platform w
 
 ## Setting up the folder
 
-1. Check this is a git repository (`git rev-parse --is-inside-work-tree`). If not, explain in one line and offer to run `git init`.
-2. Check the remote, if there is one (`gh repo view --json visibility -q .visibility`). "No git remotes found" just means the repo is local for now: fine, and when they create the GitHub repo later, it should be private. If it's `PUBLIC`, stop and say so: customer and objection data shouldn't go in a public repository. Offer to make it private (the user confirms the command) or to keep the banks out of git.
-3. Create `gtm/` and the files below. Add `gtm/.private/` to `.gitignore`.
-4. Never commit or push without the user's OK. At the end, offer one commit with a message like `gtm: build context layer` and ask before pushing. Scheduled refreshes commit or push only as the user allowed in refresh-gtm-context setup (recorded in the Refresh block).
+1. Run `gtm_home.py status`. If `~/gtm-context` is already a git repository, use it and go to step 3.
+2. Otherwise, say in one line: "I'll create a private repository called gtm-context on your GitHub and keep it at ~/gtm-context, so every project can use it." On OK:
+   - With the GitHub CLI signed in (`gh auth status`): from the home folder, run `gh repo create gtm-context --private --clone`. If a `gtm-context` repo already exists on their account, clone it instead (`gh repo clone gtm-context ~/gtm-context`).
+   - Without it: `git init ~/gtm-context`, and say they can publish it as a private repo later (the guide's last step offers that).
+3. Check the visibility (`gh repo view --json visibility -q .visibility`, run inside `~/gtm-context`). "No git remotes found" means it's local for now: fine. If it's `PUBLIC`, stop and say so: customer and objection data shouldn't be public. Offer to make it private (the user confirms the command).
+4. Create `gtm/` and the files below. `.gitignore` gets `gtm/.private/` and `.private/`.
+5. Never commit or push without the user's OK. At the end, offer one commit with a message like `gtm: build context layer` and ask before pushing. Scheduled refreshes commit or push only as the user allowed in refresh-gtm-context setup (recorded in the Refresh block).
 
 ## gtm/README.md (the hub)
 
@@ -133,14 +136,14 @@ Rules for every bank:
 
 ## The helper script
 
-Each skill that touches a bank has `scripts/gtm_csv.py` in its own folder. Commands run from the project folder, so call the script by its full path: `<skill folder>` is the base directory shown when the skill loads.
+Each skill that touches a bank has `scripts/gtm_csv.py` in its own folder. Commands run from whatever project the user is in, so call the script by its full path (`<skill folder>` is the base directory shown when the skill loads) and give bank paths in full, under `~/gtm-context/gtm/`.
 
 ```bash
-python3 <skill folder>/scripts/gtm_csv.py init gtm/objections.csv --cols "Objection,Theme,What they said,Who,Our answer,Answer status,Stage,Source,Times seen,Last seen,Reference"
-python3 <skill folder>/scripts/gtm_csv.py query gtm/objections.csv --where Theme=price --cols "Objection,Our answer,Answer status"
-python3 <skill folder>/scripts/gtm_csv.py query gtm/customers.csv --where "Best customer=yes" --cols "Company,Size,Industry"
-python3 <skill folder>/scripts/gtm_csv.py count gtm/customers.csv --by Size
-python3 <skill folder>/scripts/gtm_csv.py upsert gtm/objections.csv --key Objection --rows gtm/.private/new-objections.json
+python3 <skill folder>/scripts/gtm_csv.py init ~/gtm-context/gtm/objections.csv --cols "Objection,Theme,What they said,Who,Our answer,Answer status,Stage,Source,Times seen,Last seen,Reference"
+python3 <skill folder>/scripts/gtm_csv.py query ~/gtm-context/gtm/objections.csv --where Theme=price --cols "Objection,Our answer,Answer status"
+python3 <skill folder>/scripts/gtm_csv.py query ~/gtm-context/gtm/customers.csv --where "Best customer=yes" --cols "Company,Size,Industry"
+python3 <skill folder>/scripts/gtm_csv.py count ~/gtm-context/gtm/customers.csv --by Size
+python3 <skill folder>/scripts/gtm_csv.py upsert ~/gtm-context/gtm/objections.csv --key Objection --rows ~/gtm-context/gtm/.private/new-objections.json
 ```
 
 Filters: `--where COL=VALUE`, `--contains COL=TEXT`, `--any COL=A|B`, `--min COL=NUMBER`. They combine and are case-insensitive. `upsert` updates rows whose key matches (ignoring case) and appends the rest. It never changes the key itself, and it refuses unknown columns.

@@ -17,7 +17,7 @@ The best copy uses the buyer's own words. This skill finds those words in real c
 
 ## Before starting
 
-1. Read `gtm-hub.md` in the project folder. If it's missing, run the build-gtm-context skill first, which sets up the Hub.
+1. Read `~/gtm-context/gtm-hub.md`, the links file. It always lives there, whatever project you are in. If it's missing, run the build-gtm-context skill first, which sets up the Hub.
 2. Fetch the Product & offer and ICP pages by their links. You need the product summary and the ICP names.
 3. Fetch the Messaging page by its link. If it has content, summarise it and ask what to refresh.
 
@@ -69,4 +69,4 @@ Show the page and a coverage line ("Read 34 email threads and 9 calls from Jul 2
 
 - Quotes stay verbatim with a source tag. No names, emails or profile URLs, only role and company type.
 - If a source can't be read, say so and continue with the others. If none can, use pasted text. Never invent quotes.
-- Fetch by link, never search Notion. Never copy this content into the project folder.
+- Fetch by link, never search Notion. Never copy this content into a project.

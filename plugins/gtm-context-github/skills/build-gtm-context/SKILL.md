@@ -1,32 +1,39 @@
 ---
 name: build-gtm-context
-description: "Build your whole go-to-market context layer in your own GitHub repo with you, no Notion needed. First it finds where your GTM information already lives (website, CRM, course or payment platform, docs, calls, email) and reads it, through a connector or by browsing. Then it drafts product and offer, customers, competitors, ICP, customer language, objections and shareable logos, and asks you only about real gaps. Everything lands in a gtm/ folder: short markdown pages plus CSV banks that agents query instead of reading whole. Resumes where you left off. Use for \"build my GTM context\", \"set up my GTM context in GitHub\", \"start the context layer\", \"help me define my ICP and messaging\", \"System 1\", or the first time you use this plugin. Not for refreshing one section only (use the matching gtm-* skill, for example gtm-objections)."
+description: "Build your whole go-to-market context layer in a private gtm-context repo on your GitHub, kept at ~/gtm-context so every project can use it, no Notion needed. First it finds where your GTM information already lives (website, CRM, course or payment platform, docs, calls, email) and reads it, through a connector or by browsing. Then it drafts product and offer, customers, competitors, ICP, customer language, objections and shareable logos, and asks you only about real gaps. Everything lands in a gtm/ folder: short markdown pages plus CSV banks that agents query instead of reading whole. Resumes where you left off. Use for \"build my GTM context\", \"set up my GTM context in GitHub\", \"start the context layer\", \"help me define my ICP and messaging\", \"System 1\", or the first time you use this plugin. Not for refreshing one section only (use the matching gtm-* skill, for example gtm-objections)."
 metadata:
   version: "0.2.0"
 ---
 
 # Build your GTM context (GitHub)
 
-This is the guide. It works in three moves: **find** what the user already has, **read** it all, then **draft** each section from it and ask only about gaps. The result is a `gtm/` folder in the user's repository that every later agent (outbound, inbound, content) reads first.
+This is the guide. It works in three moves: **find** what the user already has, **read** it all, then **draft** each section from it and ask only about gaps. The result is a `gtm/` folder that every later agent (outbound, inbound, content) reads first.
+
+Where it lives is decided for the user, never asked: a private repository called `gtm-context` on their GitHub, cloned at `~/gtm-context`, outside any project. Every `gtm/` path in this skill is inside `~/gtm-context/`.
 
 ## Reference files
 
 - `references/source-map.md`: the buckets, where they usually live, how to ask, and how to get into each source (connector, browser, export, paste).
 - `references/repo-structure.md`: the `gtm/` folder, the hub file, page rules, CSV columns, the helper script, privacy and git rules.
 - `references/sections.md`: what each section captures and the quality bar.
+- `references/context-home.md`: the fixed home `~/gtm-context`, the pointer in Claude's memory, and older setups.
 - `scripts/gtm_csv.py`: reads and updates the CSV banks without reading them whole. Call it by its full path in this skill's folder.
+- `scripts/gtm_home.py`: checks and sets up `~/gtm-context`.
 
 ## Start
 
 Explain in three lines:
-- What they'll end up with: a `gtm/` folder in their repo with their product, ICP, competitors, customer language, objections and customers.
+- What they'll end up with: a private `gtm-context` repo, kept at `~/gtm-context`, with their product, ICP, competitors, customer language, objections and customers. Every project and every later course system can use it.
 - How it works: "First tell me where this already lives. I'll read it and draft, and only ask you about what's missing." About 30 minutes of their time, less if a lot already exists. They can stop at any step.
 - What you'll read only with their OK. Nothing is ever sent, nothing is pushed without asking, and no personal names are saved.
 
 ## Step 0. Check what exists
 
-- **`gtm/README.md` exists:** read it. Show each section with its status. One AskUserQuestion: continue from the first unfinished section (recommended), update specific sections, or start over. The "Sources" list is reused, so don't ask for sources again unless the user wants to add some.
-- **No `gtm/` folder:** go to step 1.
+Run `gtm_home.py status`.
+
+- **`~/gtm-context/gtm/README.md` exists:** read it. Show each section with its status. One AskUserQuestion: continue from the first unfinished section (recommended), update specific sections, or start over. The "Sources" list is reused, so don't ask for sources again unless the user wants to add some.
+- **An old `gtm/` folder in the current project:** say in one line that the context now has one fixed home. Offer to move it into `~/gtm-context` once that repo exists (step 2), and remove the old copy only on a clear yes.
+- **Neither:** go to step 1.
 
 ## Step 1. Map the sources
 
@@ -38,10 +45,11 @@ Explain in three lines:
 ## Step 2. Set up the folder
 
 Follow "Setting up the folder" in `repo-structure.md`:
-1. Check it's a git repository, and that the remote isn't public. If it is public, stop and resolve that with the user first.
+1. Create or reuse the private `gtm-context` repository at `~/gtm-context`, after one OK, and check it isn't public.
 2. Customers or objections that already live in a connected system are linked under "Sources", not copied (see "Reuse before you create").
-3. Create `gtm/README.md`, the three pages, and only the CSV banks that are needed, using the script's `init` with the exact columns from `repo-structure.md`. Add `gtm/.private/` to `.gitignore`.
+3. Create `gtm/README.md`, the three pages, and only the CSV banks that are needed, using the script's `init` with the exact columns from `repo-structure.md`. `.gitignore` covers `gtm/.private/` and `.private/`.
 4. Fill the "Sources" list: link and how to get in for each bucket.
+5. **Pointer in Claude's memory** (see `context-home.md`): show the block from `gtm_home.py pointer --repo <owner>/gtm-context --print` and explain it in one sentence: every Claude session will know where the GTM context is, without searching. Write it after one OK. Then offer `gtm_home.py allow`, so working in other projects doesn't ask for permission each time Claude reads the context.
 
 ## Step 3. Read everything
 
@@ -80,7 +88,7 @@ When the sources already answered most of product, ICP and messaging, draft thos
 2. Show a short status:
    - Sections done and skipped, and which sources each came from.
    - How many items are still marked `(guess, confirm)` or `draft`, and where they are.
-3. Run `git status` and show what changed. Ask once: "Commit this to your repo?" On yes, commit with `gtm: build context layer`. Then ask separately before pushing.
+3. Run `git -C ~/gtm-context status` and show what changed. Ask once: "Commit this to your gtm-context repo?" On yes, commit with `gtm: build context layer`. Then ask separately before pushing. If the repo has no GitHub remote yet, offer to publish it as private (`gh repo create gtm-context --private --source ~/gtm-context --push`), only on a clear yes.
 4. Tell them in one line that later course systems read `gtm/README.md` first and open only the files they need.
 
 ## Step 12. Keep it fresh

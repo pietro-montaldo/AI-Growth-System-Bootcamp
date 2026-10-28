@@ -14,6 +14,7 @@ The build is a snapshot. This skill keeps it current: same sources, only what's 
 - `references/refresh-playbook.md`: what may change on its own and what may not, what to check per bucket, the rules for unattended runs, and the report and alert formats. Read it first.
 - `references/source-map.md`: how to get into each source (connector, browser, export, paste).
 - `references/mining-playbook.md`: what counts as customer language and objections.
+- `references/context-home.md`: the fixed home `~/gtm-context` and the pointer in Claude's memory. `scripts/gtm_home.py` checks and sets them up (full path in this skill's folder).
 
 ## Pick the mode
 
@@ -21,7 +22,7 @@ The build is a snapshot. This skill keeps it current: same sources, only what's 
 - **Scheduled run:** the prompt says "scheduled run", or the user says "refresh now" or "run the refresh".
 - **Review:** the user says "review GTM updates", or follows an alert.
 
-All modes start by reading `gtm-hub.md` (its path is in the scheduled prompt). If it's missing, say the Hub isn't set up and point to build-gtm-context.
+All modes start by reading `~/gtm-context/gtm-hub.md`, the fixed home of the links file (see `references/context-home.md`). If it's missing, check the current folder for an old `gtm-hub.md` and move it with `scripts/gtm_home.py migrate`. If there's none at all, say the Hub isn't set up and point to build-gtm-context.
 
 ## Setup
 
@@ -42,14 +43,15 @@ All modes start by reading `gtm-hub.md` (its path is in the scheduled prompt). I
 
 ```
 Scheduled run of the GTM refresh. Use the gtm-context-notion:refresh-gtm-context skill in "scheduled run" mode.
-Links file: <absolute path to gtm-hub.md>
+Links file: <absolute path to ~/gtm-context/gtm-hub.md, for example /Users/name/gtm-context/gtm-hub.md>
 Do not ask questions. Follow refresh-playbook.md: update the banks, write proposed updates for anything else, write the report, then send the alert.
 Alert: <email to address | Slack DM to member ID>.
 ```
 
    App: `create_scheduled_task` with taskId `gtm-refresh`, a title like "Weekly GTM refresh" and the cron expression (for example `0 8 * * 1`). Cloud: run `/schedule` with the same prompt and timing.
 7. **Record it** in `gtm-hub.md` under a `## Refresh` block (format in build-gtm-context's `hub-structure.md`). Create the "Updates to review" page under the Hub if it doesn't exist, and add its row to the Hub links table.
-8. Offer a first run now, so they see a real report. On yes, run the scheduled-run steps below and stay available for questions.
+8. Run `gtm_home.py status`. If the pointer isn't in Claude's memory yet, offer it now (as in build-gtm-context step 2). For an app scheduled task, also offer `gtm_home.py allow`, so unattended runs can read `~/gtm-context` without a permission prompt.
+9. Offer a first run now, so they see a real report. On yes, run the scheduled-run steps below and stay available for questions.
 
 ## Scheduled run
 

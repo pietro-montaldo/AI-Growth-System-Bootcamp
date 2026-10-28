@@ -131,7 +131,7 @@ Then install your version and start it:
 About 30 minutes of your time, less if a lot already exists. You can stop at any step and pick up later.
 
 1. **Tell Claude where things already live.** Your website, a Notion page, your CRM, your course or payment platform, your call recorder, your inbox. A rough pointer is enough. Where there's no connector (for example a Maven or Stripe dashboard), Claude says so and offers to browse there read-only with Claude in Chrome, or to read an export.
-2. **Set up where it lives.** In Notion, one GTM Hub page that links to everything. In GitHub, a `gtm/` folder, checked to be private first. Customer and objection lists you already keep somewhere connected are linked, not copied.
+2. **Set up where it lives.** In Notion, one GTM Hub page that links to everything. In GitHub, a private `gtm-context` repo. Either way, the local part lives in one fixed folder, `~/gtm-context` (see below), so you're never asked where to save. Customer and objection lists you already keep somewhere connected are linked, not copied.
 3. **Claude reads everything at once,** with parallel agents, then shows you what it found per section.
 4. **Product & offer,** drafted from your pages and docs.
 5. **Customers.** For long lists or B2C, "best customers" come from behaviour you choose (bought again, came back for more, left reviews) instead of picking names.
@@ -160,10 +160,20 @@ Every run:
 
 To go through the proposed updates, say "review GTM updates": you approve, edit or reject each one, then confirm new objection answers and logo permissions. You can also run a refresh any time by saying "refresh my GTM context".
 
+### Where your context lives: `~/gtm-context`
+
+Your GTM context isn't tied to any one project. It lives in one fixed folder in your home directory, `~/gtm-context`, so every project, every later course system (outbound, inbound, content) and every scheduled refresh finds the same context.
+
+| Notion version | GitHub version |
+|---|---|
+| `~/gtm-context/gtm-hub.md` holds only links to your Notion Hub. The content stays in Notion. | `~/gtm-context` is your private `gtm-context` repo on GitHub, with the context in `gtm/` inside. |
+
+During setup, Claude also adds three lines to its global memory (`~/.claude/CLAUDE.md`) saying where your context is, so any Claude session can use it without searching. You see the lines first and approve them. If you use Cowork, share the `~/gtm-context` folder with it once.
+
 ### How it's organised
 
 ```
-Notion version                      GitHub version
+Notion version                      GitHub version (inside ~/gtm-context)
 GTM Hub (page)                      gtm/
 ├── Product & offer                 ├── README.md       the hub
 ├── ICP                             ├── product.md
@@ -194,7 +204,7 @@ Three rules keep it fast and cheap for agents to read:
 .claude-plugin/marketplace.json   # the plugin marketplace for this repo
 plugins/gtm-context-notion/       # Notion + GitHub version
 plugins/gtm-context-github/       # GitHub-only version
-shared/                           # text, agents and the CSV helper both versions use
+shared/                           # text, agents and the helper scripts both versions use
 scripts/sync-shared.sh            # copies shared/ into the plugins
 ```
 
