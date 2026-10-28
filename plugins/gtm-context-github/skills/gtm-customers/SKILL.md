@@ -18,7 +18,7 @@ It has two parts. Run both when used on its own. Inside build-gtm-context, part 
 
 ## Before starting
 
-1. Read `gtm/README.md`. If it's missing, run the build-gtm-context skill first, which sets up the folder.
+1. Read `~/gtm-context/gtm/README.md`. Every `gtm/` path in this skill is inside `~/gtm-context/`, the student's private gtm-context repo, whatever project they are in. If it's missing, run the build-gtm-context skill first, which sets up the folder.
 2. Check the "Sources" list: if customers live in a connected system (CRM, Notion, Airtable, Sheets), work there and don't create `gtm/customers.csv`. Otherwise use the CSV.
 
 ## Part A. Collect customers

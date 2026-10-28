@@ -47,7 +47,7 @@ A signal that can't be found anywhere public ("ambitious", "data-driven", "frust
 4. **Value test.** Does this ICP get a clearly better result from the product than the next-best option? If the honest answer is "about the same", it is not the primary ICP.
 5. **Findability.** Can every hard filter, and most scoring signals, be checked in public data or an enrichment tool, without talking to the person? Count them, and rewrite the ones that can't.
 6. **Evidence.** Is each attribute backed by customers, competitors or calls? Mark anything else `(guess, confirm)`.
-7. **Count.** At most 3 ICPs. Put the primary one first. A solo business usually needs 1.
+7. **Count.** One ICP per distinct group in the data, up to 5, each with a fit score from 1 to 5, strongest first. Don't merge distinct groups to keep the count low, and don't split one group to raise it. A small list with one clear buyer may need only 1.
 
 ## Common mistakes to flag
 

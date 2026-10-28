@@ -17,7 +17,7 @@ Every other section builds on this page: the ICP says who it's for, messaging sa
 
 ## Before starting
 
-1. Read `gtm-hub.md` in the project folder. If it's missing, the Hub isn't set up yet: run the build-gtm-context skill first, which sets it up and then continues here.
+1. Fetch the GTM Hub page: its link is in the "GTM context" block of Claude's memory. Its links table and "For agents" section hold every link you need. If no Hub link is known, the Hub isn't set up yet: run the build-gtm-context skill first, which sets it up and then continues here.
 2. Fetch the Product & offer page by its link. If it already has content, summarise it in three lines and ask what changed, then update only that part.
 
 ## Steps
@@ -60,4 +60,4 @@ One line with the page link. If running inside build-gtm-context, hand back the 
 - One or two screens. Summary first, examples and details further down.
 - Plain buyer words. No "leverage", "solutions", "empower", "seamless".
 - Never invent prices, numbers or clients. Ask, or mark `(guess, confirm)`.
-- Fetch by link, never search Notion. Never copy this content into the project folder.
+- Fetch by link, never search Notion. Never copy this content into a project.

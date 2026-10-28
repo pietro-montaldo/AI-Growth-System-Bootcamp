@@ -1,6 +1,6 @@
 # The gtm/ folder (GitHub only)
 
-All the context lives in a `gtm/` folder in the student's own repository. `gtm/README.md` is the hub: it links to everything, so skills open the exact file they need and never search. The repository should be private, because the banks hold customer and objection data.
+All the context lives in a `gtm/` folder inside a private repository called `gtm-context` on the student's GitHub, cloned at `~/gtm-context`. It's one fixed place, outside any project, decided for the student and never asked (see `context-home.md`). `gtm/README.md` is the hub: it links to everything, so skills open the exact file they need and never search. The repository must be private, because the banks hold customer and objection data. All `gtm/` paths in the skills are inside `~/gtm-context/`.
 
 ```
 gtm/
@@ -12,7 +12,7 @@ gtm/
 ├── competitors.csv    bank
 ├── objections.csv     bank
 ├── customers.csv      bank
-├── updates/           one report per refresh run (added by refresh-gtm-context)
+├── updates/           one report per update run (added at the handover)
 └── .private/          raw exports while you work (gitignored, delete when done)
 ```
 
@@ -24,10 +24,14 @@ Create a CSV bank when the data has no other home, or lives only in a platform w
 
 ## Setting up the folder
 
-1. Check this is a git repository (`git rev-parse --is-inside-work-tree`). If not, explain in one line and offer to run `git init`.
-2. Check the remote, if there is one (`gh repo view --json visibility -q .visibility`). "No git remotes found" just means the repo is local for now: fine, and when they create the GitHub repo later, it should be private. If it's `PUBLIC`, stop and say so: customer and objection data shouldn't go in a public repository. Offer to make it private (the user confirms the command) or to keep the banks out of git.
-3. Create `gtm/` and the files below. Add `gtm/.private/` to `.gitignore`.
-4. Never commit or push without the user's OK. At the end, offer one commit with a message like `gtm: build context layer` and ask before pushing. Scheduled refreshes commit or push only as the user allowed in refresh-gtm-context setup (recorded in the Refresh block).
+1. Run `gtm_home.py status`. If `~/gtm-context` is already a git repository, use it and go to step 3.
+2. Otherwise, say in one line: "I'll create a private repository called gtm-context on your GitHub and keep it at ~/gtm-context, so every project can use it." On OK:
+   - **A `gtm-context` repo already exists on their GitHub** (`gh repo view gtm-context` works): if `~/gtm-context` is missing or empty, `gh repo clone gtm-context ~/gtm-context`. If the folder already has files (for example a `.private/` folder from the Notion version), clone won't work there: run `git init ~/gtm-context`, `git -C ~/gtm-context remote add origin <its URL>`, then `git -C ~/gtm-context pull origin main`.
+   - **No repo yet:** `git init ~/gtm-context` (fine if the folder already exists). With the GitHub CLI signed in (`gh auth status`), also run `gh repo create gtm-context --private --source ~/gtm-context --remote origin`. That creates the empty private repo and links it. Nothing is pushed yet.
+   - **No GitHub CLI:** keep the local repo, and say they can publish it as a private repo later (the guide's last step offers that).
+3. Check the visibility (`gh repo view --json visibility -q .visibility`, run inside `~/gtm-context`). "No git remotes found" means it's local for now: fine. If it's `PUBLIC`, stop and say so: customer and objection data shouldn't be public. Offer to make it private (the user confirms the command).
+4. Create `gtm/` and the files below. `.gitignore` gets `gtm/.private/` and `.private/`.
+5. Never commit or push without the user's OK. At the end, offer one commit with a message like `gtm: build context layer` and ask before pushing. Scheduled updates commit or push only as the user allowed at the handover (recorded in the Updates block and in their update skill).
 
 ## gtm/README.md (the hub)
 
@@ -37,7 +41,7 @@ Create a CSV bank when the data has no other home, or lives only in a platform w
 > **In short:** <what we sell, in one sentence>
 > **Primary ICP:** <one sentence>
 > **Say this:** "<one line>"
-> **Last refreshed:** <date> · <n> new customers, <n> objections, <n> quotes · <n> updates to review   (added once a refresh is scheduled)
+> **Last refreshed:** <date> · <n> new customers, <n> objections, <n> quotes · <n> updates to review   (added once updates are scheduled)
 
 Agents: open only the file you need from the table below. Query the CSV banks with the helper script (filters, counts), never read them whole. Don't copy this content anywhere else.
 
@@ -49,19 +53,21 @@ Agents: open only the file you need from the table below. Query the CSV banks wi
 | Competitors | [competitors.md](competitors.md), [competitors.csv](competitors.csv) | Not started | |
 | Objections | [objections.csv](objections.csv) | Not started | |
 | Customers | [customers.csv](customers.csv) | Not started | |
+| Resource: <name> | <link> | one line on what it's for (one row per extra resource, linked, never copied) | |
 
 ## Sources
-Where the context was built from, and how to get back in. Refreshes reread these instead of asking again.
+Where the context was built from, and how to get in.
 - <bucket>: <link or tool> | via: <connector name | Claude in Chrome | built-in browser | export file | pasted> | filter: <if the source is shared with other offers>
 
 ## Best-customer rule
 <for example: "came back for more, or left 2+ reviews">
 
-## Refresh
-Added by refresh-gtm-context setup. Settings only, no content.
-- Runs: <app scheduled task gtm-refresh | cloud routine <name> on branch gtm-refresh> · <cadence, for example every Monday 08:00>
+## Updates
+Added at the handover. Settings only, no content.
+- Update skill: update-gtm-context in the my-gtm-context plugin, private repo <owner>/gtm-update
+- Runs: <Claude app scheduled task gtm-update | cloud scheduled task, on branch gtm-updates> · <cadence, for example every Monday 08:00>
 - Full check: first run of each month
-- Alert: <email to your own address | Slack DM to your member ID>
+- Alert: <email to your own address | Slack DM to yourself> (the address or member ID is only in the scheduled prompt, never in a file)
 - Git: commit <yes|no> · push <yes|no>
 - Reports: [updates/](updates/)
 - Last run: customers <date> · conversations <date> · full check <date>
@@ -133,14 +139,14 @@ Rules for every bank:
 
 ## The helper script
 
-Each skill that touches a bank has `scripts/gtm_csv.py` in its own folder. Commands run from the project folder, so call the script by its full path: `<skill folder>` is the base directory shown when the skill loads.
+Each skill that touches a bank has `scripts/gtm_csv.py` in its own folder. Commands run from whatever project the user is in, so call the script by its full path (`<skill folder>` is the base directory shown when the skill loads) and give bank paths in full, under `~/gtm-context/gtm/`.
 
 ```bash
-python3 <skill folder>/scripts/gtm_csv.py init gtm/objections.csv --cols "Objection,Theme,What they said,Who,Our answer,Answer status,Stage,Source,Times seen,Last seen,Reference"
-python3 <skill folder>/scripts/gtm_csv.py query gtm/objections.csv --where Theme=price --cols "Objection,Our answer,Answer status"
-python3 <skill folder>/scripts/gtm_csv.py query gtm/customers.csv --where "Best customer=yes" --cols "Company,Size,Industry"
-python3 <skill folder>/scripts/gtm_csv.py count gtm/customers.csv --by Size
-python3 <skill folder>/scripts/gtm_csv.py upsert gtm/objections.csv --key Objection --rows gtm/.private/new-objections.json
+python3 <skill folder>/scripts/gtm_csv.py init ~/gtm-context/gtm/objections.csv --cols "Objection,Theme,What they said,Who,Our answer,Answer status,Stage,Source,Times seen,Last seen,Reference"
+python3 <skill folder>/scripts/gtm_csv.py query ~/gtm-context/gtm/objections.csv --where Theme=price --cols "Objection,Our answer,Answer status"
+python3 <skill folder>/scripts/gtm_csv.py query ~/gtm-context/gtm/customers.csv --where "Best customer=yes" --cols "Company,Size,Industry"
+python3 <skill folder>/scripts/gtm_csv.py count ~/gtm-context/gtm/customers.csv --by Size
+python3 <skill folder>/scripts/gtm_csv.py upsert ~/gtm-context/gtm/objections.csv --key Objection --rows ~/gtm-context/gtm/.private/new-objections.json
 ```
 
 Filters: `--where COL=VALUE`, `--contains COL=TEXT`, `--any COL=A|B`, `--min COL=NUMBER`. They combine and are case-insensitive. `upsert` updates rows whose key matches (ignoring case) and appends the rest. It never changes the key itself, and it refuses unknown columns.

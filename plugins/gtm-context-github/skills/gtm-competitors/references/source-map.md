@@ -12,10 +12,13 @@ Most users already have a lot of their GTM context somewhere: a sales page, a CR
 | Customer language | Call recorder (Fathom, Granola, Gong, Fireflies), recordings of free webinars and live sessions (the audience's questions), email, LinkedIn DMs, reviews (G2, Trustpilot, Google, course platform reviews), surveys, testimonials |
 | Objections | An objections doc or database, call notes, an FAQ page, refund or cancellation reasons in the platform, the support inbox |
 | Proof and shareable customers | Logos and case studies on the website, testimonial pages, review platforms |
+| Anything else | Case studies, pitch decks, sales one-pagers, pricing sheets, battle cards, brand or tone guides, webinar slides, FAQ pages |
 
 ## How to ask
 
 Show the table in the chat and ask the user to answer in one message: for each bucket, paste a link, name the tool, or say "none". Tell them a rough pointer is enough ("it's in my Maven dashboard", "somewhere in Notion"). Don't use AskUserQuestion for this: links don't fit multiple-choice options.
+
+End the message with one open question: "Is there any other GTM context you'd like included that isn't in this list? For example case studies, a pitch deck or a pricing sheet." Extras are linked from the hub, never copied: one row each in the hub's links table (`Resource: <name>`, the link, one line on what it's for). Read them like any other source, and use what fits a section: a case study feeds proof and the customers bank (Result, Case study), a deck or pricing sheet feeds Product & offer, a battle card feeds Competitors.
 
 If they say "it's somewhere in my Notion / Drive" and that connector is available, run one plain search per bucket ("ICP", "customers", "objections", "case study"), show what you found, and let them confirm which ones to use.
 
@@ -30,13 +33,28 @@ If they say "it's somewhere in my Notion / Drive" and that connector is availabl
    - Read one page at a time in the main conversation, because the browser is shared.
    - Start with summary pages (dashboard, product list, sales and student counts). Open individual customer records only if no database already holds them.
    - Close the tabs you opened when you're done.
-4. **Export a file.** Most platforms can export customers or students as CSV. Ask the user to export it into the project folder (or attach it). It's often faster than browsing many pages.
+4. **Export a file.** Most platforms can export customers or students as CSV. Ask the user to attach it or export it into the private folder for raw exports (`~/gtm-context/.private/` in the Notion version, `~/gtm-context/gtm/.private/` in the GitHub version). Don't keep it in the project folder. It's often faster than browsing many pages.
 5. **Paste.** Always works.
+
+## Will each source stay current?
+
+The build reads each source once. Later updates need to know where new information will come from, which is not always the same place. Sort every source into one of two kinds, and use judgement instead of asking about the obvious ones:
+
+- **Live:** it keeps changing on its own. A CRM, an inbox, a call recorder, a course or payment dashboard, the website, a Notion or Airtable database the team keeps adding to. Later updates read it again for what's new since the last run.
+- **Snapshot:** it was true on the day it was shared and won't change by itself. An uploaded or exported file, a pasted list, a one-off doc, a log nobody adds to anymore. For each one, ask where that information will show up from now on and how you can get it. For example: "You gave me a customer list as a file. Where do new customers show up from now on: a payment dashboard, the CRM, an email when someone buys?" Or: "Does your team still add to this objections log? If not, where did these objections come from: calls, email, DMs?" Then map it to a live source when one exists.
+
+For every bucket, settle one line: where new information comes from, how you get in, and who does it:
+- **auto:** a connector, or a public page. Works in any scheduled run.
+- **auto, app only:** needs Claude in Chrome (a signed-in dashboard), so it works only in a scheduled task in the Claude app, while the computer is on and Chrome is signed in.
+- **you:** no way to get it unattended. The user drops a fresh export or pastes it, and each update alert reminds them when it's due (for example monthly).
+- **none:** it doesn't change (a past case study). Never reread.
+
+Show the whole plan as one table with your proposal for each line, and ask only about the snapshots and anything you couldn't settle, in one message.
 
 ## After reading
 
 - Show a short "What I found" table: bucket, sources read, found / partly / nothing.
-- Record each source in the links file under "Sources": its link, and how to get in (connector, browser, export). This way a later refresh reads the same places without asking again. Links only, never the content.
+- Record each source in the hub's "Sources" list (the Notion Hub's "For agents" section, or `gtm/README.md` in the GitHub version): its link, and how to get in (connector, browser, export). This is what the build read; the handover then plans where new information comes from ("Will each source stay current?"). Links only, never the content.
 - Every section skill then drafts from what was found and asks only about what's still missing.
 
 ## Privacy

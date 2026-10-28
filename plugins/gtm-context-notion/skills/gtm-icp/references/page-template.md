@@ -1,13 +1,17 @@
 # ICP page template
 
-One section per ICP, primary first. Keep the whole page to two screens. Evidence tags stay on the page so later agents know what's confirmed.
+One section per ICP (up to 5), strongest first, with a score table at the top. Keep each section short so the page stays about two screens. Evidence tags stay on the page so later agents know what's confirmed.
 
 ```markdown
 > **In short:** We sell best to <ICP 1 in one sentence>. We don't sell to <anti-ICP in a few words>.
 > **Built from:** <n best customers / competitors' customers / no data yet>
 > Last updated: <YYYY-MM-DD>
 
-## ICP 1: <short name>
+| ICP | Fit score | Customers | Best customers | Why this score |
+|---|---|---|---|---|
+| 1. <short name> | 5/5 | <n> | <n> | <best-customer rate, came back for more, reviews> |
+
+## ICP 1: <short name> (<score>/5)
 **Who:** <role + company type + situation, one sentence>
 
 **Hard filters** (all must be true)
@@ -34,8 +38,8 @@ One section per ICP, primary first. Keep the whole page to two screens. Evidence
 
 **Say this:** "<one line in their words>"
 
-## ICP 2: <short name>
-<same structure, only if the evidence supports it>
+## ICP 2 to 5: <short name> (<score>/5)
+<same structure, one section per distinct group the data supports, up to 5 in all>
 
 ---
 
