@@ -8,6 +8,7 @@ Claude skills from the AI Growth Systems Bootcamp by [Pietro Montaldo](https://w
 |---|---|
 | [voice-miner](plugins/voice-miner/skills/voice-miner) (plugin) | Learns your real voice from your sent emails and sales calls, and builds you a personal skill that writes emails, cold outreach and LinkedIn posts that sound like you, not like AI. |
 | [GTM context](#gtm-context) (plugin) | Builds your go-to-market context layer with you: what you sell, your ideal customer, competitors, how your buyers talk, objections and shareable customers. It reads what you already have first, then asks only about gaps. Lives in Notion or in your own GitHub repo. |
+| [AI Growth Skills](#ai-growth-skills) (separate repo) | The skills that use your GTM context: LinkedIn posts and leads, newsletters, sales calls, prospecting, and tools for building your own skills. |
 
 ---
 
@@ -199,6 +200,27 @@ scripts/sync-shared.sh            # copies shared/ into the plugins
 ```
 
 Inspired by Corey Haines' [product-marketing skill](https://github.com/coreyhaines31/marketingskills/tree/main/skills/product-marketing) and Lenny's [defining-icp skill](https://github.com/RefoundAI/lenny-skills/tree/main/skills/defining-icp).
+
+---
+
+## AI Growth Skills
+
+Once your GTM context is built, put it to work. **[AI Growth Skills](https://github.com/pietro-montaldo/ai-growth-skills)** is a separate repo of commercial skills that read this context first, so every draft starts from your offer, your ICP and your voice:
+
+| Plugin | What you get |
+|---|---|
+| `linkedin` | Hooks and posts in your voice, a review before you publish, a weekly read on what worked, posts from your calls, and leads from a post's commenters |
+| `newsletter` | A full edition from your raw notes and links |
+| `sales-calls` | A brief before the call, coaching after it, the follow-up email, the proposal, webinar follow-ups and a weekly inbound review |
+| `prospecting` | The Reddit communities and threads worth your time, a lead list ranked against your ICP, and a persona from your sign-ups |
+| `skill-building` | An audit of any skill, and an upgrade for skills written for older Claude models |
+
+Install in Claude Code:
+
+```
+/plugin marketplace add pietro-montaldo/ai-growth-skills
+/plugin install sales-calls@ai-growth-skills
+```
 
 ## License
 
