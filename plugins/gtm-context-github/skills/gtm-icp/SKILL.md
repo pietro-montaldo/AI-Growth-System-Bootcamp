@@ -52,7 +52,7 @@ Then enrich, so the scoring works before first contact. Look up the best group a
 
 Public attributes that clearly separate the best group become the hard filters and public scoring signals. What people only say on calls becomes conversation signals.
 
-Write 1 primary ICP. Add a second or third only if the evidence clearly shows a separate group with a different buyer or reason to buy.
+Write one ICP for each distinct group the data shows, up to 5. A group is distinct when it has its own buyer, reason to buy or public signals, and enough customers to show a pattern (for example 3 or more best customers, or about 10% of the list). Start from groupings the data already has, such as a persona or segment column. Give each ICP a fit score from 1 to 5, based on the evidence: best-customer rate first, then coming back for more, then reviews or referrals. Keep a weaker group with a low score instead of dropping it, so later agents can weigh it. Strongest first.
 
 ### 3. Draft and check
 
@@ -74,7 +74,7 @@ Apply edits. Don't write on silence.
 
 ## Rules
 
-- At most 3 ICPs. Primary first.
+- Up to 5 ICPs, as many as the data supports, each with a fit score. Strongest first.
 - Hard filters and public scoring signals must be checkable from public data or company data. "Ambitious" or "growth-minded" is not a filter. Each public signal says where to check it.
 - Every attribute shows its evidence: `(customers)`, `(from competitors, confirm)` or `(guess, confirm)`.
 - Query with filters, never read whole banks.
