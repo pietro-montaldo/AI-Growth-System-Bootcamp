@@ -36,7 +36,7 @@ If they say "it's somewhere in my Notion / Drive" and that connector is availabl
 ## After reading
 
 - Show a short "What I found" table: bucket, sources read, found / partly / nothing.
-- Record each source in the links file under "Sources": its link, and how to get in (connector, browser, export). This way a later refresh reads the same places without asking again. Links only, never the content.
+- Record each source in the hub's "Sources" list (the Notion Hub's "For agents" section, or `gtm/README.md` in the GitHub version): its link, and how to get in (connector, browser, export). This way a later refresh reads the same places without asking again. Links only, never the content.
 - Every section skill then drafts from what was found and asks only about what's still missing.
 
 ## Privacy

@@ -17,7 +17,7 @@ The best copy uses the buyer's own words. This skill finds those words in real c
 
 ## Before starting
 
-1. Read `~/gtm-context/gtm-hub.md`, the links file. It always lives there, whatever project you are in. If it's missing, run the build-gtm-context skill first, which sets up the Hub.
+1. Fetch the GTM Hub page: its link is in the "GTM context" block of Claude's memory. Its links table and "For agents" section hold every link you need. If no Hub link is known, run the build-gtm-context skill first, which sets up the Hub.
 2. Fetch the Product & offer and ICP pages by their links. You need the product summary and the ICP names.
 3. Fetch the Messaging page by its link. If it has content, summarise it and ask what to refresh.
 

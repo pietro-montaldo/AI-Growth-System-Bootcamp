@@ -11,10 +11,10 @@ The public repo for students of the AI Growth Systems Bootcamp (https://maven.co
 
 The GTM context kit has two plugins with the same skill and agent names. Only the storage steps differ:
 
-- `plugins/gtm-context-notion`: context lives in Notion under one GTM Hub page. Locally there's only `~/gtm-context/gtm-hub.md`, a list of links and data source IDs.
+- `plugins/gtm-context-notion`: context lives in Notion under one GTM Hub page. The Hub is its own map: a links table plus a collapsed "For agents" section with data source IDs, sources, the best-customer rule and refresh settings. Nothing is saved locally except temporary exports.
 - `plugins/gtm-context-github`: context lives as markdown pages and CSV banks in `gtm/`, inside a private `gtm-context` repo cloned at `~/gtm-context`.
 
-Either way the local part has one fixed home, `~/gtm-context`, outside any project, and is never asked about. A pointer block in the student's `~/.claude/CLAUDE.md` (between `gtm-context:start` and `gtm-context:end` markers) tells every session where it is. See `shared/references/context-home.md`. Skills must never write the links file or `gtm/` into the current project folder.
+Where it lives is never asked. A pointer block in the student's `~/.claude/CLAUDE.md` (between `gtm-context:start` and `gtm-context:end` markers) tells every session where it is: only the Hub link for Notion, the repo and `~/gtm-context` path for GitHub. See `shared/references/context-home.md`. Skills must never write `gtm/` or any context into the current project folder.
 
 The skills are content, not code: SKILL.md files, agent files and reference markdown. There is no build step and no test suite.
 
@@ -36,17 +36,17 @@ The README is the student-facing page for everything in the repo: one row per sk
 ## Structure that spans files
 
 - `shared/` is the single source for everything both plugins need. Installed plugins can't read outside their own folder, so `scripts/sync-shared.sh` copies it in, using the maps at the top of the script. Edit `shared/` only, never the copies, then run the script.
-  - `shared/references/` (`sections.md`, `icp-checks.md`, `mining-playbook.md`, `source-map.md`) go into each skill's `references/`.
+  - `shared/references/` (`sections.md`, `icp-checks.md`, `mining-playbook.md`, `source-map.md`, `refresh-playbook.md`, `context-home.md`) go into the skills' `references/` that need them.
   - `shared/agents/` go into each plugin's `agents/`. The agents are storage-agnostic, so both plugins share them.
   - `shared/scripts/gtm_csv.py` goes into the GitHub plugin's skills that touch a CSV bank (`scripts/`). It is standard-library Python: `init`, `query`, `count`, `upsert`. Skills call it by full path from the skill folder.
-  - `shared/scripts/gtm_home.py` goes into both plugins' `build-gtm-context` and `refresh-gtm-context`. It handles `~/gtm-context`: `status`, `init`, `pointer` (idempotent memory block), `allow` (adds the folder to `permissions.additionalDirectories` in `~/.claude/settings.json`, with a backup) and `migrate` (moves an old links file, never overwrites). `GTM_CONTEXT_HOME` and `CLAUDE_CONFIG_DIR` override the paths, for testing.
+  - `shared/scripts/gtm_home.py` goes into both plugins' `build-gtm-context` and `refresh-gtm-context`. It handles the pointer and `~/gtm-context`: `status` (mode, Hub link parsed from the pointer, old setup files), `init`, `pointer` (idempotent memory block) and `allow` (adds the folder to `permissions.additionalDirectories` in `~/.claude/settings.json`, with a backup). `GTM_CONTEXT_HOME` and `CLAUDE_CONFIG_DIR` override the paths, for testing.
 - `build-gtm-context` is the guide. It works in three moves: map where the user's GTM information already lives (`source-map.md`), read it all, then run the six section skills (`gtm-product`, `gtm-customers`, `gtm-competitors`, `gtm-icp`, `gtm-messaging`, `gtm-objections`). Each section drafts from what was found and asks only about gaps. Each section skill also works on its own, and then asks where its bucket lives first.
 - `refresh-gtm-context` keeps the context current, in three modes:
   - **Setup:** the build's last step hands over to it. It confirms sources, picks an app scheduled task or a cloud routine, sets the cadence, and records the email or Slack alert.
   - **Scheduled run:** unattended, so it never asks. Banks grow on their own (customers, objections, quotes). Pages only get proposed updates in a dated report.
   - **Review:** the user applies or rejects the proposed updates.
 
-  Its rules are in `shared/references/refresh-playbook.md`. `source-reader` has a compare mode (baseline in, only ADDED/REMOVED/CHANGED out) for the monthly offer check. The scheduled prompt must be self-contained (absolute path to the links file or repo, alert target, git permissions), because each run starts with no memory.
+  Its rules are in `shared/references/refresh-playbook.md`. `source-reader` has a compare mode (baseline in, only ADDED/REMOVED/CHANGED out) for the monthly offer check. The scheduled prompt must be self-contained (the Notion Hub link or the repo path, alert target, git permissions), because each run starts with no memory.
 - Sources without a connector (course and payment dashboards like Maven or Stripe) are read with a browser tool (Claude in Chrome for signed-in pages), read-only, or from an export.
 - Three agents do the heavy reading in parallel, so the main conversation keeps only conclusions:
   - `source-reader`: one per existing doc, database, export or page.
@@ -59,7 +59,7 @@ The README is the student-facing page for everything in the repo: one row per sk
 
 ## Rules the skills must keep
 
-- Notion: one GTM Hub page links to everything; skills fetch pages by the links in `gtm-hub.md` and never search for them; banks (objections, competitors, customers) are queried with filters, never read whole; dedupe with one filtered query per batch; no copies of context in the repo.
+- Notion: one GTM Hub page links to everything; skills fetch pages by the links on the Hub page (links table and "For agents" section) and never search for them; banks (objections, competitors, customers) are queried with filters, never read whole; dedupe with one filtered query per batch; no copies of context in the repo.
 - GitHub: `gtm/README.md` links to everything; CSV banks are queried and written only through `gtm_csv.py`, never read whole; check the repo isn't public before writing data; raw exports stay in gitignored `gtm/.private/`; never commit or push without asking. Data that already lives in a connected system is linked under "Sources", not copied into CSV.
 - Pages stay one or two screens with a summary at the top.
 - Every write has an approval pause. Nothing is ever sent, posted or connected. The one exception is refresh-gtm-context's scheduled run, which the user authorises once at setup: it may add to banks, write a report, and send one alert to the user's own email or Slack DM. It never changes curated pages and never contacts anyone else.

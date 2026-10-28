@@ -16,7 +16,7 @@ Objections are the most useful context for outreach and follow-ups, and the most
 
 ## Before starting
 
-1. Read `~/gtm-context/gtm-hub.md`, the links file. It always lives there, whatever project you are in. If it's missing, run the build-gtm-context skill first, which sets up the Hub.
+1. Fetch the GTM Hub page: its link is in the "GTM context" block of Claude's memory. Its links table and "For agents" section hold every link you need. If no Hub link is known, run the build-gtm-context skill first, which sets up the Hub.
 2. Fetch the Objections bank by its link once, to read its columns and Theme options. Don't read its rows.
 
 ## Steps

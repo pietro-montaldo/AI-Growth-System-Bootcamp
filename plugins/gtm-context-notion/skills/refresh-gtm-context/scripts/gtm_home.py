@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""Set up and check the fixed home of the GTM context: ~/gtm-context.
+"""Point every Claude session at the student's GTM context, and check the setup.
 
-Every student gets the same folder, whatever project they work in, and a short
-pointer in Claude's global memory so every session can find it without asking.
-Standard library only.
+Notion version: the Hub page is its own map, so the pointer only holds the Hub
+link and nothing else is saved locally. GitHub version: the context is a
+private gtm-context repo at ~/gtm-context. Either way, a short pointer in
+Claude's global memory tells every session where it is. Standard library only.
 
   gtm_home.py status                      where things are, as JSON
-  gtm_home.py init                        create ~/gtm-context if missing
+  gtm_home.py init                        create ~/gtm-context (GitHub version, or for temporary exports)
   gtm_home.py pointer --notion-hub URL    write the pointer for the Notion version
   gtm_home.py pointer --repo OWNER/NAME   write the pointer for the GitHub version
   gtm_home.py pointer ... --print         show the pointer without writing it
-  gtm_home.py allow                       let Claude Code read the folder without asking each time
-  gtm_home.py migrate --from PATH         move an old gtm-hub.md into ~/gtm-context
+  gtm_home.py allow                       let Claude Code read ~/gtm-context without asking each time
 
 Environment (for testing): GTM_CONTEXT_HOME overrides ~/gtm-context,
 CLAUDE_CONFIG_DIR overrides ~/.claude.
@@ -34,10 +34,24 @@ def claude_dir():
     return os.path.abspath(os.path.expanduser(os.environ.get("CLAUDE_CONFIG_DIR", "~/.claude")))
 
 
+def pointer_block():
+    text = read(os.path.join(claude_dir(), "CLAUDE.md"))
+    if START in text and END in text:
+        return text.split(START, 1)[1].split(END, 1)[0]
+    return ""
+
+
+def notion_hub():
+    for line in pointer_block().splitlines():
+        if line.startswith("- GTM Hub (Notion): "):
+            return line.split(": ", 1)[1].split(" ", 1)[0].rstrip(".")
+    return None
+
+
 def mode(path):
     if os.path.exists(os.path.join(path, "gtm", "README.md")):
         return "github"
-    if os.path.exists(os.path.join(path, "gtm-hub.md")):
+    if notion_hub():
         return "notion"
     return "none"
 
@@ -74,16 +88,20 @@ def allowed(h):
 def cmd_status(args):
     h = home()
     memory = os.path.join(claude_dir(), "CLAUDE.md")
-    legacy = [p for p in ("gtm-hub.md", os.path.join("gtm", "README.md")) if os.path.exists(p)]
+    candidates = ["gtm-hub.md", os.path.join("gtm", "README.md"), os.path.join(h, "gtm-hub.md")]
+    if os.path.abspath("gtm") == os.path.join(h, "gtm"):
+        candidates.remove(os.path.join("gtm", "README.md"))
+    legacy = sorted({os.path.abspath(p) for p in candidates if os.path.exists(p)})
     print(json.dumps({
-        "home": h,
-        "home_exists": os.path.isdir(h),
         "mode": mode(h),
-        "is_git_repo": os.path.isdir(os.path.join(h, ".git")),
+        "notion_hub": notion_hub(),
         "pointer_in_memory": START in read(memory),
         "memory_file": memory,
+        "home": h,
+        "home_exists": os.path.isdir(h),
+        "is_git_repo": os.path.isdir(os.path.join(h, ".git")),
         "folder_allowed": allowed(h),
-        "old_files_in_current_folder": [os.path.abspath(p) for p in legacy],
+        "old_setup_files": legacy,
     }, indent=2))
 
 
@@ -96,14 +114,17 @@ def cmd_init(args):
 def pointer_text(args):
     h = home().replace(os.path.expanduser("~"), "~", 1)
     if args.notion_hub:
-        where = f"- Notion GTM Hub: {args.notion_hub}\n- Links and settings: {h}/gtm-hub.md (links and IDs only)"
+        body = ("My go-to-market context (product, ICP, messaging, objections, customers) lives in Notion.\n"
+                f"- GTM Hub (Notion): {args.notion_hub} . Its links table and its \"For agents\" section "
+                "hold every page, database and setting.\n"
+                "Before any GTM, sales, outreach or content task, fetch the Hub and open only the pages you need.")
     else:
-        where = f"- GitHub: private repo {args.repo}, cloned at {h}\n- Hub: {h}/gtm/README.md (links to every page and bank)"
-    return (f"{START}\n## GTM context\n"
-            f"My go-to-market context (product, ICP, messaging, objections, customers) lives in {h}.\n"
-            f"{where}\n"
-            "Before any GTM, sales, outreach or content task, read that file and open only the pages you need. "
-            "Never search for them, and never copy the context into a project.\n"
+        body = (f"My go-to-market context (product, ICP, messaging, objections, customers) lives in {h}.\n"
+                f"- GitHub: private repo {args.repo}, cloned at {h}\n"
+                f"- Hub: {h}/gtm/README.md (links to every page and bank)\n"
+                "Before any GTM, sales, outreach or content task, read the hub and open only the files you need.")
+    return (f"{START}\n## GTM context\n{body}\n"
+            "Never search for the context, and never copy it into a project.\n"
             f"{END}")
 
 
@@ -145,17 +166,6 @@ def cmd_allow(args):
     print(f"allowed {h} in {path} (backup: settings.json.bak)")
 
 
-def cmd_migrate(args):
-    src = os.path.abspath(os.path.expanduser(args.source))
-    dst = os.path.join(home(), "gtm-hub.md")
-    if not os.path.exists(src):
-        sys.exit(f"not found: {src}")
-    if os.path.exists(dst):
-        sys.exit(f"{dst} already exists, not overwriting. Compare the two files and keep one.")
-    os.makedirs(home(), exist_ok=True)
-    shutil.move(src, dst)
-    print(f"moved {src} -> {dst}")
-
 
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -168,11 +178,8 @@ def main():
     group.add_argument("--notion-hub")
     group.add_argument("--repo")
     pt.add_argument("--print", action="store_true")
-    mg = sub.add_parser("migrate")
-    mg.add_argument("--from", dest="source", required=True)
     args = p.parse_args()
-    {"status": cmd_status, "init": cmd_init, "pointer": cmd_pointer, "allow": cmd_allow,
-     "migrate": cmd_migrate}[args.command](args)
+    {"status": cmd_status, "init": cmd_init, "pointer": cmd_pointer, "allow": cmd_allow}[args.command](args)
 
 
 if __name__ == "__main__":

@@ -12,10 +12,10 @@ This is the guide. It works in three moves: **find** what the user already has, 
 ## Reference files
 
 - `references/source-map.md`: the buckets, where they usually live, how to ask, and how to get into each source (connector, browser, export, paste).
-- `references/hub-structure.md`: the Hub, its pages and database schemas, reusing existing databases, the Notion tools, and the `gtm-hub.md` format.
+- `references/hub-structure.md`: the Hub, its pages and database schemas, reusing existing databases, the Notion tools, and the "For agents" section that makes the Hub its own map.
 - `references/sections.md`: what each section captures and the quality bar.
-- `references/context-home.md`: where the links file lives (always `~/gtm-context/`, never asked), the pointer in Claude's memory, and older setups.
-- `scripts/gtm_home.py`: checks and sets up `~/gtm-context`. Call it by its full path in this skill's folder.
+- `references/context-home.md`: how every session finds the context (the Hub link in Claude's memory, never asked), and older setups.
+- `scripts/gtm_home.py`: checks the pointer, writes it, and finds old links files. Call it by its full path in this skill's folder.
 
 ## Start
 
@@ -26,10 +26,10 @@ Explain in three lines:
 
 ## Step 0. Check what exists
 
-Run `gtm_home.py status`. The links file always lives at `~/gtm-context/gtm-hub.md`, in every project. Never ask the user where to save it.
+Find the Hub link: the "GTM context" block in Claude's memory, or `gtm_home.py status` (it reads the pointer). Never ask the user where anything is saved.
 
-- **`~/gtm-context/gtm-hub.md` exists:** fetch the Hub page by its link and read the links table. Show each section with its status. One AskUserQuestion: continue from the first unfinished section (recommended), update specific sections, or start over. The "Sources" list in `gtm-hub.md` is reused, so don't ask for sources again unless the user wants to add some.
-- **An old `gtm-hub.md` in the current project folder:** say in one line that the context now has one fixed home, move it with `gtm_home.py migrate --from <path>`, then continue as above.
+- **A Hub link is known:** fetch the Hub page. Its links table and "For agents" section are the whole map. Show each section with its status. One AskUserQuestion: continue from the first unfinished section (recommended), update specific sections, or start over. The "Sources" in the "For agents" section are reused, so don't ask for sources again unless the user wants to add some.
+- **An old `gtm-hub.md` turns up** (`status` lists it, in the project folder or `~/gtm-context/`): follow "Older setups" in `hub-structure.md`. Move its contents onto the Hub page, then continue as above.
 - **Neither:** go to step 1.
 
 ## Step 1. Map the sources
@@ -47,8 +47,8 @@ Run `gtm_home.py status`. The links file always lives at `~/gtm-context/gtm-hub.
    - **No:** ask for the link of the page it should live under. If they don't know, run one workspace search for likely parents ("wiki", "company", "marketing") and let them pick.
 2. Customers or objections databases found in step 1 are linked, not copied. Follow "Reuse before you create" in `hub-structure.md`.
 3. Create the Hub page, the four pages and any missing databases.
-4. Run `gtm_home.py init`, then write `~/gtm-context/gtm-hub.md`: every link, data source ID and filter, plus a "Sources" list (link and how to get in). Show the Hub link, and say in one line that the links file lives in `~/gtm-context` so every project and later system can find it.
-5. **Pointer in Claude's memory** (see `context-home.md`): show the block from `gtm_home.py pointer --notion-hub <Hub link> --print` and explain it in one sentence: every Claude session will know where the GTM context is, without searching. Write it with `gtm_home.py pointer --notion-hub <Hub link>` after one OK. If they also use Claude Code across several projects, offer `gtm_home.py allow` so reading the folder doesn't ask for permission each time.
+4. Write the collapsed "For agents: links and settings" section at the bottom of the Hub (format in `hub-structure.md`): data source IDs and filters, plus the "Sources" list (link and how to get in). Show the Hub link.
+5. **Pointer in Claude's memory** (see `context-home.md`): show the block from `gtm_home.py pointer --notion-hub <Hub link> --print` and explain it in one sentence: every Claude session will know where the GTM context is, without searching. Write it with `gtm_home.py pointer --notion-hub <Hub link>` after one OK. Nothing else is saved on their computer.
 
 ## Step 3. Read everything
 
@@ -57,7 +57,7 @@ Start all of these at once, so the user waits only once:
 - One `language-miner` agent per approved conversation source (brief: see gtm-messaging step 2), in the background.
 - Sources that need a signed-in browser: read them yourself in the main conversation, one page at a time, while the agents run.
 
-If conversation sources were already mined recently for the same window (the "Sources" list in `gtm-hub.md` shows the date), reuse those results and mine only the new sources.
+If conversation sources were already mined recently for the same window (the "Sources" in the Hub's "For agents" section show the date), reuse those results and mine only the new sources.
 
 When everything is back, show a "What I found" table: bucket, sources read, found / partly / nothing.
 
@@ -87,7 +87,7 @@ When the sources already answered most of product, ICP and messaging, draft thos
 2. Show the Hub link and a short status:
    - Sections done and skipped, and which sources each one came from.
    - How many items are still marked `(guess, confirm)` or `draft`, and where they are.
-3. Tell them in one line that later course systems read `~/gtm-context/gtm-hub.md` first and fetch only the pages they need.
+3. Tell them in one line that later course systems find the Hub through Claude's memory and fetch only the pages they need.
 
 ## Step 12. Keep it fresh
 
@@ -99,6 +99,6 @@ The context goes stale within weeks: prices change, new customers buy, new objec
 - Use AskUserQuestion for choices (at most 4 options per question: list longer choices in the chat), and plain chat for links and free text.
 - Every write is shown to the user first. Don't write on silence.
 - Browsing is read-only. The user signs in themselves, and you never click anything that changes data or sends messages.
-- Fetch Hub pages by the links in `gtm-hub.md`. Never search for them. The only searches are the source search in step 1 (if the user asks) and the parent-page search in step 2.
+- Fetch pages by the links on the Hub (links table and "For agents" section). Never search for them. The only searches are the source search in step 1 (if the user asks) and the parent-page search in step 2.
 - Query databases with filters, never read them whole.
-- `gtm-hub.md` holds links only. Never copy context or personal data into a project folder.
+- The Hub link is the only thing saved outside Notion (in Claude's memory). Never copy context or personal data onto the user's computer.

@@ -22,18 +22,18 @@ The build is a snapshot. This skill keeps it current: same sources, only what's 
 - **Scheduled run:** the prompt says "scheduled run", or the user says "refresh now" or "run the refresh".
 - **Review:** the user says "review GTM updates", or follows an alert.
 
-All modes start by reading `~/gtm-context/gtm-hub.md`, the fixed home of the links file (see `references/context-home.md`). If it's missing, check the current folder for an old `gtm-hub.md` and move it with `scripts/gtm_home.py migrate`. If there's none at all, say the Hub isn't set up and point to build-gtm-context.
+All modes start by fetching the GTM Hub page. Its link is in the scheduled prompt, or in the "GTM context" block of Claude's memory (see `references/context-home.md`). The Hub's links table and its "For agents" section (sources, data source IDs, best-customer rule, refresh settings) are the whole map, so nothing local is needed and the same steps work in a cloud routine. If no Hub link is known, say the Hub isn't set up and point to build-gtm-context. If an old local `gtm-hub.md` turns up, follow "Older setups" in build-gtm-context's `hub-structure.md`.
 
 ## Setup
 
-1. **Confirm the sources.** Show the "Sources" list from `gtm-hub.md` per bucket. Ask the user to reply in one message: keep, remove, or add a source (a link or a tool name). This is where they point the refresh in the right direction.
+1. **Confirm the sources.** Show the "Sources" from the Hub's "For agents" section, per bucket. Ask the user to reply in one message: keep, remove, or add a source (a link or a tool name). This is where they point the refresh in the right direction.
 2. **Check what works without them.** Mark each source:
    - **Connector:** works.
    - **Claude in Chrome:** works only with an app scheduled task, while Chrome is open and signed in.
    - **Export or paste:** can't run alone. Offer a connector if one exists, or a monthly reminder in the alert to drop a fresh export.
 3. **Where it runs.** Explain in two lines each, then ask with AskUserQuestion:
    - **Claude app scheduled task:** runs on their computer while the Claude app is open (a missed run happens at the next launch). Can use Claude in Chrome. Created with the scheduled-tasks tool.
-   - **Cloud routine:** runs even when the computer is off, but only with cloud connectors, no browser and no local files. Created with the `/schedule` skill.
+   - **Cloud routine:** runs even when the computer is off, but only with cloud connectors and no browser. Everything it needs is on the Hub page, so no local files are needed. Created with the `/schedule` skill.
 4. **When.** Default every Monday at 08:00 local time, and the user can pick another day or time. There's one task: the run itself decides when the monthly full check is due.
 5. **Alert.** Ask: email or Slack.
    - Email: a Gmail or Outlook connector that can send, to their own address. Confirm the address.
@@ -43,21 +43,21 @@ All modes start by reading `~/gtm-context/gtm-hub.md`, the fixed home of the lin
 
 ```
 Scheduled run of the GTM refresh. Use the gtm-context-notion:refresh-gtm-context skill in "scheduled run" mode.
-Links file: <absolute path to ~/gtm-context/gtm-hub.md, for example /Users/name/gtm-context/gtm-hub.md>
+GTM Hub: <Notion Hub link>  (its "For agents" section holds the sources, IDs and refresh settings)
 Do not ask questions. Follow refresh-playbook.md: update the banks, write proposed updates for anything else, write the report, then send the alert.
 Alert: <email to address | Slack DM to member ID>.
 ```
 
    App: `create_scheduled_task` with taskId `gtm-refresh`, a title like "Weekly GTM refresh" and the cron expression (for example `0 8 * * 1`). Cloud: run `/schedule` with the same prompt and timing.
-7. **Record it** in `gtm-hub.md` under a `## Refresh` block (format in build-gtm-context's `hub-structure.md`). Create the "Updates to review" page under the Hub if it doesn't exist, and add its row to the Hub links table.
-8. Run `gtm_home.py status`. If the pointer isn't in Claude's memory yet, offer it now (as in build-gtm-context step 2). For an app scheduled task, also offer `gtm_home.py allow`, so unattended runs can read `~/gtm-context` without a permission prompt.
+7. **Record it** under "Refresh" in the Hub's "For agents" section (format in build-gtm-context's `hub-structure.md`). Create the "Updates to review" page under the Hub if it doesn't exist, and add its row to the Hub links table.
+8. Run `gtm_home.py status`. If the pointer isn't in Claude's memory yet, offer it now (as in build-gtm-context step 2).
 9. Offer a first run now, so they see a real report. On yes, run the scheduled-run steps below and stay available for questions.
 
 ## Scheduled run
 
 Follow the unattended rules in `refresh-playbook.md`: no questions, skip and log any source that fails, alert only the user.
 
-1. **Load.** Read `gtm-hub.md`, its Sources and its Refresh block. Each bucket's window starts at its last run date, or 30 days ago.
+1. **Load.** Fetch the Hub and read its "For agents" section: Sources, data source IDs and Refresh settings. Each bucket's window starts at its last run date, or 30 days ago.
 2. **Decide the scope.** It's a full check if the last full check was in an earlier calendar month, or the user asked for one. Otherwise it's a weekly run.
 3. **Read, in parallel and in the background:**
    - One `language-miner` per conversation source, with the window and "extract: both".
@@ -75,8 +75,8 @@ Follow the unattended rules in `refresh-playbook.md`: no questions, skip and log
    - Staleness: passed dates, sections older than the rhythm, old drafts.
 6. **Write the report** as a child page of "Updates to review", titled `GTM refresh <date>`, in the playbook's format. Then:
    - Update the Hub callout's "Last refreshed" line: date, counts, and the number of open updates.
-   - Update the last run dates in the `## Refresh` block of `gtm-hub.md`.
-7. **Send the alert** in the playbook's format, with the report link, to the address or DM in the Refresh block only. If sending fails, leave a draft and note it in the report.
+   - Update the "Last run" line in the Hub's "For agents" section (anchor the edit on its plain-text label).
+7. **Send the alert** in the playbook's format, with the report link, to the address or DM in the scheduled prompt only. In a manual run, ask the user for it. If sending fails, leave a draft and note it in the report.
 
 ## Review
 
@@ -92,6 +92,6 @@ Follow the unattended rules in `refresh-playbook.md`: no questions, skip and log
 
 - Same sources as the build. Only the user adds or removes sources, in setup or review.
 - Unattended runs never change the Product, ICP or messaging summary. They only propose.
-- Fetch pages by the links in `gtm-hub.md`. Query banks with filters, never read them whole.
+- Fetch pages by the links on the Hub. Query banks with filters, never read them whole.
 - The alert goes to the user only. Nothing is ever sent to anyone else.
 - Don't name the enrichment tool to the user: say "public company data".

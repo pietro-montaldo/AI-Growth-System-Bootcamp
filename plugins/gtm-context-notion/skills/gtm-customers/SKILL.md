@@ -17,7 +17,7 @@ It has two parts. Run both when used on its own. Inside build-gtm-context, part 
 
 ## Before starting
 
-1. Read `~/gtm-context/gtm-hub.md`, the links file. It always lives there, whatever project you are in. If it's missing, run the build-gtm-context skill first, which sets up the Hub.
+1. Fetch the GTM Hub page: its link is in the "GTM context" block of Claude's memory. Its links table and "For agents" section hold every link you need. If no Hub link is known, run the build-gtm-context skill first, which sets up the Hub.
 2. Fetch the Customers database by its link once, to read its columns and select options. Don't read its rows yet.
 
 ## Part A. Collect customers
@@ -52,7 +52,7 @@ Best customers drive the ICP. "Best" means they paid well, got results, came bac
 2. Ask (multiSelect): "Which of these mean a great customer to you?"
 3. Apply that rule with one query. The best group is usually the top 10 to 20%. If the rule catches much more (common signals like "left a review" do), show the count for the rule as picked and for one or two tighter versions ("2 or more reviews", "both signals"), and let the user choose. Then show how the chosen group differs from everyone else (roles, company size, location, how they found you).
 4. Leave out partners, co-instructors, team members and free seats, even when they match.
-5. After approval, tick Best customer on the matching rows and record the rule itself ("came back for more or left 2+ reviews") so it can be reapplied next month. Each row is a separate update, so above about 30 rows say so before starting.
+5. After approval, tick Best customer on the matching rows and record the rule itself ("came back for more or left 2+ reviews") under "Best-customer rule" in the Hub's "For agents" section, so it can be reapplied next month. Each row is a separate update, so above about 30 rows say so before starting.
 
 Either way, the result is a best group plus the reason it's best. The ICP step looks for what that group shares.
 

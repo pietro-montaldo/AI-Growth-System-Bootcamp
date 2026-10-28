@@ -1,6 +1,6 @@
 # GTM Hub structure (Notion)
 
-One GTM Hub page links to everything. Four short pages and three databases sit under it. The links file `~/gtm-context/gtm-hub.md` (one fixed place for every student, see `context-home.md`) holds only links, so skills never search Notion.
+One GTM Hub page links to everything. Four short pages and three databases sit under it. The Hub page is also the map for agents: its links table and its collapsed "For agents" section hold every link, ID and setting, so skills never search Notion and no local file is needed. The Hub link itself lives in Claude's memory (see `context-home.md`).
 
 ```
 GTM Hub (page)
@@ -18,7 +18,7 @@ GTM Hub (page)
 Many users already keep customers or objections in Notion. Copying them into the Hub would create a second source of truth, so always ask first:
 
 - "Do you already keep your customers in a Notion database?" and "Do you already log objections somewhere in Notion?"
-- **Yes:** they paste the link. Fetch its schema once and link it from the Hub and `gtm-hub.md` instead of creating a new database. Record the filter that selects the rows for this offer (for example `Products paid contains "AI Growth Systems Bootcamp"`).
+- **Yes:** they paste the link. Fetch its schema once and link it from the Hub (links table and "For agents" section) instead of creating a new database. Record the filter that selects the rows for this offer (for example `Products paid contains "AI Growth Systems Bootcamp"`).
 - **Missing columns:** if the existing database lacks a column a skill needs (for customers: Best customer, Logo shareable, Permission note), show the list and add only those, with the user's OK (`notion-update-data-source`). Never rename or remove their columns.
 - **Their vocabulary wins:** use their existing theme, persona and stage options instead of the defaults below. Map new rows onto them.
 - Create a new database only for what doesn't exist yet.
@@ -52,6 +52,7 @@ Title: `GTM Hub`. Content, in this order:
 1. A callout with the summary: what the business sells in one sentence, the primary ICP in one sentence, and the "say this" line. Updated by the guide at the end of each run. Once a refresh is scheduled, it ends with one more line, kept current by refresh-gtm-context: `Last refreshed: <date> · <n> new customers, <n> objections, <n> quotes · <n> updates to review`.
 2. A short paragraph: "Agents: read the page you need by its link below. Query the databases with a filter. Don't copy this content anywhere else."
 3. A table: `Section | Link | One-line summary | Last updated`. One row per child page and database. A new section shows "Not started" in the summary column.
+4. At the very bottom, the collapsed "For agents: links and settings" section (format below).
 
 ## Pages
 
@@ -109,39 +110,44 @@ Create only the ones the user doesn't already have (see "Reuse before you create
 | Result | text | a number or outcome, only if shareable |
 | Case study | url | |
 
-## gtm-hub.md
+## The "For agents" section (the map)
 
-Saved at `~/gtm-context/gtm-hub.md`, never in a project folder and never asked. Links and IDs only, never content.
+The Hub page is the only map of the context. Its links table lists every page and database. A collapsed section at the very bottom holds what agents need beyond that: data source IDs, filters, sources, the best-customer rule and the refresh settings. Settings only, never content.
+
+Because the map lives in Notion, any session on any surface (Claude Code, Cowork, a cloud routine, another computer) needs only the Hub link: one fetch gives it everything. The Hub link itself sits in Claude's memory (see `context-home.md`) and in every scheduled prompt.
+
+Write it as a toggle heading, so people reading the Hub don't see it unless they open it:
 
 ```markdown
-# GTM Hub links
+<toggle heading="h2">
+For agents: links and settings
 
-Only links live here. The context itself lives in Notion. Skills read pages by these links and never search.
+Read this instead of searching. Settings only, no content. Kept current by the GTM context skills.
 
-- Hub: <url>
-- Product & offer: <url>
-- ICP: <url>
-- Messaging & customer language: <url>
-- Competitors page: <url>
-- Competitors database: <url> | data source: <collection://...>
-- Objections bank: <url> | data source: <collection://...> | filter: <only if the database is shared with other offers>
-- Customers: <url> | data source: <collection://...> | filter: <only if the database is shared with other offers>
+**Databases**
+- Objections bank: <mention of the database> · data source: collection://... · filter: <only if shared with other offers>
+- Customers: <mention> · data source: collection://... · filter: <...>
+- Competitors: <mention> · data source: collection://...
 
-## Sources
-Where the context was built from, and how to get back in. Refreshes reread these instead of asking again.
-- <bucket>: <link or tool> | via: <connector name | Claude in Chrome | built-in browser | export file | pasted>
+**Sources** (where the context was built from, and how to get back in; refreshes reread these instead of asking)
+- <bucket>: <link or tool> · via: <connector name | Claude in Chrome | built-in browser | export file | pasted>
 
-## Refresh
-Added by refresh-gtm-context setup. Settings only, no content.
+**Best-customer rule:** <for example "came back for more, or left 2+ reviews">
+
+**Refresh** (added by refresh-gtm-context setup)
 - Runs: <app scheduled task gtm-refresh | cloud routine <name>> · <cadence, for example every Monday 08:00>
 - Full check: first run of each month
-- Alert: <email to your own address | Slack DM to your member ID>
-- Updates to review: <url>
+- Alert: <email to your own address | Slack DM to yourself> (the address or member ID is only in the scheduled prompt, never on the page)
 - Last run: customers <date> · conversations <date> · full check <date>
 
 Last updated: <YYYY-MM-DD>
+</toggle>
 ```
 
-Mark a linked database as `(linked, existing database)` after its name, so later skills know not to create rows in a format the user didn't choose. Leave out lines for skipped sections.
+Mark a linked database as `(linked, existing database)` after its name, so later skills know not to create rows in a format the user didn't choose. Leave out lines for skipped sections. When editing this section later, anchor on its plain-text labels (for example `Last run: customers`), as with the links table.
 
 If a link stops working (page moved or deleted), ask the user for the new link. Don't search for it.
+
+## Older setups: gtm-hub.md
+
+Earlier versions kept this map in a local file, `gtm-hub.md`, in the project folder or in `~/gtm-context/`. If one is found (`gtm_home.py status` lists them), copy its database lines, sources and refresh settings into the "For agents" section, update the pointer in Claude's memory to the Hub link, and tell the user the file is no longer needed. Delete it only on their OK.

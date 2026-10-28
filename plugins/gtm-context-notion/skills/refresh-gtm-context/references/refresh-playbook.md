@@ -24,8 +24,8 @@ Tag every row a scheduled run adds, so the review can find it: in a linked log, 
 
 1. **Never ask a question.** Anything that needs a decision becomes a proposed update in the report.
 2. **Never stop on one failure.** A source that can't be read (connector signed out, Chrome closed, page gone) is skipped, logged in the report under "Couldn't read", and named in the alert.
-3. **Same sources as the build.** Read the "Sources" list in the links file. Don't go looking for new sources. Only the user adds sources, in setup or review.
-4. **Only what's new.** Each bucket has a "last run" date in the Refresh block. Read conversations and customers since that date. If there's no date, use the last 30 days.
+3. **Same sources as the build.** Read the "Sources" list in the hub (the Notion Hub's "For agents" section, or `gtm/README.md` in the GitHub version). Don't go looking for new sources. Only the user adds sources, in setup or review.
+4. **Only what's new.** Each bucket has a "last run" date in the Refresh settings, next to the Sources. Read conversations and customers since that date. If there's no date, use the last 30 days.
 5. **Read-only browsing.** Same rules as the build: summary pages first, never click anything that changes data or sends messages, close tabs afterwards.
 6. **No personal data.** Same as the build: role and company type, never names, emails or profile URLs.
 7. **One message out, to the user only.** The alert goes to the address or Slack DM saved at setup, and nowhere else. Never send anything to customers or prospects.
