@@ -84,7 +84,7 @@ GitHub version only: Commit: <yes|no>. Push: <yes|no>.
 - **App task:** `create_scheduled_task` with taskId `gtm-update`, a title like "Weekly GTM update" and the cron expression (for example `0 8 * * 1`).
 - **Cloud task:** run the `/schedule` skill with the same prompt and timing. Select the repository: `gtm-context` in the GitHub version (the run writes there), `gtm-update` in the Notion version (a cloud task needs one; the run doesn't change it). Leave on the connectors the plan uses, plus the alert one.
 
-Record it under "Updates" in the hub (format in `hub-structure.md` or `repo-structure.md`), and create the "Updates to review" page or `gtm/updates/` folder if it doesn't exist.
+Record it under "Updates" in the hub (format in `hub-structure.md` or `repo-structure.md`), add the "Last refreshed" line to the end of the hub summary (the Hub callout, or the summary block in `gtm/README.md`) so every run has a line to update, and create the "Updates to review" page or `gtm/updates/` folder if it doesn't exist. The "Updates to review" link goes into the update skill, so create it before step 3 writes the skill.
 
 ## 7. First run
 
