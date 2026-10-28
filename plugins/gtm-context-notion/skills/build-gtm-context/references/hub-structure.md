@@ -10,7 +10,7 @@ GTM Hub (page)
 ├── Competitors (page: summary on top, then the Competitors database inline)
 ├── Objections bank (database)
 ├── Customers (database)
-└── Updates to review (page, added by refresh-gtm-context: one child page per refresh report)
+└── Updates to review (page, added at the handover: one child page per update report)
 ```
 
 ## Reuse before you create
@@ -49,9 +49,9 @@ Editing tips that save a failed call:
 
 Title: `GTM Hub`. Content, in this order:
 
-1. A callout with the summary: what the business sells in one sentence, the primary ICP in one sentence, and the "say this" line. Updated by the guide at the end of each run. Once a refresh is scheduled, it ends with one more line, kept current by refresh-gtm-context: `Last refreshed: <date> · <n> new customers, <n> objections, <n> quotes · <n> updates to review`.
+1. A callout with the summary: what the business sells in one sentence, the primary ICP in one sentence, and the "say this" line. Updated by the guide at the end of each run. Once updates are scheduled, it ends with one more line, kept current by the student's update skill: `Last refreshed: <date> · <n> new customers, <n> objections, <n> quotes · <n> updates to review`.
 2. A short paragraph: "Agents: read the page you need by its link below. Query the databases with a filter. Don't copy this content anywhere else."
-3. A table: `Section | Link | One-line summary | Last updated`. One row per child page and database. A new section shows "Not started" in the summary column.
+3. A table: `Section | Link | One-line summary | Last updated`. One row per child page and database. A new section shows "Not started" in the summary column. Extra resources the user shared (case studies, a deck, a pricing sheet) get one row each, named `Resource: <name>`, linked and never copied.
 4. At the very bottom, the collapsed "For agents: links and settings" section (format below).
 
 ## Pages
@@ -112,7 +112,7 @@ Create only the ones the user doesn't already have (see "Reuse before you create
 
 ## The "For agents" section (the map)
 
-The Hub page is the only map of the context. Its links table lists every page and database. A collapsed section at the very bottom holds what agents need beyond that: data source IDs, filters, sources, the best-customer rule and the refresh settings. Settings only, never content.
+The Hub page is the only map of the context. Its links table lists every page and database. A collapsed section at the very bottom holds what agents need beyond that: data source IDs, filters, sources, the best-customer rule and the update settings. Settings only, never content.
 
 Because the map lives in Notion, any session on any surface (Claude Code, Cowork, a cloud routine, another computer) needs only the Hub link: one fetch gives it everything. The Hub link itself sits in Claude's memory (see `context-home.md`) and in every scheduled prompt.
 
@@ -129,13 +129,14 @@ Read this instead of searching. Settings only, no content. Kept current by the G
 - Customers: <mention> · data source: collection://... · filter: <...>
 - Competitors: <mention> · data source: collection://...
 
-**Sources** (where the context was built from, and how to get back in; refreshes reread these instead of asking)
+**Sources** (where the context was built from, and how to get in)
 - <bucket>: <link or tool> · via: <connector name | Claude in Chrome | built-in browser | export file | pasted>
 
 **Best-customer rule:** <for example "came back for more, or left 2+ reviews">
 
-**Refresh** (added by refresh-gtm-context setup)
-- Runs: <app scheduled task gtm-refresh | cloud routine <name>> · <cadence, for example every Monday 08:00>
+**Updates** (added at the handover)
+- Update skill: update-gtm-context in the my-gtm-context plugin, private repo <owner>/gtm-update
+- Runs: <Claude app scheduled task gtm-update | cloud scheduled task> · <cadence, for example every Monday 08:00>
 - Full check: first run of each month
 - Alert: <email to your own address | Slack DM to yourself> (the address or member ID is only in the scheduled prompt, never on the page)
 - Last run: customers <date> · conversations <date> · full check <date>
@@ -150,4 +151,4 @@ If a link stops working (page moved or deleted), ask the user for the new link. 
 
 ## Older setups: gtm-hub.md
 
-Earlier versions kept this map in a local file, `gtm-hub.md`, in the project folder or in `~/gtm-context/`. If one is found (`gtm_home.py status` lists them), copy its database lines, sources and refresh settings into the "For agents" section, update the pointer in Claude's memory to the Hub link, and tell the user the file is no longer needed. Delete it only on their OK.
+Earlier versions kept this map in a local file, `gtm-hub.md`, in the project folder or in `~/gtm-context/`. If one is found (`gtm_home.py status` lists them), copy its database lines, sources and update settings into the "For agents" section, update the pointer in Claude's memory to the Hub link, and tell the user the file is no longer needed. Delete it only on their OK.

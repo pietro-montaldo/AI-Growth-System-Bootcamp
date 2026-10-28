@@ -1,8 +1,8 @@
 ---
 name: build-gtm-context
-description: "Build your whole go-to-market context layer in Notion with you. First it finds where your GTM information already lives (Notion, CRM, course or payment platform, website, calls, email) and reads it, through a connector or by browsing. Then it drafts product and offer, customers, competitors, ICP, customer language, objections and shareable logos, and asks you only about real gaps. Everything lands in one GTM Hub page. Resumes where you left off. Use for \"build my GTM context\", \"set up my GTM Hub\", \"start the context layer\", \"help me define my ICP and messaging\", \"System 1\", or the first time you use this plugin. Not for refreshing one section only (use the matching gtm-* skill, for example gtm-objections)."
+description: "Build your whole go-to-market context layer in Notion with you. First it finds where your GTM information already lives (Notion, CRM, course or payment platform, website, calls, email) and reads it, through a connector or by browsing. Then it drafts product and offer, customers, competitors, ICP, customer language, objections and shareable logos, and asks you only about real gaps. Everything lands in one GTM Hub page. At the end it creates your own update skill, on your Claude account, that keeps the context current on a schedule. Resumes where you left off. Use for \"build my GTM context\", \"set up my GTM Hub\", \"start the context layer\", \"help me define my ICP and messaging\", \"System 1\", \"set up my GTM updates\", or the first time you use this plugin. Not for redoing one section only (use the matching gtm-* skill, for example gtm-objections)."
 metadata:
-  version: "0.2.0"
+  version: "0.3.0"
 ---
 
 # Build your GTM context
@@ -14,6 +14,9 @@ This is the guide. It works in three moves: **find** what the user already has, 
 - `references/source-map.md`: the buckets, where they usually live, how to ask, and how to get into each source (connector, browser, export, paste).
 - `references/hub-structure.md`: the Hub, its pages and database schemas, reusing existing databases, the Notion tools, and the "For agents" section that makes the Hub its own map.
 - `references/sections.md`: what each section captures and the quality bar.
+- `references/handover.md`: the last step. Creates the student's own update plugin in a private `gtm-update` repo, adds it to their Claude account, schedules it, and removes the course plugin.
+- `references/update-skill-template.md`: the update skill the handover fills in for this student.
+- `references/update-playbook.md` and `references/mining-playbook.md`: copied into the student's update plugin.
 - `references/context-home.md`: how every session finds the context (the Hub link in Claude's memory, never asked), and older setups.
 - `scripts/gtm_home.py`: checks the pointer, writes it, and finds old links files. Call it by its full path in this skill's folder.
 
@@ -30,13 +33,14 @@ Find the Hub link: the "GTM context" block in Claude's memory, or `gtm_home.py s
 
 - **A Hub link is known:** fetch the Hub page. Its links table and "For agents" section are the whole map. Show each section with its status. One AskUserQuestion: continue from the first unfinished section (recommended), update specific sections, or start over. The "Sources" in the "For agents" section are reused, so don't ask for sources again unless the user wants to add some.
 - **An old `gtm-hub.md` turns up** (`status` lists it, in the project folder or `~/gtm-context/`): follow "Older setups" in `hub-structure.md`. Move its contents onto the Hub page, then continue as above.
+- **The user asked to set up updates** ("set up my GTM updates") and the Hub exists: go straight to step 12.
 - **Neither:** go to step 1.
 
 ## Step 1. Map the sources
 
 1. Check that a Notion connector is available. If not, stop and explain: connect Notion in Claude's connector settings, then run this skill again.
 2. See which other connectors exist from the tool names already listed in the session (for example `gmail`, `fathom`, `hubspot`, `google_drive`). Don't run one broad keyword search across all tools: it returns huge tool definitions and can miss the ones you need. Load a tool only when you use it, with a `select:` query.
-3. Show the bucket table from `source-map.md` and ask the user to reply in one message: for each bucket, a link, a tool name, or "none". Add which offer this context is about, if they sell several.
+3. Show the bucket table from `source-map.md` and ask the user to reply in one message: for each bucket, a link, a tool name, or "none". Add which offer this context is about, if they sell several, and the open question about any other GTM context to include (case studies, a pitch deck, a pricing sheet).
 4. For each pointer, settle access using the order in `source-map.md`: connector, browser, export, paste. When there's no connector for a tool, say so plainly and offer to browse there (Claude in Chrome for signed-in dashboards) or to read an export.
 5. One AskUserQuestion to confirm: which conversation sources (email, call recorder, DMs) you may read, and whether to use Claude in Chrome or the built-in browser for the sources that need browsing.
 
@@ -47,7 +51,7 @@ Find the Hub link: the "GTM context" block in Claude's memory, or `gtm_home.py s
    - **No:** ask for the link of the page it should live under. If they don't know, run one workspace search for likely parents ("wiki", "company", "marketing") and let them pick.
 2. Customers or objections databases found in step 1 are linked, not copied. Follow "Reuse before you create" in `hub-structure.md`.
 3. Create the Hub page, the four pages and any missing databases.
-4. Write the collapsed "For agents: links and settings" section at the bottom of the Hub (format in `hub-structure.md`): data source IDs and filters, plus the "Sources" list (link and how to get in). Show the Hub link.
+4. Write the collapsed "For agents: links and settings" section at the bottom of the Hub (format in `hub-structure.md`): data source IDs and filters, plus the "Sources" list (link and how to get in). Add one row to the Hub links table per extra resource (`Resource: <name>`). Show the Hub link.
 5. **Pointer in Claude's memory** (see `context-home.md`): show the block from `gtm_home.py pointer --notion-hub <Hub link> --print` and explain it in one sentence: every Claude session will know where the GTM context is, without searching. Write it with `gtm_home.py pointer --notion-hub <Hub link>` after one OK. Nothing else is saved on their computer.
 
 ## Step 3. Read everything
@@ -89,9 +93,15 @@ When the sources already answered most of product, ICP and messaging, draft thos
    - How many items are still marked `(guess, confirm)` or `draft`, and where they are.
 3. Tell them in one line that later course systems find the Hub through Claude's memory and fetch only the pages they need.
 
-## Step 12. Keep it fresh
+## Step 12. Hand over: your own update skill
 
-The context goes stale within weeks: prices change, new customers buy, new objections show up. Explain that in one sentence, then ask: "Set up a weekly automatic refresh now? It takes about 3 minutes." On yes, run the refresh-gtm-context skill in setup mode. It reuses the sources from this build and only asks the user to confirm them, pick when it runs, and choose email or Slack for alerts. On no, say they can start it later by saying "set up automatic updates".
+The context goes stale within weeks: prices change, new customers buy, new objections show up. From now on the user only needs to keep it current, so the build ends by giving them their own update skill and removing the course plugin. Say that in two sentences, then follow `references/handover.md` step by step:
+1. Plan where new information comes from, for every source (live or snapshot, and who gets it).
+2. Pick where and when it runs, and email or Slack for alerts.
+3. Write their `my-gtm-context` plugin, publish it as a private `gtm-update` repo, and add it to their Claude account.
+4. Create the schedule, offer a first run, then remove the course plugin.
+
+Each step needs one OK. If they stop, they pick up later by saying "set up my GTM updates", which jumps straight here.
 
 ## Rules
 

@@ -1,6 +1,6 @@
 # How every session finds the GTM context
 
-Every later course system, every project and every scheduled refresh must find the same context without searching and without asking the user where it is. Never ask the user where to save it. The answer is fixed:
+Every later course system, every project and every scheduled update must find the same context without searching and without asking the user where it is. Never ask the user where to save it. The answer is fixed:
 
 | Version | Where the context lives | What Claude needs to find it |
 |---|---|---|
@@ -15,7 +15,7 @@ The setup adds a short block to Claude's global memory file (`~/.claude/CLAUDE.m
 
 Show the user the block (`gtm_home.py pointer ... --print`) and write it after one OK, because it's their global settings. It sits between two marker lines, so later runs update it in place instead of adding a second copy.
 
-Because the Notion pointer is only a link, it works anywhere Notion is connected: another computer, Cowork, or a cloud routine. Scheduled prompts carry the Hub link themselves, since a cloud routine doesn't load local memory.
+Because the Notion pointer is only a link, it works anywhere Notion is connected: another computer, Cowork, or a cloud routine. The student's own update skill has the Hub link written into it, so scheduled updates find the context without local memory.
 
 ## Reading the folder from any project (GitHub version)
 

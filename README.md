@@ -130,7 +130,7 @@ Then install your version and start it:
 
 About 30 minutes of your time, less if a lot already exists. You can stop at any step and pick up later.
 
-1. **Tell Claude where things already live.** Your website, a Notion page, your CRM, your course or payment platform, your call recorder, your inbox. A rough pointer is enough. Where there's no connector (for example a Maven or Stripe dashboard), Claude says so and offers to browse there read-only with Claude in Chrome, or to read an export.
+1. **Tell Claude where things already live.** Your website, a Notion page, your CRM, your course or payment platform, your call recorder, your inbox, plus anything else you'd like included, like case studies or a pitch deck. A rough pointer is enough. Where there's no connector (for example a Maven or Stripe dashboard), Claude says so and offers to browse there read-only with Claude in Chrome, or to read an export.
 2. **Set up where it lives.** In Notion, one GTM Hub page that links to everything. In GitHub, a private `gtm-context` repo. Either way, Claude remembers where it is (see below), so you're never asked where to save. Customer and objection lists you already keep somewhere connected are linked, not copied.
 3. **Claude reads everything at once,** with parallel agents, then shows you what it found per section.
 4. **Product & offer,** drafted from your pages and docs.
@@ -140,29 +140,31 @@ About 30 minutes of your time, less if a lot already exists. You can stop at any
 8. **Customer language.** With your OK, Claude reads recent calls, webinars, emails and DMs and pulls out how buyers describe the problem in their own words.
 9. **Objections,** grouped by theme with the answers that work.
 10. **Logo permission:** which customers you may show publicly. Only the ones that said yes.
+11. **Your own update skill,** so it stays current (see below).
 
-You see every draft before anything is written. Nothing is ever sent, and in the GitHub version nothing is committed or pushed without asking. You can also run any section on its own later, for example `/gtm-context-github:gtm-objections` to refresh objections from last month's calls.
+You see every draft before anything is written. Nothing is ever sent, and in the GitHub version nothing is committed or pushed without asking. While the course plugin is installed, you can also run any section on its own, for example `/gtm-context-github:gtm-objections` to redo objections from last month's calls.
 
-### Keep it fresh
+### Keep it fresh: your own update skill
 
-Context goes stale within weeks: prices change, new customers buy, new objections show up. At the end of the build, Claude offers to set up a scheduled refresh (`refresh-gtm-context`). It takes about 3 minutes:
+Context goes stale within weeks: prices change, new customers buy, new objections show up. After the first build you only need to keep it current, so the build ends by handing you your own update skill and removing the course plugin:
 
-1. **Confirm the sources.** It reuses the ones from your build. You add or remove any, so it looks in the right places.
-2. **Pick where it runs.** A Claude app scheduled task (on your computer while the app is open, can use Claude in Chrome for dashboards like Maven) or a cloud routine (runs even when your computer is off, connectors only; in the GitHub version Claude adds the refresh skill to your gtm-context repo so the cloud can run it).
-3. **Pick when.** Weekly by default, every Monday morning.
-4. **Pick how you hear about it:** an email or a Slack message to yourself.
+1. **Plan where new information comes from.** For every source you gave, Claude works out whether it keeps updating on its own (a CRM, your inbox, your call recorder, a dashboard) or was a one-off (an uploaded file, a pasted list). For one-offs it asks where new customers or objections will show up from now on, and whether it can fetch them or you'll send them.
+2. **Pick where and when it runs.** A scheduled task in the Claude app (on your computer, can read dashboards like Maven through Claude in Chrome) or in the cloud (runs even when your computer is off, connectors only). Weekly by default, plus an email or Slack alert to yourself.
+3. **Claude writes your update skill** and saves it in a private `gtm-update` repo on your GitHub.
+4. **You add it to your Claude account** in Customize > Plugins > Add marketplace, so it works in Claude Code, Cowork and scheduled runs.
+5. **First run, then the course plugin goes.** You see a real report, then Claude helps you remove the course plugin (other course plugins, like voice-miner, stay).
 
 Every run:
 - **Adds what's new to your banks on its own:** new customers, new and repeat objections, and new buyer quotes on the messaging page.
 - **Once a month, checks your offers, prices and website** against your Product & offer page, and whether new customers still match your ICP.
 - **Never rewrites your pages.** Anything that needs a decision becomes a numbered "proposed update" in a report.
-- **Sends you a short alert** with what changed and a link to the report.
+- **Sends you a short alert** with what changed, a link to the report, and a reminder when a file from you is due.
 
-To go through the proposed updates, say "review GTM updates": you approve, edit or reject each one, then confirm new objection answers and logo permissions. You can also run a refresh any time by saying "refresh my GTM context".
+Say "review GTM updates" to go through the proposed updates, or "change my GTM update settings" to add a source or change the alert or schedule. For a bigger change, like a new ICP from scratch, install the course plugin again and run that section.
 
 ### Where your context lives
 
-Your GTM context isn't tied to any one project, so every project, every later course system (outbound, inbound, content) and every scheduled refresh finds the same context. You're never asked where to save it.
+Your GTM context isn't tied to any one project, so every project, every later course system (outbound, inbound, content) and every scheduled update finds the same context. You're never asked where to save it.
 
 | Notion version | GitHub version |
 |---|---|
@@ -181,8 +183,8 @@ GTM Hub (page)                      gtm/
 ├── Competitors (+ database)        ├── messaging.md
 ├── Objections bank (database)      ├── competitors.md + .csv
 ├── Customers (database)            ├── objections.csv
-└── Updates to review (refresh)     ├── customers.csv
-                                    └── updates/          refresh reports
+└── Updates to review               ├── customers.csv
+                                    └── updates/          update reports
 ```
 
 Three rules keep it fast and cheap for agents to read:

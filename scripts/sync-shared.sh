@@ -19,6 +19,7 @@ sections.md:build-gtm-context
 sections.md:gtm-product
 sections.md:gtm-icp
 icp-checks.md:gtm-icp
+mining-playbook.md:build-gtm-context
 mining-playbook.md:gtm-messaging
 mining-playbook.md:gtm-objections
 source-map.md:build-gtm-context
@@ -27,18 +28,14 @@ source-map.md:gtm-customers
 source-map.md:gtm-competitors
 source-map.md:gtm-messaging
 source-map.md:gtm-objections
-source-map.md:refresh-gtm-context
-mining-playbook.md:refresh-gtm-context
-sections.md:refresh-gtm-context
-refresh-playbook.md:refresh-gtm-context
+update-playbook.md:build-gtm-context
+handover.md:build-gtm-context
 context-home.md:build-gtm-context
-context-home.md:refresh-gtm-context
 "
 
 # shared script : skill that needs it, in every GTM plugin
 SCRIPTS_ALL="
 gtm_home.py:build-gtm-context
-gtm_home.py:refresh-gtm-context
 "
 
 # shared script : skill that needs it (GitHub plugin only: its banks are CSV files)
@@ -48,7 +45,6 @@ gtm_csv.py:gtm-customers
 gtm_csv.py:gtm-competitors
 gtm_csv.py:gtm-icp
 gtm_csv.py:gtm-objections
-gtm_csv.py:refresh-gtm-context
 "
 
 check=0

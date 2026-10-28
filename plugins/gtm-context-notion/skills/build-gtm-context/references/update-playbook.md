@@ -1,6 +1,6 @@
-# Refresh playbook: keeping the GTM context current
+# Update playbook: keeping the GTM context current
 
-The first build is a snapshot. Prices change, cohorts start and end, new customers buy, and new objections and buyer phrases show up every week. A refresh rereads the same sources as the build, adds what's new to the banks, and proposes changes to the pages.
+The first build is a snapshot. Prices change, cohorts start and end, new customers buy, and new objections and buyer phrases show up every week. An update reads the sources in the update skill's plan ("Where new information comes from"), adds what's new to the banks, and proposes changes to the pages.
 
 ## What may change without the user, and what may not
 
@@ -18,14 +18,14 @@ The first build is a snapshot. Prices change, cohorts start and end, new custome
 
 Banks only ever grow or get counters updated. Nothing is deleted, and nothing curated is rewritten without the user.
 
-Tag every row a scheduled run adds, so the review can find it: in a linked log, put "Added by GTM refresh <date>" in a notes column it already has (for example "How we know"); in a CSV bank, Answer status `draft` and the source tag do the job. A linked log without a count column can't record repeats: skip them and list them in the report instead.
+Tag every row a scheduled run adds, so the review can find it: in a linked log, put "Added by GTM update <date>" in a notes column it already has (for example "How we know"); in a CSV bank, Answer status `draft` and the source tag do the job. A linked log without a count column can't record repeats: skip them and list them in the report instead.
 
 ## Rules for unattended runs
 
 1. **Never ask a question.** Anything that needs a decision becomes a proposed update in the report.
 2. **Never stop on one failure.** A source that can't be read (connector signed out, Chrome closed, page gone) is skipped, logged in the report under "Couldn't read", and named in the alert.
-3. **Same sources as the build.** Read the "Sources" list in the hub (the Notion Hub's "For agents" section, or `gtm/README.md` in the GitHub version). Don't go looking for new sources. Only the user adds sources, in setup or review.
-4. **Only what's new.** Each bucket has a "last run" date in the Refresh settings, next to the Sources. Read conversations and customers since that date. If there's no date, use the last 30 days.
+3. **Only the planned sources.** Read the sources in the update skill's plan, and nothing else. Lines marked `auto, app only` are skipped and logged when Chrome isn't available. Lines marked `you` are read only if the user dropped a new export or pasted something; otherwise the alert reminds them when it's due. Don't go looking for new sources: only the user adds them, by changing the update settings.
+4. **Only what's new.** Each bucket has a "last run" date in the hub's Updates settings (the Notion Hub's "For agents" section, or `gtm/README.md` in the GitHub version). Read conversations and customers since that date. If there's no date, use the last 30 days.
 5. **Read-only browsing.** Same rules as the build: summary pages first, never click anything that changes data or sends messages, close tabs afterwards.
 6. **No personal data.** Same as the build: role and company type, never names, emails or profile URLs.
 7. **One message out, to the user only.** The alert goes to the address or Slack DM saved at setup, and nowhere else. Never send anything to customers or prospects.
@@ -73,7 +73,7 @@ Status is `open`, `applied` or `rejected`. Review mode sets it.
 
 ## The report
 
-One report per run. Title: `GTM refresh <YYYY-MM-DD>`.
+One report per run. Title: `GTM update <YYYY-MM-DD>`.
 
 ```markdown
 > **Summary:** 3 new customers, 5 objections (2 new, 3 repeats), 8 new quotes, 4 proposed updates. 1 source couldn't be read.
@@ -99,10 +99,10 @@ One report per run. Title: `GTM refresh <YYYY-MM-DD>`.
 Short, plain, and sent only to the user's own address or DM:
 
 ```
-GTM refresh <date>: 3 new customers, 5 objections, 8 quotes added. 4 updates need your OK.
+GTM update <date>: 3 new customers, 5 objections, 8 quotes added. 4 updates need your OK.
 1 source couldn't be read: Maven (Chrome was closed).
 Report: <link or path>
-To review, open Claude in your project and say "review GTM updates".
+To review, open Claude anywhere and say "review GTM updates".
 ```
 
 If nothing changed, still send a one-line alert ("No changes this week"), so the user knows the schedule works. If the send fails, leave an email draft instead, and note it in the report.
