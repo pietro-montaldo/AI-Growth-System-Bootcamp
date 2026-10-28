@@ -148,7 +148,7 @@ You see every draft before anything is written. Nothing is ever sent, and in the
 Context goes stale within weeks: prices change, new customers buy, new objections show up. At the end of the build, Claude offers to set up a scheduled refresh (`refresh-gtm-context`). It takes about 3 minutes:
 
 1. **Confirm the sources.** It reuses the ones from your build. You add or remove any, so it looks in the right places.
-2. **Pick where it runs.** A Claude app scheduled task (on your computer while the app is open, can use Claude in Chrome for dashboards like Maven) or a cloud routine (runs even when your computer is off, connectors only).
+2. **Pick where it runs.** A Claude app scheduled task (on your computer while the app is open, can use Claude in Chrome for dashboards like Maven) or a cloud routine (runs even when your computer is off, connectors only; in the GitHub version Claude adds the refresh skill to your gtm-context repo so the cloud can run it).
 3. **Pick when.** Weekly by default, every Monday morning.
 4. **Pick how you hear about it:** an email or a Slack message to yourself.
 

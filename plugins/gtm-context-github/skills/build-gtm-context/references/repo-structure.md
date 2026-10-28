@@ -26,8 +26,9 @@ Create a CSV bank when the data has no other home, or lives only in a platform w
 
 1. Run `gtm_home.py status`. If `~/gtm-context` is already a git repository, use it and go to step 3.
 2. Otherwise, say in one line: "I'll create a private repository called gtm-context on your GitHub and keep it at ~/gtm-context, so every project can use it." On OK:
-   - With the GitHub CLI signed in (`gh auth status`): from the home folder, run `gh repo create gtm-context --private --clone`. If a `gtm-context` repo already exists on their account, clone it instead (`gh repo clone gtm-context ~/gtm-context`).
-   - Without it: `git init ~/gtm-context`, and say they can publish it as a private repo later (the guide's last step offers that).
+   - **A `gtm-context` repo already exists on their GitHub** (`gh repo view gtm-context` works): if `~/gtm-context` is missing or empty, `gh repo clone gtm-context ~/gtm-context`. If the folder already has files (for example a `.private/` folder from the Notion version), clone won't work there: run `git init ~/gtm-context`, `git -C ~/gtm-context remote add origin <its URL>`, then `git -C ~/gtm-context pull origin main`.
+   - **No repo yet:** `git init ~/gtm-context` (fine if the folder already exists). With the GitHub CLI signed in (`gh auth status`), also run `gh repo create gtm-context --private --source ~/gtm-context --remote origin`. That creates the empty private repo and links it. Nothing is pushed yet.
+   - **No GitHub CLI:** keep the local repo, and say they can publish it as a private repo later (the guide's last step offers that).
 3. Check the visibility (`gh repo view --json visibility -q .visibility`, run inside `~/gtm-context`). "No git remotes found" means it's local for now: fine. If it's `PUBLIC`, stop and say so: customer and objection data shouldn't be public. Offer to make it private (the user confirms the command).
 4. Create `gtm/` and the files below. `.gitignore` gets `gtm/.private/` and `.private/`.
 5. Never commit or push without the user's OK. At the end, offer one commit with a message like `gtm: build context layer` and ask before pushing. Scheduled refreshes commit or push only as the user allowed in refresh-gtm-context setup (recorded in the Refresh block).
@@ -64,7 +65,7 @@ Where the context was built from, and how to get back in. Refreshes reread these
 Added by refresh-gtm-context setup. Settings only, no content.
 - Runs: <app scheduled task gtm-refresh | cloud routine <name> on branch gtm-refresh> · <cadence, for example every Monday 08:00>
 - Full check: first run of each month
-- Alert: <email to your own address | Slack DM to your member ID>
+- Alert: <email to your own address | Slack DM to yourself> (the address or member ID is only in the scheduled prompt, never in a file)
 - Git: commit <yes|no> · push <yes|no>
 - Reports: [updates/](updates/)
 - Last run: customers <date> · conversations <date> · full check <date>

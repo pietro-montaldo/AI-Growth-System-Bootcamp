@@ -66,7 +66,7 @@ Follow the unattended rules in `refresh-playbook.md`: no questions, skip and log
    - Sources that need Claude in Chrome: read them yourself, one page at a time. If Chrome isn't available, log the source under "Couldn't read".
 4. **Update the banks (automatic):**
    - **Customers:** dedupe with one filtered query for this batch's company names. Create the new rows at company level with Permission note `not asked yet`. Tick Best customer where the saved rule matches.
-   - **Objections:** dedupe exactly like gtm-objections step 3, with one query per batch. New rows get Answer status `draft`. Repeats get Times seen and Last seen updated, where the bank has those columns.
+   - **Objections:** dedupe with one filtered query for the themes in this batch, comparing by meaning, not exact wording (as in gtm-objections step 3). New rows get Answer status `draft`. Repeats get Times seen and Last seen updated, where the bank has those columns.
    - **Quotes:** add the 5 to 10 strongest new quotes to a "New quotes (unreviewed, <date>)" section at the bottom of the Messaging page. Use `insert_content` at the end, and never edit the top of the page.
 5. **Find what needs a decision (proposed updates only):**
    - Every difference the compare-mode readers returned.
