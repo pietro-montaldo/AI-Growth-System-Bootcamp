@@ -4,9 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-The public repo for students of the AI Growth Systems Bootcamp (https://maven.com/pietro-montaldo/ai-growth-system-bootcamp-claude). It's a Claude Code plugin marketplace named `ai-growth-system-bootcamp` (`.claude-plugin/marketplace.json`, `plugins/`, `shared/`, `scripts/`). A skill only shows up for students once it's inside a plugin listed in `marketplace.json`. Today it ships two things:
+The public repo for students of the AI Growth Systems Bootcamp (https://maven.com/pietro-montaldo/ai-growth-system-bootcamp-claude). It's a Claude Code plugin marketplace named `ai-growth-system-bootcamp` (`.claude-plugin/marketplace.json`, `plugins/`, `shared/`, `scripts/`). A skill only shows up for students once it's inside a plugin listed in `marketplace.json`. Today it ships three things:
 
 - `plugins/voice-miner`: a standalone plugin with one skill. See "voice-miner" below.
+- `plugins/do-not-contact`: a standalone plugin that builds one do-not-contact list every outreach system checks first. See "do-not-contact" below.
 - The GTM context kit, which helps students build a go-to-market context layer: product, ICP, competitors, customer language, objections, shareable customers. Later course systems (outbound and inbound agents) read that context first.
 
 The GTM context kit has two plugins with the same skill and agent names. Only the storage steps differ:
@@ -27,6 +28,8 @@ claude plugin validate .          # validate the marketplace manifest
 claude plugin validate plugins/gtm-context-notion
 claude plugin validate plugins/gtm-context-github
 python3 shared/scripts/gtm_csv.py --help   # the CSV helper the GitHub plugin ships
+claude plugin validate plugins/do-not-contact
+python3 shared/do-not-contact/scripts/dnc.py --help   # the do-not-contact helper
 ```
 
 To try a plugin locally: `/plugin marketplace add ./` then `/plugin install gtm-context-notion@ai-growth-system-bootcamp` (or `gtm-context-github@ai-growth-system-bootcamp`).
@@ -70,3 +73,13 @@ Students are non-technical (founders, consultants, operators). Write in plain la
 ## voice-miner
 
 `plugins/voice-miner` is its own plugin in the marketplace, separate from the GTM context plugins. It doesn't use `shared/` or `sync-shared.sh`. Its script (`scripts/voice_mine.py`) is standard-library Python. Students' raw mailbox and transcript data go in a `voice-mining/` working folder, which is gitignored.
+
+## do-not-contact
+
+`plugins/do-not-contact` is its own plugin with three skills: `build-do-not-contact` (pick Google Sheet or Notion, map sources, collect, approve, pointer, weekly schedule), `update-do-not-contact` (quick add, unattended scheduled run, review, settings) and `check-do-not-contact` (split a lead list into keep and drop, export a sending tool blocklist). One agent, `dnc-collector`, reads one source and returns rows in the list's columns, never message text.
+
+- Its references and script live in `shared/do-not-contact/` and `scripts/sync-shared.sh` copies them into all three skills. Edit `shared/do-not-contact/` only.
+- `dnc.py` is standard-library Python: `clean`, `normalize`, `merge`, `keys`, `check`, `blocklist`. It owns key cleaning (lowercase emails, `linkedin.com/in/<slug>`, bare domains, no company blocks on personal email providers) and the `Until` expiry, so skills never compare keys by hand.
+- The list is found through a pointer block in `~/.claude/CLAUDE.md` between `do-not-contact:start` and `do-not-contact:end`. The GTM Hub or `gtm/README.md` may hold its link, never its rows.
+- It is the one place in the course that keeps emails and LinkedIn URLs on purpose. No names or message text. Said no, unsubscribed, bounced and erasure request rows are never deleted automatically. The scheduled run only adds rows, fills `To review`, updates Last run and sends one summary to the student.
+- LinkedIn is paste only: never read the LinkedIn inbox with automation.

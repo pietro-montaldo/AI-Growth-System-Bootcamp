@@ -8,6 +8,7 @@ Claude skills from the AI Growth Systems Bootcamp by [Pietro Montaldo](https://w
 |---|---|
 | [voice-miner](plugins/voice-miner/skills/voice-miner) (plugin) | Learns your real voice from your sent emails and sales calls, and builds you a personal skill that writes emails, cold outreach and LinkedIn posts that sound like you, not like AI. |
 | [GTM context](#gtm-context) (plugin) | Builds your go-to-market context layer with you: what you sell, your ideal customer, competitors, how your buyers talk, objections and shareable customers. It reads what you already have first, then asks only about gaps. Lives in Notion or in your own GitHub repo. |
+| [do-not-contact](#do-not-contact) (plugin) | Builds one list of everyone your outreach must skip: people who said no, unsubscribed or bounced, plus customers and open deals. It finds them in your inbox, CRM and tools, keeps them in a Google Sheet or Notion, updates every week, and checks every lead list before you send. |
 
 ---
 
@@ -211,6 +212,53 @@ scripts/sync-shared.sh            # copies shared/ into the plugins
 ```
 
 Inspired by Corey Haines' [product-marketing skill](https://github.com/coreyhaines31/marketingskills/tree/main/skills/product-marketing) and Lenny's [defining-icp skill](https://github.com/RefoundAI/lenny-skills/tree/main/skills/defining-icp).
+
+---
+
+## do-not-contact
+
+Once you run more than one outreach system (LinkedIn drafts, automated email, inbound replies), the same person can hear from you twice, or after they already said no. You don't need a full CRM to stop that. You need one shared list that every system checks before it contacts anyone, and that grows whenever someone says no.
+
+### What it does
+
+1. **Asks where things live.** Your inbox, your CRM, your sending tool, your course or payment platform. A rough pointer is enough.
+2. **Finds the people.** Replies that said no, "not now" or unsubscribe, bounces, customers, open deals, plus partners, competitors and friends you name. LinkedIn no's are pasted in, never read automatically, to keep your account safe.
+3. **Shows you who it found** and saves them after your OK. Unclear replies are yours to decide.
+4. **Tells every later system about it.** A short note in Claude's memory says: check this list before contacting anyone.
+5. **Updates every week** and sends you a short summary. Anything that needs a decision, like a customer who left, waits for your review.
+
+### Google Sheet or Notion?
+
+| | Google Sheet | Notion |
+|---|---|---|
+| Enrichment and automation tools can look people up before a send | Yes, most can | Some can |
+| Claude can check it | Yes | Yes |
+| Best for | Most people, and anyone sending email from a tool | People whose CRM is already in Notion |
+
+The skill shows you this and recommends one. A GitHub file isn't offered: the list changes every time someone replies, and it holds emails.
+
+### Install
+
+```
+/plugin marketplace add pietro-montaldo/AI-Growth-System-Bootcamp
+/plugin install do-not-contact@ai-growth-system-bootcamp
+/do-not-contact:build-do-not-contact
+```
+
+Then, any time:
+
+| Say | What happens |
+|---|---|
+| "add jane@acme.com, said no" | Adds one person or company |
+| "check this lead list against do not contact" | Gives you a keep file and a drop file, with reasons |
+| "make a blocklist for my sending tool" | A file to upload to your email tool's blocklist |
+| "review do-not-contact" | Goes through what the weekly update wasn't sure about |
+
+### Privacy
+
+- The list keeps emails, LinkedIn links and company domains only. No names, no message text.
+- Rows of people who said no, unsubscribed or bounced are never deleted automatically.
+- Share the Sheet with your team only. Temporary files go in `~/do-not-contact/.private/` and are deleted after each run.
 
 ## License
 

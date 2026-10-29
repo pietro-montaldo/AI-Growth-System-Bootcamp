@@ -6,6 +6,7 @@
 #   shared/references/*  -> the skills listed in REFERENCES, in both GTM plugins
 #   shared/agents/*      -> agents/ in both GTM plugins (not voice-miner)
 #   shared/scripts/*     -> the skills listed in SCRIPTS_ALL (every GTM plugin) and SCRIPTS (GitHub only)
+#   shared/do-not-contact/* -> every skill of the do-not-contact plugin
 #
 #   scripts/sync-shared.sh          copy
 #   scripts/sync-shared.sh --check  exit 1 if any copy is out of date
@@ -81,6 +82,14 @@ done
 for pair in $SCRIPTS; do
   skill="${pair##*:}"
   sync "shared/scripts/${pair%%:*}" "plugins/gtm-context-github/skills/${skill}/scripts"
+done
+
+# do-not-contact: every skill gets the same references and script
+for skill in plugins/do-not-contact/skills/*/; do
+  for ref in shared/do-not-contact/references/*.md; do
+    sync "$ref" "${skill}references"
+  done
+  sync shared/do-not-contact/scripts/dnc.py "${skill}scripts"
 done
 
 if [ "$check" = 1 ]; then
