@@ -1,6 +1,6 @@
 # Update playbook: keeping the GTM context current
 
-The first build is a snapshot. Prices change, cohorts start and end, new customers buy, and new objections and buyer phrases show up every week. An update reads the sources in the update skill's plan ("Where new information comes from"), adds what's new to the banks, and proposes changes to the pages.
+The first build is a snapshot. Prices change, cohorts start and end, new customers buy, and new objections and buyer phrases show up every week. An update reads the sources in the update task's plan ("Where new information comes from"), adds what's new to the banks, and proposes changes to the pages.
 
 ## What may change without the user, and what may not
 
@@ -24,7 +24,7 @@ Tag every row a scheduled run adds, so the review can find it: in a linked log, 
 
 1. **Never ask a question.** Anything that needs a decision becomes a proposed update in the report.
 2. **Never stop on one failure.** A source that can't be read (connector signed out, Chrome closed, page gone) is skipped, logged in the report under "Couldn't read", and named in the alert.
-3. **Only the planned sources.** Read the sources in the update skill's plan, and nothing else. Lines marked `auto, app only` are skipped and logged when Chrome isn't available. Lines marked `you` are read only if the user dropped a new export or pasted something; otherwise the alert reminds them when it's due. Don't go looking for new sources: only the user adds them, by changing the update settings.
+3. **Only the planned sources.** Read the sources in the update task's plan, and nothing else. Lines marked `auto, app only` are skipped and logged when Chrome isn't available. Lines marked `you` are read only if the user dropped a new export or pasted something; otherwise the alert reminds them when it's due. Don't go looking for new sources: only the user adds them, by changing the update settings.
 4. **Only what's new.** Each bucket has a "last run" date in the hub's Updates settings (the Notion Hub's "For agents" section, or `gtm/README.md` in the GitHub version). Read conversations and customers since that date. If there's no date, use the last 30 days.
 5. **Read-only browsing.** Same rules as the build: summary pages first, never click anything that changes data or sends messages, close tabs afterwards.
 6. **No personal data.** Same as the build: role and company type, never names, emails or profile URLs.

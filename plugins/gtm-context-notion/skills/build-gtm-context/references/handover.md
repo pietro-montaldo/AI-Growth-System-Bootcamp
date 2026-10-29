@@ -1,107 +1,79 @@
-# Handover: the student's own update plugin
+# Handover: the student's own scheduled update
 
-After the build, the student only needs to keep their context current. So the build ends by creating a plugin that belongs to them: one skill, `update-gtm-context`, written for their context, their tools and their sources. It lives in a private GitHub repo of theirs, is added to their Claude account as a marketplace, and runs on a schedule. Then the course plugin can go.
+After the build, the student only needs to keep their context current. So the build ends with one scheduled task that belongs to them: its prompt holds the whole update, written for their context, their tools and their sources. Nothing else is installed. Then the course plugin can go.
+
+A task prompt can do the full job because a skill is just instructions: in the Claude app a scheduled task is itself stored as a skill file (`~/.claude/scheduled-tasks/gtm-update/SKILL.md`), and each run reads all of it.
 
 Every step below is shown first and done after one OK. The student can stop at any step and pick up later by saying "set up my GTM updates".
 
 ## What they end up with
 
-```
-~/gtm-update/                        local copy of the private repo <owner>/gtm-update
-├── .claude-plugin/marketplace.json  marketplace "my-gtm" with one plugin
-├── README.md                        two lines: what this is, how to change it
-└── plugins/my-gtm-context/
-    ├── .claude-plugin/plugin.json
-    ├── agents/                      language-miner.md, source-reader.md
-    └── skills/update-gtm-context/
-        ├── SKILL.md                 filled in from references/update-skill-template.md
-        ├── references/              update-playbook.md, mining-playbook.md, source-map.md
-        └── scripts/gtm_csv.py       GitHub version only
-```
+- **The scheduled task `gtm-update`:** its prompt is `references/update-task-template.md` (this skill's folder), filled in. It does the scheduled run only.
+- **The review guide:** how to review an update report and how to change the settings. On the "Updates to review" page (Notion) or in `gtm/updates/README.md` (GitHub).
+- **One more line in the pointer** in Claude's memory, so "review GTM updates" works from any project.
+- **GitHub version only:** `gtm_csv.py` committed to `~/gtm-context/scripts/`, so runs can query and update the CSV banks.
 
-The names are fixed for every student, like `~/gtm-context`: repo `gtm-update`, marketplace `my-gtm`, plugin `my-gtm-context`. Never ask.
+The task ID is fixed for every student: `gtm-update`. Never ask.
 
 ## 1. Plan the updates
 
 Follow "Will each source stay current?" in `source-map.md`. Start from the hub's "Sources" (what the build read) and propose, per bucket, where new information comes from and who gets it (`auto`, `auto, app only`, `you`, `none`). Ask only about snapshots and open lines, in one message.
 
 Then settle, with AskUserQuestion where it's a choice:
-- **Where it runs.** If any line is `auto, app only`, recommend a scheduled task in the Claude app (runs on their computer while the app is open, can use Claude in Chrome). Otherwise recommend a cloud scheduled task (runs even when the computer is off, connectors only). Two lines each, then ask.
+- **Where it runs.** If any line is `auto, app only`, recommend a scheduled task in the Claude app (runs on their computer while the app is open, can use Claude in Chrome). Otherwise offer both: the app task, or a cloud scheduled task (runs even when the computer is off, connectors only). Two lines each, then ask.
 - **When.** Default every Monday at 08:00 local time. One task: the run decides when the monthly full check is due.
 - **Alert.** Email (a Gmail or Outlook connector that can send, to their own address) or Slack (a DM to themself; find their member ID with the Slack connector). Confirm the address. Offer one test message, sent only on a clear yes.
 - **GitHub version only: git.** "May update runs commit?" and, only if yes, "May they also push?" A cloud task must commit and push to a `gtm-updates` branch, or its work is lost, so say so instead of asking.
 
-## 2. Check GitHub
+## 2. Prepare the hub
 
-Run `gh auth status`. If the GitHub CLI is missing or signed out, say why it's needed (their update skill lives in a private repo on their GitHub) and ask them to install it and run `gh auth login` in their own terminal. They sign in themselves. Wait, then check again.
+- Create the "Updates to review" page under the Hub (Notion) or the `gtm/updates/` folder (GitHub), if it doesn't exist. Its link goes into the task prompt.
+- Add the "Last refreshed" line to the end of the hub summary (the Hub callout, or the summary block in `gtm/README.md`), so every run has a line to update.
+- **GitHub version only:** copy `gtm_csv.py` from this skill's `scripts/` to `~/gtm-context/scripts/gtm_csv.py`. It's committed with the rest at the end of the handover.
 
-If `~/gtm-update` or a `gtm-update` repo already exists, this is a rerun: clone or pull it, read the current `SKILL.md`, and carry over its settings unless the user changes them. Show the diff before writing.
+## 3. Write the task prompt and the review guide
 
-## 3. Write the plugin
+Fill in `references/update-task-template.md` as its header says. It has two parts:
+- **The task prompt** (between the task markers): where things live, where new information comes from, the run steps, the reading briefs, and the update rules pasted in from `update-playbook.md` and `mining-playbook.md`.
+- **The review guide** (between the guide markers): how to review a report and how to change the settings.
 
-1. Fill in `references/update-skill-template.md` (this skill's folder) as its header says, and write it to `skills/update-gtm-context/SKILL.md`. Show the user the "Where things live" and "Where new information comes from" sections before writing.
-2. Copy into the plugin: `update-playbook.md`, `mining-playbook.md` and `source-map.md` from this skill's `references/`; `language-miner.md` and `source-reader.md` from `<this skill folder>/../../agents/`; GitHub version only, `gtm_csv.py` from this skill's `scripts/`. Quote the paths: they can contain spaces.
-3. Write the two manifests:
+Show the user the "Where things live" and "Where new information comes from" sections before writing anything. Never put an email address or Slack member ID anywhere except the task prompt's Alert line.
 
-```json
-{ "name": "my-gtm",
-  "owner": { "name": "<their company>" },
-  "metadata": { "description": "My own GTM context update skill." },
-  "plugins": [ { "name": "my-gtm-context", "source": "./plugins/my-gtm-context",
-                 "description": "Keeps my GTM context up to date." } ] }
-```
+Write the review guide onto the "Updates to review" page (Notion, below its first line) or into `gtm/updates/README.md` (GitHub).
 
-```json
-{ "name": "my-gtm-context", "version": "1.0.0",
-  "author": { "name": "<their company>" },
-  "description": "My own GTM context update skill, made by the AI Growth Systems Bootcamp setup." }
-```
+## 4. Create the schedule
 
-4. Run `claude plugin validate ~/gtm-update` and fix anything it reports.
+- **App task:** `create_scheduled_task` with taskId `gtm-update`, title "Weekly GTM update", the cron expression (for example `0 8 * * 1`) and the filled task prompt.
+- **Cloud task:** run the `/schedule` skill with the same prompt and timing. Select a repository: `gtm-context` in the GitHub version (the run writes there). In the Notion version a cloud task still needs one repository; any repo of theirs works, because the run doesn't change it. Leave on the connectors the plan uses, plus the alert one.
 
-## 4. Publish it as a private repo
+If a `gtm-update` task already exists, this is a rerun: read its current prompt, carry over its settings unless the user changes them, show the diff, and update it (`update_scheduled_task`, or `/schedule` for a cloud task).
 
-`git -C ~/gtm-update init`, commit with `my GTM update skill`, then `gh repo create gtm-update --private --source ~/gtm-update --remote origin --push`. Check it's private (`gh repo view gtm-update --json visibility -q .visibility`). On a rerun, commit and push to the existing repo instead.
+Record it under "Updates" in the hub (format in `hub-structure.md` or `repo-structure.md`).
 
-## 5. Add it to their Claude account
+## 5. Pointer: how to review
 
-Walk them through it, one step at a time, and wait for each:
-1. In claude.ai or the Claude app, open **Customize > Plugins > Add > Add marketplace** and enter `<owner>/gtm-update`.
-2. Because the repo is private, the dialog asks to **Connect GitHub** and to give the Claude GitHub App access to `gtm-update`. Give it access to that repo only.
-3. Add the `my-gtm-context` plugin, and turn on **Sync automatically**, so changes they push reach their account.
-4. Check it arrived: in Claude Code, `claude plugin list` shows `my-gtm-context@synced` after a restart or `/reload-plugins`. This needs Claude Code signed in with their Claude account (not an API key), version 2.1.273 or later.
+Update the pointer in Claude's memory with the review guide's location, after one OK:
+- Notion: `gtm_home.py pointer --notion-hub <Hub link> --updates <Updates to review link>`
+- GitHub: `gtm_home.py pointer --repo <owner>/gtm-context` (once `gtm/updates/README.md` exists, it adds the review line on its own)
 
-## 6. Create the schedule
+GitHub version: then commit the handover's changes in `~/gtm-context` (`gtm/README.md`, `gtm/updates/README.md`, `scripts/gtm_csv.py`) after one OK, and push only if they allow it.
 
-The prompt must stand on its own, because each run starts with no memory:
+## 6. First run
 
-```
-Scheduled run of the GTM update. Use the update-gtm-context skill (my-gtm-context plugin) in "scheduled run" mode.
-Do not ask questions. Alert: <email to address | Slack DM to member ID>.
-GitHub version only: Commit: <yes|no>. Push: <yes|no>.
-```
+Offer a first run now, so they see a real report: `run_scheduled_task` with `gtm-update` for an app task, or the run-now option for a cloud task. It starts a fresh session with the task prompt, exactly like a scheduled run. Stay available for questions.
 
-- **App task:** `create_scheduled_task` with taskId `gtm-update`, a title like "Weekly GTM update" and the cron expression (for example `0 8 * * 1`).
-- **Cloud task:** run the `/schedule` skill with the same prompt and timing. Select the repository: `gtm-context` in the GitHub version (the run writes there), `gtm-update` in the Notion version (a cloud task needs one; the run doesn't change it). Leave on the connectors the plan uses, plus the alert one.
+## 7. Remove the course plugin
 
-Record it under "Updates" in the hub (format in `hub-structure.md` or `repo-structure.md`), add the "Last refreshed" line to the end of the hub summary (the Hub callout, or the summary block in `gtm/README.md`) so every run has a line to update, and create the "Updates to review" page or `gtm/updates/` folder if it doesn't exist. The "Updates to review" link goes into the update skill, so create it before step 3 writes the skill.
-
-## 7. First run
-
-Offer a first run now, so they see a real report: run `my-gtm-context:update-gtm-context` in scheduled-run mode. If the synced plugin isn't loaded yet, read `~/gtm-update/plugins/my-gtm-context/skills/update-gtm-context/SKILL.md` and follow it. Stay available for questions.
-
-## 8. Remove the course plugin
-
-Explain in one line: everything they need is now in their own plugin, and keeping both means two skills that do similar things.
+Explain in one line: everything they need is now in their context, their scheduled task and the review guide.
 - **Installed in Claude Code:** `claude plugin uninstall gtm-context-notion@ai-growth-system-bootcamp` (or `gtm-context-github@...`), after their OK.
 - **Added in Customize:** they remove it there (open the plugin, menu, **Remove**).
-- **The course marketplace:** keep it if they use other course plugins (voice-miner lives there too). Removing a marketplace removes every plugin installed from it, so offer `claude plugin marketplace remove ai-growth-system-bootcamp` only if they don't.
+- **The course marketplace:** keep it if they use other course plugins (voice-miner and do-not-contact live there too). Removing a marketplace removes every plugin installed from it, so offer `claude plugin marketplace remove ai-growth-system-bootcamp` only if they don't.
 
 The pointer in Claude's memory stays: later course systems use it to find the context.
 
-## 9. Tell them how to use it
+## 8. Tell them how to use it
 
 Three lines:
 - Updates run on their own, and an alert says what changed.
-- "Review GTM updates" goes through the proposed changes. "Change my GTM update settings" adds a source or changes the alert or schedule.
+- "Review GTM updates" goes through the proposed changes. "Change my GTM update settings" adds a source or changes the alert or schedule. Both work in any Claude Code session, because the pointer says where the guide is.
 - For a bigger change (a new ICP from scratch, a first competitor study), they install the course plugin again and run that section, then rerun this handover.
