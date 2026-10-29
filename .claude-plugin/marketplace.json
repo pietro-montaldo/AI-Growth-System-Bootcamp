@@ -5,8 +5,8 @@
     "url": "https://www.notlinear.ai"
   },
   "metadata": {
-    "description": "Claude plugins from the AI Growth Systems Bootcamp. Voice Miner: learn your real voice from your sent email and sales calls, without the AI tells. GTM context: build your go-to-market context layer (product, ICP, competitors, customer language, objections, shareable customers) in Notion + GitHub or GitHub only.",
-    "version": "0.5.1"
+    "description": "Claude plugins from the AI Growth Systems Bootcamp. Voice Miner: learn your real voice from your sent email and sales calls, without the AI tells. GTM context: build your go-to-market context layer (product, ICP, competitors, customer language, objections, shareable customers) in Notion + GitHub or GitHub only. Do not contact: one list of people your outreach must skip, kept in a Google Sheet or Notion and checked before every send.",
+    "version": "0.6.0"
   },
   "plugins": [
     {
@@ -25,6 +25,12 @@
       "name": "voice-miner",
       "source": "./plugins/voice-miner",
       "description": "Learn your real voice from your sent emails and sales calls, filter out anything AI-written, and build a personal skill that writes emails, cold outreach and LinkedIn posts that sound like you.",
+      "version": "1.0.0"
+    },
+    {
+      "name": "do-not-contact",
+      "source": "./plugins/do-not-contact",
+      "description": "One do-not-contact list every outreach system checks first: people who said no, unsubscribed or bounced, plus customers and open deals. Collected from your inbox, CRM, sending tool and platforms, kept in a Google Sheet or Notion, updated weekly.",
       "version": "1.0.0"
     }
   ]
