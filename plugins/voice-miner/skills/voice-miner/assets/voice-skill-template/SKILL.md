@@ -1,6 +1,6 @@
 ---
-name: {{FIRSTNAME_LOWER}}-voice
-description: Write as {{FULLNAME}}, in their real voice, mined from their own sent emails and sales calls. Use whenever Claude drafts anything {{FIRSTNAME}} will send or publish as themselves: email replies, cold emails, follow-ups after calls, proposal cover emails, LinkedIn posts, DMs, comments and connection notes, even if they don't mention voice. Triggers on "reply to this", "answer this email", "draft a follow-up", "write a cold email to", "write a post about", "DM this person", "in my voice", "sound like me", "how would I say this". {{OFFER}}
+name: "{{FIRSTNAME_LOWER}}-voice"
+description: "Write as {{FULLNAME}}, in their real voice, mined from their own sent emails and sales calls. Use whenever Claude drafts anything {{FIRSTNAME}} will send or publish as themselves: email replies, cold emails, follow-ups after calls, proposal cover emails, LinkedIn posts, DMs, comments and connection notes, even if they don't mention voice. Triggers on \"reply to this\", \"answer this email\", \"draft a follow-up\", \"write a cold email to\", \"write a post about\", \"DM this person\", \"in my voice\", \"sound like me\", \"how would I say this\". {{OFFER}} Not for text written as someone else or for company brand guidelines."
 ---
 
 # {{FIRSTNAME}}'s voice
@@ -9,15 +9,15 @@ Write the way {{FIRSTNAME}} actually writes and sells. The rules here come from 
 
 ## Process
 
-1. **Work out the job.** Is it a reply, cold email, follow-up, post, DM or comment? Who's the reader: stranger, prospect, client or peer? What language? And what should the reader do after reading? If you can't infer one of these, ask one short question.
+1. **Work out the job.** Is it a reply, cold email, follow-up, new email to someone they know, post, DM or comment? Who's the reader: stranger, prospect, client or peer? What language? And what should the reader do after reading? If you can't infer one of these, ask one short question.
 2. **Get the facts.** For a reply, read the whole thread and answer what they actually asked. For outreach, use only real, specific facts about the person or company. If you have none, say so and ask, or leave a [placeholder]. Never fake personalization.
 3. **Load the voice.** Read `references/profile.md`. Then read the section of `references/formats.md` for this job. Read `references/examples.md` for the matching kind.
 4. **Draft** to the numbers in the profile for this kind of message: length, sentence length, greeting, sign-off.
-5. **Check it.** Save the draft and run:
+5. **Check it.** Save the draft and run the script by its full path in this skill's folder (quote the path if it has spaces):
    ```bash
-   python3 scripts/voice_mine.py check draft.txt --fingerprint fingerprint.json --kind <cold|followup|reply>
+   python3 "<this skill's folder>/scripts/voice_mine.py" check draft.txt --fingerprint "<this skill's folder>/fingerprint.json" --kind <cold|followup|reply|new|post|dm|comment>
    ```
-   Fix every AI tell and every off-voice note. Then reread it against `references/ai-tells.md`, since the script can't catch everything.
+   Fix every AI tell and every off-voice note. Read any warnings: they say which checks were skipped, for example when there are no numbers for this language or for posts. Your [placeholders] come back under "fill in before sending", not as AI tells. Then reread it against `references/ai-tells.md`, since the script can't catch everything.
 6. **Read it as {{FIRSTNAME}}.** Would they say each sentence out loud to this person? If a line sounds like a press release, a chatbot, or a LinkedIn guru, rewrite it.
 7. **Show only the draft.** No preamble, no list of changes. For email, offer to save it as a draft in their mailbox. Never send.
 

@@ -8,13 +8,19 @@ Standard library only, so it runs anywhere Python 3 does.
   gtm_csv.py add-cols FILE --cols "Offer,Seniority"   add missing columns, empty, keep every row
   gtm_csv.py query FILE [filters] [--cols A,B] [--limit N]
   gtm_csv.py count FILE --by COL [filters]
-  gtm_csv.py upsert FILE --key COL (--row '{"Company": "Acme"}' | --rows rows.json)
+  gtm_csv.py upsert FILE --key COL[,COL] [--merge COL] (--row '{"Company": "Acme"}' | --rows rows.json)
+
+upsert: a row matches when every key column matches (ignoring case), so
+--key "Objection,Offer" keeps the same objection about two offers apart.
+--merge "Offer" adds new "; " values to the cell instead of replacing it.
+JSON null is written as an empty cell, true/false as yes/no, a list as "a; b".
 
 Filters (combine as many as needed, all must match, case-insensitive):
   --where COL=VALUE        exact match
   --contains COL=TEXT      text appears in the cell
   --any COL=V1|V2|V3       exact match on any of the values
-  --min COL=NUMBER         number in the cell is at least NUMBER
+  --min COL=NUMBER         number in the cell is at least NUMBER (a blank or
+                           non-numeric cell doesn't match)
 """
 import argparse
 import csv
@@ -24,7 +30,10 @@ import sys
 
 
 def read(path):
-    with open(path, newline="", encoding="utf-8") as f:
+    if not os.path.isfile(path):
+        sys.exit(f"{path} doesn't exist. Create it first with: init {path} --cols \"...\"")
+    # utf-8-sig drops the byte-order mark Excel adds, so the first column keeps its name.
+    with open(path, newline="", encoding="utf-8-sig") as f:
         reader = csv.DictReader(f)
         return reader.fieldnames or [], list(reader)
 
@@ -43,6 +52,27 @@ def split(pair, flag):
         sys.exit(f"{flag} needs COL=VALUE, got: {pair}")
     col, value = pair.split("=", 1)
     return col.strip(), value.strip()
+
+
+def names(text):
+    """Split "A, B,A" into ["A", "B"]: trimmed, no blanks, no repeats."""
+    out = []
+    for c in text.split(","):
+        c = c.strip()
+        if c and c not in out:
+            out.append(c)
+    return out
+
+
+def cell_text(v):
+    """Turn a JSON value into cell text: null -> "", true/false -> yes/no, list -> "a; b"."""
+    if v is None:
+        return ""
+    if isinstance(v, bool):
+        return "yes" if v else "no"
+    if isinstance(v, list):
+        return "; ".join(cell_text(x) for x in v if cell_text(x))
+    return str(v)
 
 
 def check_cols(cols, wanted):
@@ -64,9 +94,14 @@ def matches(row, args):
             return False
     for col, number in (split(p, "--min") for p in args.min):
         try:
-            if float(cell(col) or "nan") < float(number):
-                return False
+            limit = float(number)
         except ValueError:
+            sys.exit(f"--min needs a number, got: {number}")
+        try:
+            value = float(cell(col))
+        except ValueError:
+            return False  # blank or not a number: it doesn't meet the minimum
+        if value != value or value < limit:  # value != value catches "nan"
             return False
     return True
 
@@ -78,13 +113,16 @@ def filter_cols(args):
 def cmd_init(args):
     if os.path.exists(args.file):
         sys.exit(f"{args.file} already exists, not overwriting")
-    write(args.file, [c.strip() for c in args.cols.split(",")], [])
+    cols = names(args.cols)
+    if not cols:
+        sys.exit("--cols needs at least one column")
+    write(args.file, cols, [])
     print(f"created {args.file}")
 
 
 def cmd_add_cols(args):
     cols, rows = read(args.file)
-    new = [c.strip() for c in args.cols.split(",") if c.strip() and c.strip() not in cols]
+    new = [c for c in names(args.cols) if c not in cols]
     if not new:
         print("no new columns")
         return
@@ -95,18 +133,25 @@ def cmd_add_cols(args):
 def cmd_query(args):
     cols, rows = read(args.file)
     check_cols(cols, filter_cols(args))
-    show = [c.strip() for c in args.cols.split(",")] if args.cols else cols
+    show = names(args.cols) if args.cols else cols
     check_cols(cols, show)
+    if args.limit is not None and args.limit < 0:
+        sys.exit("--limit can't be negative")
     hits = [r for r in rows if matches(r, args)]
     print(f"{len(hits)} of {len(rows)} rows match")
-    hits = hits[: args.limit] if args.limit else hits
+    if args.limit is not None:
+        hits = hits[: args.limit]
     if not hits:
         return
-    clean = lambda v: (v or "").replace("|", "/").replace("\n", " ")
     print("| " + " | ".join(show) + " |")
     print("|" + "---|" * len(show))
     for r in hits:
         print("| " + " | ".join(clean(r.get(c)) for c in show) + " |")
+
+
+def clean(v):
+    """One table cell on one line: no pipes, no line breaks (Excel adds \\r)."""
+    return " ".join((v or "").replace("|", "/").replace("\r", " ").replace("\n", " ").split())
 
 
 def cmd_count(args):
@@ -115,10 +160,22 @@ def cmd_count(args):
     counts = {}
     for r in rows:
         if matches(r, args):
-            key = (r.get(args.by) or "").strip() or "(empty)"
+            key = clean(r.get(args.by)) or "(empty)"
             counts[key] = counts.get(key, 0) + 1
     for key, n in sorted(counts.items(), key=lambda kv: -kv[1]):
         print(f"{key}: {n}")
+
+
+def merged(old, new):
+    """Add the "; " values of new to old, keeping old's order and skipping repeats."""
+    items = [x.strip() for x in (old or "").split(";") if x.strip()]
+    seen = {x.lower() for x in items}
+    for x in new.split(";"):
+        x = x.strip()
+        if x and x.lower() not in seen:
+            items.append(x)
+            seen.add(x.lower())
+    return "; ".join(items)
 
 
 def cmd_upsert(args):
@@ -126,21 +183,40 @@ def cmd_upsert(args):
     if args.row:
         new = [json.loads(args.row)]
     else:
-        with open(args.rows, encoding="utf-8") as f:
+        if not os.path.isfile(args.rows):
+            sys.exit(f"{args.rows} doesn't exist")
+        with open(args.rows, encoding="utf-8-sig") as f:
             new = json.load(f)
-    check_cols(cols, [args.key] + [c for r in new for c in r])
-    index = {(r.get(args.key) or "").strip().lower(): r for r in rows}
+    if isinstance(new, dict):
+        new = [new]
+    if not isinstance(new, list) or not all(isinstance(r, dict) for r in new):
+        sys.exit("rows must be a JSON object or a list of objects, one per row")
+    keys = names(args.key)
+    merge = names(args.merge or "")
+    if not keys:
+        sys.exit("--key needs at least one column")
+    check_cols(cols, keys + merge + [c for r in new for c in r])
+    if set(keys) & set(merge):
+        sys.exit("a key column can't also be a --merge column")
+    keyof = lambda r: tuple(cell_text(r.get(k)).strip().lower() for k in keys)
+    index = {keyof(r): r for r in rows}
     updated = added = 0
     for item in new:
-        key = str(item.get(args.key, "")).strip().lower()
-        if not key:
-            sys.exit(f"a row is missing its {args.key}")
+        item = {k: cell_text(v) for k, v in item.items()}
+        key = keyof(item)
+        missing = [k for k, part in zip(keys, key) if not part]
+        if missing:
+            sys.exit(f"a row is missing its {', '.join(missing)} (key: {', '.join(keys)}): {json.dumps(item)}")
         if key in index:
-            index[key].update({k: str(v) for k, v in item.items() if str(v) != "" and k != args.key})
+            row = index[key]
+            for k, v in item.items():
+                if k in keys or v == "":
+                    continue
+                row[k] = merged(row.get(k), v) if k in merge else v
             updated += 1
         else:
             row = {c: "" for c in cols}
-            row.update({k: str(v) for k, v in item.items()})
+            row.update(item)
             rows.append(row)
             index[key] = row
             added += 1
@@ -162,7 +238,8 @@ def main():
     sub.choices["query"].add_argument("--cols")
     sub.choices["query"].add_argument("--limit", type=int)
     sub.choices["count"].add_argument("--by", required=True)
-    sub.choices["upsert"].add_argument("--key", required=True)
+    sub.choices["upsert"].add_argument("--key", required=True, help='one column, or several: "Objection,Offer"')
+    sub.choices["upsert"].add_argument("--merge", help='columns whose "; " values are added to, not replaced: "Offer"')
     group = sub.choices["upsert"].add_mutually_exclusive_group(required=True)
     group.add_argument("--row")
     group.add_argument("--rows")

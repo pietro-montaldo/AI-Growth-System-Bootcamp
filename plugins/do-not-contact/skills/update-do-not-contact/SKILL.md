@@ -2,7 +2,7 @@
 name: update-do-not-contact
 description: "Keep your do-not-contact list current. Adds one person or company in seconds (\"add jane@acme.com, said no\"), runs the weekly update that finds new no's, unsubscribes, bounces, customers and open deals since the last run, and walks you through anything that needs a decision. Works with the Google Sheet or Notion list made by build-do-not-contact. Use for \"add <email or LinkedIn link> to do not contact\", \"they said no\", \"don't contact them again\", \"update my do-not-contact list\", \"review do-not-contact\", \"change my do-not-contact sources\", or when the scheduled run starts. Not for building the list the first time (use build-do-not-contact) or checking a lead list (use check-do-not-contact)."
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Update your do-not-contact list
@@ -29,8 +29,8 @@ Pick the mode from how you were called.
 The student names a person or company: "add jane@acme.com, said no", "never contact anyone at acme.com, they're a partner", or a LinkedIn link.
 
 1. `dnc.py clean <value>` gives the key. Work out the reason from their words (`storage.md` lists them), and the scope: company if they said "anyone at", otherwise person. If the reason is unclear, use "said no".
-2. Check it isn't already listed. Sheet: read the key columns. Notion: one filtered query on that key.
-3. Already there: say so in one line, with its reason. Not there: write the row (Source: what they said, otherwise manual; Added: today) and confirm in one line.
+2. Put the row in `new.csv` (Source: what they said, otherwise manual). Read the key columns (Sheet) or query that key (Notion) into `existing.csv`, and run `dnc.py merge new.csv --existing existing.csv -o add.csv`. Never compare by hand.
+3. `add.csv` empty: say it's already listed, in one line, with its reason. Otherwise write the row and confirm in one line. A stronger reason is added as a new row, for example "unsubscribed" for someone listed as "not now". The old row stays.
 
 Several at once (a pasted list): put them in a CSV, run `dnc.py merge` with the key columns as `--existing`, show the counts, and write after one OK.
 
@@ -41,14 +41,16 @@ Never ask anything. One failed source never stops the run: note it and go on.
 1. For each source in the plan, the window runs from its Last run date to today. If there's no date, use the last 30 days.
 2. **auto sources:** start one `dnc-collector` agent per source, in parallel, with the window, B2B or B2C, and the records to read:
    - CRM: new customers, new open deals, deals closed lost with a no.
-   - **Also ask the CRM for changes to rows already listed.** That means customers who churned and deals that closed lost or won.
+   - **Also ask the CRM for CHANGES:** customers who churned and deals closed lost for any reason. A won deal comes back as a new customer row, and the merge adds it.
 3. **auto (app only) sources:** read them only if Claude in Chrome is connected. Otherwise note "skipped, needs the app".
 4. **you sources:** if a new export is in `~/do-not-contact/.private/`, read it. If not, add a reminder to the summary.
-5. **Merge.** Save all ROWS to `new.csv`. Read the list's key columns (Sheet) or query the batch's keys (Notion) into `existing.csv`. Then run `dnc.py merge new.csv --existing existing.csv -o add.csv`.
+5. **Merge.** Save all ROWS to `new.csv` and all CHANGES to `changes.csv`. Read the list's key columns (Sheet) or query the keys of both files (Notion) into `existing.csv`. Then run:
+   - `dnc.py merge new.csv --existing existing.csv -o add.csv`;
+   - `dnc.py check changes.csv --list existing.csv --out-dir <private folder>/changes`. Its `drop.csv` holds the changes that concern rows already on the list.
 6. **Write:**
    - every row of `add.csv` to the list;
    - every UNSURE item to `To review`, with Proposed "add";
-   - every change to an existing row to `To review`, with Proposed "remove" and why. For example "customer churned 2026-10" or "deal won, now a customer". Don't change or delete the row itself (`rules.md`).
+   - every row of `changes/drop.csv` to `To review`, with Proposed "remove", the listed reason, and the change as why. For example "customer churned 2026-10". Changes are never applied in a scheduled run: don't change or delete the row itself (`rules.md`).
 7. Update Last run for each source that was read.
 8. **Send the summary** to the address in the prompt, and only there:
 
@@ -79,9 +81,10 @@ Never ask anything. One failed source never stops the run: note it and go on.
 - **Sources:** update the plan table. For a new source, offer a first collection from it now (mode 2 steps for that source only, then show and approve as in build-do-not-contact step 5).
 - **Schedule or summary address:** update the scheduled task (`update_scheduled_task`, or the `/schedule` skill for a cloud task), after one OK.
 - **Moving between Sheet and Notion:**
+  - say what will happen (new home, row count, pointer and scheduled prompt changed) and ask once. Do nothing before a yes;
   - create the new home (`storage.md`);
-  - copy all rows over;
-  - update the pointer and the scheduled prompt;
+  - copy all rows over, then compare the row counts;
+  - show the new pointer block and prompt, and write them after one OK;
   - leave the old list in place until the student deletes it themselves.
 
 ## Wrap up

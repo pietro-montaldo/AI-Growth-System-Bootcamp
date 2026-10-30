@@ -22,7 +22,7 @@ Five at most. Each one comes with evidence.
 
 From the fingerprint. Treat these as targets, not suggestions.
 
-| | Cold | Follow-up | Reply | Internal |
+| | Cold | Follow-up | Reply | New |
 |---|---|---|---|---|
 | Median length (words) | | | | |
 | Usual range (p25 to p75) | | | | |

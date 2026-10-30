@@ -2,7 +2,7 @@
 name: build-do-not-contact
 description: "Build your do-not-contact list with you: everyone your outreach must skip. It finds them where they already are (email replies that said no or unsubscribe, bounces, your CRM's customers and open deals, your sending tool's unsubscribes, your course or payment platform's buyers) and saves them in a Google Sheet or a Notion database, your choice. Then it tells every later system to check the list before contacting anyone, and schedules a weekly update. Use for \"build my do-not-contact list\", \"set up a suppression list\", \"make sure I never message people who said no\", \"stop double-texting people\", \"who shouldn't I contact\", or the first time you use this plugin. Not for adding one person (use update-do-not-contact) or checking a lead list (use check-do-not-contact)."
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Build your do-not-contact list
@@ -28,7 +28,7 @@ Explain in three lines:
 ## Step 0. Check what exists
 
 - Look for a `do-not-contact:start` block in `~/.claude/CLAUDE.md`. If it's there, the list exists. Say so and offer:
-  - collect again from all sources (go to step 2, then 5 onwards; the merge skips what's listed);
+  - collect again from all sources (steps 2, 4 and 5 only; the list, pointer and schedule already exist, and the merge skips what's listed);
   - change the sources or the schedule (use update-do-not-contact, settings);
   - stop.
 - If they use the GTM context kit (a `gtm-context:start` block), read its "Sources". The CRM, inbox and platforms are already known.
@@ -72,15 +72,15 @@ Run:
 python3 <skill folder>/scripts/dnc.py merge ~/do-not-contact/.private/new.csv [--existing ~/do-not-contact/.private/existing.csv] -o ~/do-not-contact/.private/add.csv
 ```
 
-- `--existing` is only for a list that already has rows. Export its key columns first (`storage.md`).
-- The script cleans every key, drops duplicates and skips rows it can't use, with the reason.
+- `--existing` is only for a list that already has rows. Read its key columns first and pass the saved result (`storage.md`).
+- The script cleans every key, drops duplicates and skips rows it can't use, with the reason. It still adds a row for a listed person when the reason is stronger or the row brings a new email or profile link.
 
 Show:
 - counts by reason and by source;
 - five sample rows;
 - anything the script skipped.
 
-Then go through the unsure list with AskUserQuestion, up to 4 per question, each one "add" or "leave out". Add the yes's as rows.
+Then go through the unsure list with AskUserQuestion, up to 4 per question, each one "add" or "leave out". Add the yes's as rows to `new.csv` and run the merge again, so they're cleaned and deduped too. Show the new counts.
 
 Ask once: "Save these <n> rows to your list?" On yes, write `add.csv` with the tools in `storage.md`, then confirm the new row count.
 
@@ -92,8 +92,8 @@ Ask once: "Save these <n> rows to your list?" On yes, write `add.csv` with the t
 ## Step 7. Keep it growing
 
 Recommend a weekly update (Monday 08:00). Say in two lines each:
-- **A scheduled task in the Claude app** (recommended): runs on their computer while the app is open, can use Claude in Chrome. Create it with `create_scheduled_task`, taskId `do-not-contact-update`, cron `0 8 * * 1`.
-- **A cloud scheduled task:** runs even when the computer is off, connectors only. It needs this course marketplace added in Claude under Customize > Plugins, because cloud runs don't load plugins installed with `/plugin`. Create it with the `/schedule` skill.
+- **A scheduled task in the Claude app** (recommended): runs on their computer while the app is open, can use Claude in Chrome and read exports in `~/do-not-contact/.private/`. Create it with `create_scheduled_task`: taskId `do-not-contact-update`, cron `0 8 * * 1`, description "Weekly do-not-contact update", and the prompt below.
+- **A cloud scheduled task:** runs even when the computer is off, connectors only. It can't use Claude in Chrome or read files on their computer, so "auto (app only)" and export sources become reminders in the summary. It needs this course marketplace added in Claude under Customize > Plugins, because cloud runs don't load plugins installed with `/plugin`. Create it with the `/schedule` skill.
 
 Ask where to send the weekly summary: their own email or a Slack DM to themself. The prompt, for either kind:
 
@@ -103,7 +103,9 @@ List: <link> (<Google Sheet | Notion>). Business: <B2B | B2C>.
 Send the summary to: <their email or "my Slack DM">. Send nothing to anyone else.
 ```
 
-Create it only after they confirm the timing. Offer to run it once now.
+Create it only after they confirm the timing.
+
+An unattended run can stall on a permission prompt the first time it writes to the Sheet or Notion, or sends the summary. So offer to run it once now, while they watch, and have them pick "always allow" for those tools. Or they add the tools to the allow list in their settings.
 
 Last, if they send email from a sending tool: suggest switching on its global blocklist, and offer a first blocklist file now (check-do-not-contact, blocklist).
 

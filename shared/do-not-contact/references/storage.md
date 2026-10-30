@@ -35,7 +35,7 @@ Ask with AskUserQuestion: "Google Sheet (Recommended)" and "Notion", each with o
 | Added | date | date | |
 | Note | text | text | a few words, never the text of a message |
 
-`dnc.py` uses exactly these column names (without Entry). When you export rows to check or merge, keep the names.
+`dnc.py` uses exactly these column names (without Entry). When you export rows to check or merge, keep the names. It reads CSV (comma, semicolon or tab, any Excel encoding) or the connector's JSON.
 
 ## Google Sheet
 
@@ -59,13 +59,14 @@ Ask with AskUserQuestion: "Google Sheet (Recommended)" and "Notion", each with o
 | Job | Tool |
 |---|---|
 | See the tabs and the number of rows | `get_spreadsheet` |
-| Read only the key columns for a check or a merge | `get_values` on `'Do not contact'!A:H` (Email to Added, no Note) |
+| Read only the key columns for a check or a merge | `get_values` on `'Do not contact'!A:F` (Email, LinkedIn URL, Company domain, Scope, Reason, Until) |
 | Add rows | `append_values` to `'Do not contact'!A:I` |
 | Change or clear a row (only in review mode, with an OK) | `update_values` on that row's range |
 | Add a tab | `update_spreadsheet` (add sheet) |
 
-- Save what you read as a CSV in `~/do-not-contact/.private/`, run `dnc.py`, then delete the file.
-- Only the key columns are read. That's a few kilobytes even for thousands of rows.
+- A Sheet can't be queried by key, so a check reads these six columns for every row. Never Source, Added or Note, and never print the rows in the chat.
+- That's about 100 bytes a row: 1,000 rows is about 100 KB. If the list passes a few thousand rows, suggest Notion, or a lookup in their enrichment tool, for big batches.
+- Don't retype what you read. `dnc.py` reads the `get_values` result as it is (JSON with `values`, header row first). When Claude Code saves a large result to a file, pass that file's path to `dnc.py`. Otherwise save the result unchanged as `list.json` in `~/do-not-contact/.private/`. Delete it at the end.
 
 **No Sheets connector?**
 - Claude writes the new rows into `~/do-not-contact/.private/add.csv`.
@@ -98,9 +99,10 @@ FROM "collection://<data source id>"
 WHERE lower("Email") IN (?, ?) OR lower("LinkedIn URL") IN (?) OR lower("Company domain") IN (?, ?)
 ```
 
-Leave out an `IN` group that has no keys. Save the results as a CSV with these column names, then run `dnc.py`.
+Leave out an `IN` group that has no keys. `dnc.py` reads the query result as it is (a list of rows, and `date:Until:start` counts as Until). Pass the saved result file to `dnc.py`, or save the result unchanged as `list.json`. Don't retype it as a CSV.
 
 - Never read the database whole. For a merge, query the keys of the new rows the same way. That way the list can grow to any size.
+- The query matches emails as written. `dnc.py keys` also gives each email's plain form (no +tag, no Gmail dots), so both are looked up. A list row written with a +tag or dots is only caught when the lead has the same form. The Sheet check catches every form, because it reads the whole key columns.
 - If `notion-query-data-sources` isn't available on their plan, use `notion-search` scoped to the database with one key per search. That's slower, so do it only for small batches.
 
 ## The pointer

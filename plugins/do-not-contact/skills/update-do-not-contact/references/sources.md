@@ -62,4 +62,6 @@ The build reads each source once. The weekly update needs to know where new no's
 - **auto (app only):** needs Claude in Chrome, so it only runs as a scheduled task in the Claude app, while the computer is on.
 - **you:** an export or a paste. The weekly alert reminds the student, for example "Export last week's unsubscribes from your sending tool into the private folder".
 
+A cloud scheduled task only reaches connectors. It can't use Claude in Chrome or read exports on the student's computer, so with a cloud task every "auto (app only)" and "you" source becomes a reminder in the weekly summary.
+
 Write the plan in the `Read me` tab (Sheet) or the `Sources` table (Notion).

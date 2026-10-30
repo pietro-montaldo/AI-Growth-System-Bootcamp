@@ -2,7 +2,7 @@
 
 ## The contract every outreach system follows
 
-1. **Before contacting anyone,** check the batch against the list with `check-do-not-contact`. This means one filtered lookup per batch, never the whole list.
+1. **Before contacting anyone,** check the batch against the list with `check-do-not-contact`. This means one lookup per batch: a filtered query on Notion, or only the key columns of a Sheet (`storage.md`). Never the Source, Added or Note columns, and never rows printed in the chat.
 2. **When someone says no, unsubscribes or bounces,** add them with `update-do-not-contact`. This applies on any channel. A no on LinkedIn also stops email, and the other way round.
 
 Each outreach system may keep its own record of who it already contacted, if it needs one. This list is the only thing they all share.
@@ -10,11 +10,15 @@ Each outreach system may keep its own record of who it already contacted, if it 
 ## Keys and matching
 
 - **A person** is matched by email or LinkedIn URL. One match is enough.
-- **A company** row (Scope = company) blocks everyone whose email or website is on that domain.
-- **Personal email providers** (gmail.com, outlook.com, yahoo and others) are never blocked company-wide. `dnc.py` refuses them.
+- **A company** row (Scope = company) blocks everyone whose email or website is on that domain or one of its subdomains. A block on `customer.io` also stops `joe@eu.customer.io`.
+- **A blank Scope** means person when the row has an email or LinkedIn URL, and company when it only has a domain.
+- **Personal email providers** (gmail.com, outlook.com, yahoo, gmx, web.de, libero.it and many more) are never blocked company-wide. `dnc.py` refuses them, and leaves them out of every check and blocklist.
 - **Rows with a past Until date** no longer block anyone. They stay on the list as history.
-- **Always clean keys with `dnc.py`** before comparing or writing. For example, `https://it.linkedin.com/in/Jane-Doe/?utm=x` and `linkedin.com/in/jane-doe` are the same person.
-- **A lead with no email, LinkedIn URL or website can't be checked.** Say how many there were. Don't guess from the name.
+- **One key on several rows:** the strongest active reason counts, in this order: erasure request, unsubscribed, said no, bounced, customer, open deal, partner, competitor, personal, not now, other. A row with no Until beats the same reason with one. So a new "unsubscribed" is added even when the person is already listed as "not now".
+- **Always clean keys with `dnc.py`** before comparing or writing. For example, `https://it.linkedin.com/in/Jane-Doe/?utm=x` and `linkedin.com/in/jane-doe` are the same person. Old `linkedin.com/pub/<name>/12/345/678` links keep their numbers, because those are part of who it is.
+- **Email variants match.** `jane+news@acme.com` matches `jane@acme.com`, and on Gmail dots don't count (`j.ane@gmail.com` is `jane@gmail.com`). The list keeps each email as it was written. Only the check compares the plain form.
+- **Domains with accents** are kept in the ASCII form sending tools use, for example `münchen.de` becomes `xn--mnchen-3ya.de`.
+- **A lead with no readable email, LinkedIn URL or website can't be checked.** It stays in `keep.csv` with `DNC check` set to `unchecked: <why>`. Say how many there were. Don't guess from the name.
 
 ## What is never deleted
 

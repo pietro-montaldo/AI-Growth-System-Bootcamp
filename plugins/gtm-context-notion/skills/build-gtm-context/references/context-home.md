@@ -7,7 +7,7 @@ Every later course system, every project and every scheduled update must find th
 | Notion | Notion, under one GTM Hub page. The Hub is its own map: its links table and its "For agents" section hold every page, database ID, source and setting. | Only the Hub link. Nothing is saved on the computer. |
 | GitHub | The student's private `gtm-context` repository, cloned at `~/gtm-context`. The context is in `gtm/` inside it, and `gtm/README.md` is the map. | The folder `~/gtm-context`, the same for every student and outside any project. |
 
-Raw exports used while working go in a private folder and are deleted when done: `~/gtm-context/.private/` for Notion (`gtm_home.py init` creates it), `gtm/.private/` for GitHub (gitignored).
+Raw exports used while working go in a private folder and are deleted when done: `~/gtm-context/.private/` for Notion (`gtm_home.py init` creates it), `~/gtm-context/gtm/.private/` for GitHub (`gtm_home.py init --github` creates it and makes git ignore it).
 
 ## The pointer in Claude's memory
 
@@ -32,12 +32,12 @@ The Claude app's Cowork only sees folders the user has shared with it. A GitHub-
 | Command | What it does |
 |---|---|
 | `status` | JSON: Notion or GitHub mode, the Hub link from the pointer, whether the pointer and folder permission are in place, and old setup files found |
-| `init` | Creates `~/gtm-context/` and `.private/` |
-| `pointer --notion-hub URL` or `pointer --repo OWNER/NAME` | Writes or updates the pointer block (`--print` previews it) |
+| `init` | Creates `~/gtm-context/` and `.private/`. With `--github` (or once `~/gtm-context` is a git repo) it also creates `gtm/.private/` and adds both folders to `.gitignore` |
+| `pointer --notion-hub URL` or `pointer --repo OWNER/NAME` | Writes or updates the pointer block (`--print` previews it). Notion: `--updates URL` adds the review line, and later runs keep it. GitHub: the review line appears once `gtm/updates/README.md` exists. If the block's end marker is missing, it stops and says how to fix it |
 | `allow` | Adds `~/gtm-context` to Claude Code's allowed folders |
 
 ## Older setups
 
 `status` lists files from earlier versions under `old_setup_files`:
-- **A `gtm-hub.md` links file** (in the project folder or `~/gtm-context/`): Notion version. Follow "Older setups" in build-gtm-context's `hub-structure.md`: its contents move onto the Hub page.
+- **A `gtm-hub.md` links file** (in the project folder or `~/gtm-context/`): a links file from the Notion version. In the Notion version, copy its database lines, sources and update settings into the Hub's "For agents" section, point the memory pointer at the Hub link, and tell the user the file is no longer needed. Delete it only on their OK. In the GitHub version, say in one line that it's left from a Notion setup and isn't used, and leave it alone.
 - **A `gtm/` folder in the current project:** GitHub version from before the fixed home. Say so in one line and offer to move it into the `gtm-context` repo, only on a clear yes, since it changes their repository.

@@ -2,7 +2,7 @@
 name: gtm-product
 description: "Write or refresh gtm/product.md in your repo: what you sell, the result it gives, offers and prices, and what it is not. Starts from where it's already written down (website, sales or course page, deck, doc), drafts one screen, and writes it only after you approve. Use for \"describe my product\", \"update my offer\", \"we changed pricing\", \"product description for my GTM context\", or as part of build-gtm-context. Not for the ICP (use gtm-icp) or competitor research (use gtm-competitors)."
 metadata:
-  version: "0.2.0"
+  version: "0.3.0"
 ---
 
 # Product & offer

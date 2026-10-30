@@ -1,8 +1,8 @@
 ---
 name: gtm-product
-description: "Write or refresh the Product & offer page of the GTM Hub in Notion: what you sell, the result it gives, offers and prices, and what it is not. Starts from a website link, pasted text or a dictated description, drafts one screen, and writes it only after you approve. Use for \"describe my product\", \"update my offer\", \"we changed pricing\", \"product description for my GTM context\", or as step 1 of build-gtm-context. Not for the ICP (use gtm-icp) or competitor research (use gtm-competitors)."
+description: "Write or refresh the Product & offer page of the GTM Hub in Notion: what you sell, the result it gives, offers and prices, and what it is not. Starts from a website link, pasted text or a dictated description, drafts one screen, and writes it only after you approve. Use for \"describe my product\", \"update my offer\", \"we changed pricing\", \"product description for my GTM context\", or as part of build-gtm-context. Not for the ICP (use gtm-icp) or competitor research (use gtm-competitors)."
 metadata:
-  version: "0.1.0"
+  version: "0.3.0"
 ---
 
 # Product & offer

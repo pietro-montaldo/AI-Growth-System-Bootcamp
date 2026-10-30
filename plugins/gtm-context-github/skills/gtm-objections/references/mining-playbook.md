@@ -26,7 +26,7 @@ How to turn calls, emails and messages into customer language and objections. Th
 2. **Source tag on every line.** `[call 2026-09-14]`, `[email 2026-08-02]`, `[DM 2026-10-01]`, `[pasted]`.
 3. **No personal data.** Replace names with role and company type: "Head of Growth, 40-person SaaS". No emails, phone numbers or LinkedIn URLs.
 4. **Count repeats.** If the same idea shows up in several conversations, keep the best quote and record how many times it came up.
-5. **Objections need context.** Record the stage (first call, after proposal, at renewal) and, if visible, what the user answered and whether the deal moved forward.
+5. **Objections need context.** Record the stage (`first contact`, `call`, `proposal` or `renewal`, the values the objections bank uses) and, if visible, what the user answered and whether the deal moved forward.
 6. **Say what you could not read.** Report how many threads or calls you read and what you skipped, so the user knows how complete the result is.
 
 ## Objection themes

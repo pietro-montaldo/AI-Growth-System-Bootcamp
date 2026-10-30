@@ -33,6 +33,14 @@ Source: their follow-ups.
 - Third or later nudge: {{their tone, e.g. "light, gives an easy out"}}.
 - After a call: what we agreed, what I'm sending, and the next step with a date. Use their words from the call when the transcript is available.
 
+## New email to someone they know
+
+Source: their `new` emails, a client, partner or past lead they write to first.
+
+- {{N}} words. Usually shorter and warmer than a cold email, because the context is shared.
+- Open with why you're writing now, in one line. No reintroduction.
+- Greeting and sign-off from the register table for this reader.
+
 ## LinkedIn post
 
 Source: things they say often on calls and webinars, plus the structure of posts they confirmed they wrote.

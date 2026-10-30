@@ -1,34 +1,50 @@
 #!/usr/bin/env python3
 """Mine a person's writing and speaking voice from sent emails and call transcripts.
 
-Standard library only. Five subcommands:
+Standard library only. Seven subcommands:
 
+  extract      Read .mbox and .eml exports (plain text or HTML mail, any charset) and
+               write the email JSONL the other commands expect.
   clean        Strip quoted replies, forwards and repeated signatures from sent emails,
                drop auto-replies, invites, templates and near-empty mails.
   score        Score every cleaned email for the likelihood it was AI-written.
                Uses the person's own pre-ChatGPT emails as a baseline when there are enough.
   fingerprint  Measure the voice of the emails that passed (lengths, greetings, sign-offs,
                punctuation, signature phrases), split by language and by email kind.
+  redact       Replace client names, companies, emails and amounts in a fingerprint before
+               it goes into the personal skill, and print what's left for review.
   transcript   Pull one speaker's turns out of call transcripts and measure how they talk.
   check        Check a new draft for AI tells and for drift from the person's own numbers.
 
 Email input is JSONL, one object per line:
   {"id": "...", "date": "2024-03-01", "to": "a@b.com", "subject": "...",
-   "kind": "reply|new|cold|followup" (optional), "body": "..."}
+   "kind": "cold|followup|reply|new" (optional), "body": "..."}
+Kinds: cold (first message to someone who never wrote to them), followup (they wrote
+again with no reply in between), reply (answering someone), new (first message in a
+thread to someone they already know). Confirmed LinkedIn posts and DMs may be added
+with kind post or dm. A missing or null date means the email is scored, never baseline.
 
-Example:
+Example (call the script by its full path):
+  python3 voice_mine.py extract Sent.mbox -o emails.jsonl --from jane@acme.com
   python3 voice_mine.py clean emails.jsonl -o clean.jsonl
   python3 voice_mine.py score clean.jsonl -o scored.jsonl
   python3 voice_mine.py fingerprint scored.jsonl -o fingerprint.json
+  python3 voice_mine.py redact fingerprint.json -o fingerprint.redacted.json --term Acme
   python3 voice_mine.py transcript calls/ --speaker "Jane Doe" -o speech.json
   python3 voice_mine.py check draft.txt --fingerprint fingerprint.json --kind cold
 """
 
 import argparse
 import collections
+import email
+import email.parser
+import email.policy
+import email.utils
 import hashlib
+import html
+import html.parser
 import json
-import math
+import mailbox
 import os
 import re
 import statistics
@@ -37,6 +53,32 @@ import sys
 CHATGPT_LAUNCH = "2022-11-30"  # emails before this date are treated as human-written
 MIN_BASELINE = 20               # pre-ChatGPT emails needed before the baseline is trusted
 MIN_WORDS = 15                  # shorter mails only count toward greeting/sign-off stats
+EMAIL_KINDS = ("cold", "followup", "reply", "new")
+OTHER_KINDS = ("post", "dm", "comment")   # not email: email numbers never apply to these
+
+
+def straighten(text):
+    """Curly apostrophes and quotes to straight ones, so word and phrase matching sees one form."""
+    return (text or "").translate({0x2019: "'", 0x2018: "'", 0x02BC: "'", 0x201C: '"', 0x201D: '"'})
+
+
+def email_date(r):
+    """ISO date string, or '' when missing or null. Never guessed."""
+    d = r.get("date")
+    return d.strip() if isinstance(d, str) else ""
+
+
+def is_pre_ai(r):
+    d = email_date(r)
+    return bool(d) and d < CHATGPT_LAUNCH
+
+
+def read_jsonl(path):
+    rows = [json.loads(l) for l in open(path, encoding="utf-8") if l.strip()]
+    for r in rows:
+        if not isinstance(r.get("body"), str):
+            r["body"] = ""
+    return rows
 
 # ---------------------------------------------------------------------------
 # Language detection: crude stopword vote, good enough to split a mailbox.
@@ -61,22 +103,198 @@ def detect_lang(text):
 
 
 # ---------------------------------------------------------------------------
+# Extract: .mbox and .eml exports to JSONL
+
+class _HTMLText(html.parser.HTMLParser):
+    """HTML mail to plain text. Drops quoted history (gmail_quote, blockquote, Outlook's reply
+    header and everything after it), styles and scripts. Keeps line and paragraph breaks."""
+    BLOCK = {"p", "div", "br", "li", "tr", "h1", "h2", "h3", "h4", "h5", "h6", "table", "ul", "ol",
+             "blockquote", "pre", "hr"}
+    VOID = {"br", "img", "hr", "meta", "input", "link", "wbr", "col", "area", "base", "source"}
+    QUOTE_CLASSES = ("gmail_quote", "gmail_extra", "moz-cite-prefix", "yahoo_quoted", "protonmail_quote",
+                     "apple-mail-quote")
+    STOP_IDS = ("divrplyfwdmsg", "appendonsend", "mail-editor-reference-message-container")
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.out, self.skip, self.stopped = [], [], False
+
+    def handle_starttag(self, tag, attrs):
+        if self.stopped:
+            return
+        a = {k: (v or "") for k, v in attrs}
+        if a.get("id", "").lower() in self.STOP_IDS:
+            self.stopped = True                        # Outlook: the rest is the quoted thread
+            return
+        if self.skip:
+            if tag == self.skip[0] and tag not in self.VOID:
+                self.skip[1] += 1
+            return
+        cls = a.get("class", "").lower()
+        if tag in ("style", "script", "head", "title", "blockquote") or any(c in cls for c in self.QUOTE_CLASSES):
+            if tag not in self.VOID:
+                self.skip = [tag, 1]
+            return
+        if tag in self.BLOCK:
+            self.out.append("\n")
+        if tag == "li":
+            self.out.append("- ")
+
+    def handle_endtag(self, tag):
+        if self.stopped:
+            return
+        if self.skip:
+            if tag == self.skip[0]:
+                self.skip[1] -= 1
+                if self.skip[1] <= 0:
+                    self.skip = []
+            return
+        if tag in self.BLOCK:
+            self.out.append("\n")
+
+    def handle_data(self, data):
+        if not self.stopped and not self.skip:
+            self.out.append(re.sub(r"\s+", " ", data.replace("\xa0", " ")))
+
+    def text(self):
+        t = "".join(self.out)
+        lines = [ln.strip() for ln in t.split("\n")]
+        return re.sub(r"\n{3,}", "\n\n", "\n".join(lines)).strip()
+
+
+def html_to_text(markup):
+    p = _HTMLText()
+    try:
+        p.feed(markup)
+        p.close()
+    except Exception:                                  # broken markup: keep what was parsed
+        pass
+    return p.text()
+
+
+def decode_part(part):
+    raw = part.get_payload(decode=True) or b""
+    charset = part.get_content_charset() or "utf-8"
+    for enc in (charset, "utf-8", "cp1252"):
+        try:
+            return raw.decode(enc), enc
+        except (LookupError, UnicodeDecodeError):
+            continue
+    return raw.decode("latin-1"), "latin-1"
+
+
+def leaf_parts(msg):
+    """Body parts in order, without going into attached emails (message/rfc822)."""
+    if msg.is_multipart():
+        for sub in msg.get_payload():
+            if sub.get_content_type() == "message/rfc822" or sub.get_content_disposition() == "attachment":
+                continue
+            yield from leaf_parts(sub)
+    else:
+        yield msg
+
+
+def message_body(msg):
+    """Prefer text/plain, fall back to text/html converted to text. Returns (body, source, charset)."""
+    plain = htm = None
+    for part in leaf_parts(msg):
+        ct = part.get_content_type()
+        if ct == "text/plain" and plain is None:
+            plain = decode_part(part)
+        elif ct == "text/html" and htm is None:
+            htm = decode_part(part)
+    if plain and plain[0].strip():
+        return plain[0], "text", plain[1]
+    if htm:
+        return html_to_text(htm[0]), "html", htm[1]
+    return "", "none", None
+
+
+def iter_messages(paths):
+    parser = email.parser.BytesParser(policy=email.policy.default)
+    for path in paths:
+        if os.path.isdir(path):
+            subs = sorted(os.path.join(path, f) for f in os.listdir(path)
+                          if f.lower().endswith((".eml", ".mbox")))
+            yield from iter_messages(subs)
+        elif path.lower().endswith(".eml"):
+            with open(path, "rb") as fh:
+                yield path, parser.parse(fh)
+        else:                                          # .mbox, Google Takeout and Apple Mail exports
+            box = mailbox.mbox(path, create=False)
+            for key in box.iterkeys():
+                yield path, parser.parsebytes(box.get_bytes(key))
+
+
+def cmd_extract(args):
+    want = [a.strip().lower() for a in args.sender]
+    seen, rows, stats = set(), [], collections.Counter()
+    senders, charsets = collections.Counter(), collections.Counter()
+    for path, msg in iter_messages(args.inputs):
+        stats["read"] += 1
+        try:
+            sender = (email.utils.parseaddr(str(msg.get("From", "")))[1] or "").lower()
+        except Exception:
+            sender = ""
+        senders[sender] += 1
+        if want and not any(w in sender for w in want):
+            stats["skipped: not sent by the person"] += 1
+            continue
+        mid = str(msg.get("Message-ID", "") or "").strip().strip("<>")
+        if mid and mid in seen:
+            stats["skipped: duplicate"] += 1
+            continue
+        seen.add(mid)
+        body, source, cs = message_body(msg)
+        if not body.strip():
+            stats["skipped: no text body"] += 1
+            continue
+        try:
+            date = email.utils.parsedate_to_datetime(str(msg.get("Date", ""))).date().isoformat()
+        except Exception:
+            date = None                                # never guess a date
+        try:
+            to = [a for _, a in email.utils.getaddresses([str(msg.get("To", "") or "")]) if a]
+        except Exception:
+            to = []
+        subject = str(msg.get("Subject", "") or "")
+        is_reply = bool(msg.get("In-Reply-To") or msg.get("References")) or bool(
+            re.match(r"^\s*(re|r|aw|sv|rif|res)\s*:", subject, re.IGNORECASE))
+        rows.append({"id": mid or hashlib.md5(body.encode()).hexdigest()[:16], "date": date,
+                     "to": to[0] if to else "", "subject": subject,
+                     "thread": "reply" if is_reply else "first", "body": body})
+        stats[f"body from {source}"] += 1
+        charsets[cs] += 1
+    write_jsonl(rows, args.output)
+    report = {"written": len(rows), **stats, "charsets": charsets,
+              "undated": sum(1 for r in rows if not r["date"])}
+    if not want:
+        report["senders"] = dict(senders.most_common(5))
+        report["note"] = "No --from given, so every message was kept. Rerun with --from <their address> if others are mixed in."
+    print(json.dumps(report, ensure_ascii=False, indent=2))
+
+
+# ---------------------------------------------------------------------------
 # Cleaning
 
-QUOTE_MARKERS = [
-    r"^>",
-    r"^On .{0,200}wrote:\s*$",
-    r"^On .{0,120}\n?.{0,120}wrote:\s*$",
-    r"^El .{0,200}escribió:\s*$",
-    r"^Il .{0,200}ha scritto:\s*$",
-    r"^Le .{0,200}a écrit\s*:\s*$",
-    r"^Am .{0,200}schrieb .{0,100}:\s*$",
-    r"^Em .{0,200}escreveu:\s*$",
-    r"^-{2,}\s*Original Message\s*-{2,}",
-    r"^-{2,}\s*Forwarded message\s*-{2,}",
-    r"^From:\s.+$",
-    r"^De:\s.+$",
-    r"^Da:\s.+$",
+# "On <date>, <name> <email> wrote:" in every supported language. Gmail and Apple Mail
+# often wrap it over two lines, usually inside the <email>, so each also has a wrapped form
+# whose first line must hold a digit (the date) to avoid eating a normal sentence.
+ATTRIBUTIONS = [("On", r"wrote:"), ("El", r"escribió:"), ("Il", r"ha scritto:"),
+                ("Le", r"a écrit\s*:"), ("Am", r"schrieb\b[^:]{0,100}:"), ("Em", r"escreveu:")]
+HEADER_WORDS = r"From|De|Da|Von"          # Outlook reply header, en/es/fr/pt/it/de
+QUOTE_MARKERS = [r"^>"]
+for _start, _end in ATTRIBUTIONS:
+    QUOTE_MARKERS.append(rf"^{_start} .{{0,200}}{_end}\s*$")
+    QUOTE_MARKERS.append(rf"^{_start} (?=[^\n]*\d)[^\n]{{0,200}}\n[^\n]{{0,200}}{_end}\s*$")
+QUOTE_MARKERS += [
+    r"^-{2,}\s*(Original Message|Messaggio originale|Mensaje original|Message d'origine|"
+    r"Ursprüngliche Nachricht|Mensagem original)\s*-{2,}",
+    r"^-{2,}\s*(Forwarded message|Messaggio inoltrato|Mensaje reenviado|Message transféré|"
+    r"Weitergeleitete Nachricht|Mensagem encaminhada)\s*-{2,}",
+    r"^(Begin forwarded message|Inizio messaggio inoltrato|Comienzo del mensaje reenviado|"
+    r"Début du message réexpédié|Anfang der weitergeleiteten Nachricht|Início da mensagem reencaminhada):",
+    rf"^\*{{0,2}}(?:{HEADER_WORDS})\s*:\*{{0,2}}\s.+$",   # From: x, *From:* x, **Da:** x
     r"^_{10,}\s*$",
 ]
 QUOTE_RE = re.compile("|".join(QUOTE_MARKERS), re.MULTILINE | re.IGNORECASE)
@@ -92,7 +310,7 @@ MOBILE_FOOTER = re.compile(r"^(Sent from my .+|Get Outlook for .+|Enviado desde 
 
 
 def strip_quotes(body):
-    body = body.replace("\r\n", "\n").replace("\r", "\n")
+    body = (body or "").replace("\r\n", "\n").replace("\r", "\n")
     m = QUOTE_RE.search(body)
     if m:
         body = body[: m.start()]
@@ -137,17 +355,20 @@ def norm_for_dupes(text):
 
 
 def cmd_clean(args):
-    rows = [json.loads(l) for l in open(args.input, encoding="utf-8") if l.strip()]
+    rows = read_jsonl(args.input)
     for r in rows:
-        r["body"] = strip_quotes(r.get("body", ""))
+        r["body"] = strip_quotes(r["body"])
     sig = find_signature_lines([r["body"] for r in rows if r["body"]])
+    for r in rows:                                     # drop the signature before looking for templates,
+        lines = [ln for ln in r["body"].splitlines() if ln.strip() not in sig]
+        r["body"] = "\n".join(lines).strip()          # or a shared signature hides every repeat
     dupes = collections.Counter(norm_for_dupes(r["body"]) for r in rows if r["body"])
     out, stats = [], collections.Counter()
+    odd_kinds = collections.Counter(r.get("kind") for r in rows
+                                    if r.get("kind") and r.get("kind") not in EMAIL_KINDS + OTHER_KINDS)
     for r in rows:
-        subj = r.get("subject", "") or ""
-        lines = [ln for ln in r["body"].splitlines() if ln.strip() not in sig]
-        body = "\n".join(lines).strip()
-        r["body"] = body
+        subj = r.get("subject") or ""
+        body = r["body"]
         words = len(body.split())
         if SKIP_SUBJECT.search(subj):
             r["skip"] = "auto/invite"
@@ -162,8 +383,11 @@ def cmd_clean(args):
         r["words"] = words
         out.append(r)
     write_jsonl(out, args.output)
-    print(json.dumps({"total": len(rows), "signature_lines_removed": sorted(sig), **stats},
-                     ensure_ascii=False, indent=2))
+    report = {"total": len(rows), "signature_lines_removed": sorted(sig), **stats}
+    if odd_kinds:
+        report["warning"] = (f"unknown kind values {dict(odd_kinds)}. Use one of "
+                             f"{', '.join(EMAIL_KINDS + OTHER_KINDS)}.")
+    print(json.dumps(report, ensure_ascii=False, indent=2))
 
 
 # ---------------------------------------------------------------------------
@@ -209,7 +433,6 @@ AI_PHRASES = {
         r"rather than (merely|simply|relying)", r"\bnot simply\b", r"less like an? [^.]{1,30} and more like",
         r"(want me to|if you want, i can also|would you like me to)",
         r"utm_source=chatgpt|oaicite|contentreference",
-        r"\{\{\s*first_?name\s*\}\}|\[(company|first name|name)\]",
         r"(impressive|inspiring) work at", r"truly inspired by",
         r"i'?m (thrilled|humbled|excited) to (announce|share)"],
     2: [r"i wanted to (reach out|touch base|follow up)",
@@ -235,6 +458,10 @@ AI_PHRASES = {
         r"(agree|thoughts)\?\s*$", r"let me be direct", r"that'?s a fair concern",
         r"despite these challenges", r"the future looks bright"],
 }
+# Unfilled merge fields and [placeholders]. In a SENT email they mean a pasted template or
+# AI draft. In a new draft they are deliberate, so check lists them instead of scoring them.
+PLACEHOLDER_RE = re.compile(r"\{\{\s*[\w .-]{1,30}\s*\}\}|\[[^\]\n]{1,40}\]")
+SENT_PLACEHOLDER_RE = re.compile(r"\{\{\s*first_?name\s*\}\}|\[(company|first name|name)\]", re.IGNORECASE)
 EMOJI_RE = re.compile("[\U0001F300-\U0001FAFF\u2600-\u27BF]")
 FUNCTIONAL_EMOJI_RE = re.compile("[\u2705\u2714\u274C\U0001F680\U0001F9E0\U0001F539\U0001F4A1\U0001F449\u26A0]|[1-9]\ufe0f?\u20e3")
 
@@ -247,7 +474,8 @@ def sentences(text):
 
 
 def features(body):
-    low = body.lower()
+    body = body or ""
+    low = straighten(body).lower()                     # curly apostrophes must not hide a tell
     words = re.findall(r"\b[\w'’-]+\b", body)
     n = max(len(words), 1)
     sents = sentences(body)
@@ -284,7 +512,7 @@ def features(body):
 
 def baseline_from(rows):
     """What the person did before AI writing tools existed."""
-    base = [r for r in rows if r.get("date", "9999") < CHATGPT_LAUNCH and not r.get("skip")]
+    base = [r for r in rows if is_pre_ai(r) and not r.get("skip")]
     if len(base) < MIN_BASELINE:
         return None, len(base)
     feats = [features(r["body"]) for r in base]
@@ -306,7 +534,8 @@ def baseline_from(rows):
     }, len(base)
 
 
-def score_one(r, base):
+def score_one(r, base, draft=False):
+    """draft=True for a new draft from check: [placeholders] there are on purpose."""
     f = features(r["body"])
     score, reasons = 0.0, []
 
@@ -345,6 +574,8 @@ def score_one(r, base):
     for p, w in f["phrase_hits"]:
         if p not in own_p:
             add(w, f"AI-typical phrase /{p}/")
+    if not draft and SENT_PLACEHOLDER_RE.search(r["body"] or ""):
+        add(3, "unfilled placeholder like [name] or {{first_name}} (template or AI draft)")
     if f["triads"] >= 2 and f["words"] < 300:
         add(1, f"{f['triads']} lists of three")
     if f["sent_cv"] is not None and f["sent_cv"] < 0.3:
@@ -359,13 +590,13 @@ def score_one(r, base):
 
 
 def cmd_score(args):
-    rows = [json.loads(l) for l in open(args.input, encoding="utf-8") if l.strip()]
+    rows = read_jsonl(args.input)
     base, nbase = baseline_from(rows)
     counts = collections.Counter()
     for r in rows:
         if r.get("skip"):
             r["verdict"] = "skipped"
-        elif r.get("date", "9999") < CHATGPT_LAUNCH:
+        elif is_pre_ai(r):
             r["ai_score"], r["verdict"], r["ai_reasons"] = 0, "human-preAI", []
         else:
             r["ai_score"], r["verdict"], r["ai_reasons"] = score_one(r, base)
@@ -404,7 +635,9 @@ INTENSIFIERS = ["really", "very", "super", "so much", "totally", "absolutely", "
 
 
 def mask_names(line):
-    """Replace capitalised words after the first one, so 'Hi Anna,' and 'Hi Tom,' count as one habit."""
+    """Replace capitalised words after the first one, so 'Hi Anna,' and 'Hi Tom,' count as one habit.
+    A [name] or {{first_name}} placeholder counts as a name too."""
+    line = PLACEHOLDER_RE.sub("{name}", line)
     first, _, rest = line.partition(" ")
     rest = re.sub(r"\b[A-ZÀ-Ý][a-zà-ÿ]+\b", "{name}", rest)
     return (first + " " + rest).strip()
@@ -463,7 +696,7 @@ def pct(counter, total, top=6):
 
 
 def profile(rows, short_rows):
-    bodies = [r["body"] for r in rows]
+    bodies = [straighten(r["body"]) for r in rows]
     k = len(bodies)
     allw = [len(b.split()) for b in bodies]
     sents = [s for b in bodies for s in sentences(b)]
@@ -474,7 +707,7 @@ def profile(rows, short_rows):
     nwords = max(len(text.split()), 1)
     greet, sign = collections.Counter(), collections.Counter()
     for r in rows + short_rows:
-        g, s = first_last_lines(r["body"])
+        g, s = first_last_lines(straighten(r["body"]))
         if g:
             greet[g] += 1
         if s:
@@ -523,7 +756,7 @@ def profile(rows, short_rows):
 
 
 def cmd_fingerprint(args):
-    rows = [json.loads(l) for l in open(args.input, encoding="utf-8") if l.strip()]
+    rows = read_jsonl(args.input)
     good = [r for r in rows if r.get("verdict") in ("human", "human-preAI")]
     short = [r for r in rows if (r.get("skip") or "").startswith("short")]
     out = {"source_counts": collections.Counter(r.get("verdict", "unscored") for r in rows),
@@ -532,12 +765,17 @@ def cmd_fingerprint(args):
         lr = [r for r in good if r.get("lang", "unknown") == lang]
         if len(lr) < 5:
             continue
-        block = {"all": profile(lr, [r for r in short if r.get("lang") == lang])}
+        block = {}
+        mail = [r for r in lr if r.get("kind") not in OTHER_KINDS]   # posts and DMs never set email numbers
+        if len(mail) >= 5:
+            block["all"] = profile(mail, [r for r in short if r.get("lang") == lang
+                                          and r.get("kind") not in OTHER_KINDS])
         for kind in sorted({r.get("kind") for r in lr if r.get("kind")}):
             kr = [r for r in lr if r.get("kind") == kind]
             if len(kr) >= 5:
                 block[kind] = profile(kr, [])
-        out["by_language"][lang] = block
+        if block:
+            out["by_language"][lang] = block
     ref = [r for r in good if r["verdict"] == "human-preAI"] or good
     feats = [features(r["body"]) for r in ref]
     k = max(len(feats), 1)
@@ -551,13 +789,143 @@ def cmd_fingerprint(args):
         "words": sorted(t for t, c in words.items() if c / k >= 0.1),
         "phrases": sorted(p for p, c in phrases.items() if c / k >= 0.1),
     }
+    names = possible_names([r["body"] for r in good], out["by_language"])
+    out["review"] = {
+        "possible_names": names,
+        "note": ("Capitalised words that also show up in signature_phrases, top_sentence_starters, "
+                 "greetings or sign-offs. Ask the person which are clients, companies or people, "
+                 "then run redact before this file goes into the personal skill."),
+    }
     with open(args.output, "w", encoding="utf-8") as fh:
         json.dump(out, fh, ensure_ascii=False, indent=2)
     print(f"wrote {args.output}: {len(good)} emails across {list(out['by_language'])}")
+    print("possible names to review before redact: " + (", ".join(names) if names else "none found"))
+
+
+# Capitalised words that are never a client: pronouns, days, months, common tools and roles.
+COMMON_CAPS = set("""i i'm i'll i've i'd ok okay ps p.s ai ceo cto cmo coo cfo vp pm am b2b b2c saas crm
+monday tuesday wednesday thursday friday saturday sunday mon tue wed thu fri sat sun
+january february march april may june july august september october november december
+lunedì martedì mercoledì giovedì venerdì sabato domenica gennaio febbraio marzo aprile maggio
+giugno luglio agosto settembre ottobre novembre dicembre lunes martes miércoles jueves viernes
+enero febrero abril mayo junio julio agosto septiembre octubre noviembre diciembre
+linkedin google gmail outlook zoom teams slack notion chatgpt claude excel english italian
+spanish french german italiano inglese""".split())
+
+
+def fingerprint_texts(by_language):
+    """Every phrase, sentence starter, greeting and sign-off string in a fingerprint."""
+    for lang, block in by_language.items():
+        for kind, prof in block.items():
+            for key, field in (("signature_phrases", "phrase"), ("top_sentence_starters", "start"),
+                               ("greetings", "value"), ("signoffs", "value")):
+                for item in prof.get(key, []):
+                    yield lang, kind, key, item, field
+
+
+def possible_names(bodies, by_language):
+    caps, lower = collections.Counter(), collections.Counter()
+    for b in bodies:
+        for sent in sentences(straighten(b)):
+            ws = re.findall(r"[\wÀ-ÿ'-]+", sent)
+            for i, w in enumerate(ws):
+                lw = w.lower()
+                if lw in COMMON_CAPS or len(w) < 3 or w.isdigit():
+                    continue
+                if i > 0 and (w[0].isupper()):
+                    caps[lw] += 1
+                elif w.islower():
+                    lower[lw] += 1
+    fp_words = set()
+    for *_, item, field in fingerprint_texts(by_language):
+        fp_words.update(re.findall(r"[\wÀ-ÿ'-]+", str(item.get(field, "")).lower()))
+    return sorted(w for w, c in caps.items() if w in fp_words and lower[w] <= 0.25 * c)
+
+
+# ---------------------------------------------------------------------------
+# Redact a fingerprint before it goes into the personal skill
+
+AUTO_REDACT = [
+    (re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]+"), "[email]"),
+    (re.compile(r"(https?://|www\.)\S+"), "[link]"),
+    (re.compile(r"(?:[$€£]\s?\d[\d.,]*\s?[kKmM]?\b|\b\d[\d.,]*\s?(?:[kKmM]\b|€|eur\b|euro\b|usd\b|\$|dollars?\b))",
+                re.IGNORECASE), "[amount]"),
+    (re.compile(r"\+?\d[\d ()-]{7,}\d"), "[phone]"),
+]
+
+
+def cmd_redact(args):
+    fp = json.load(open(args.input, encoding="utf-8"))
+    terms = sorted({t.strip() for t in args.term if t.strip()}, key=len, reverse=True)
+    term_res = [re.compile(r"(?<![\w])" + re.escape(straighten(t).lower()) + r"(?![\w])", re.IGNORECASE)
+                for t in terms]
+    drops = {straighten(d).strip().lower() for d in args.drop}
+    changed, dropped = [], []
+    for lang, block in fp.get("by_language", {}).items():
+        for kind, prof in block.items():
+            for key, field in (("signature_phrases", "phrase"), ("top_sentence_starters", "start"),
+                               ("greetings", "value"), ("signoffs", "value")):
+                keep = []
+                for item in prof.get(key, []):
+                    old = str(item.get(field, ""))
+                    if straighten(old).strip().lower() in drops:
+                        dropped.append(f"{lang}/{kind} {key}: {old}")
+                        continue
+                    new = straighten(old)
+                    for rx, ph in AUTO_REDACT:
+                        new = rx.sub(ph, new)
+                    for rx in term_res:
+                        new = rx.sub("[name]", new)
+                    if new != old:
+                        changed.append(f"{lang}/{kind} {key}: {old!r} -> {new!r}")
+                        item[field] = new
+                    keep.append(item)
+                if key in prof:
+                    prof[key] = keep
+    review = fp.pop("review", {}) or {}
+    left = [n for n in review.get("possible_names", [])
+            if not any(rx.search(n) for rx in term_res)]
+    with open(args.output, "w", encoding="utf-8") as fh:
+        json.dump(fp, fh, ensure_ascii=False, indent=2)
+    print(f"wrote {args.output}: {len(changed)} entries redacted, {len(dropped)} dropped")
+    for line in changed + [f"dropped {d}" for d in dropped]:
+        print("  " + line)
+    if left:
+        print("possible names NOT redacted (confirm they are fine): " + ", ".join(left))
+    print("\nWhat will go into the skill. Show this to the person and get a yes:")
+    for lang, kind, key, item, field in fingerprint_texts(fp.get("by_language", {})):
+        if kind == "all" and key in ("signature_phrases", "top_sentence_starters"):
+            print(f"  {lang} {key}: {item.get(field)}")
 
 
 # ---------------------------------------------------------------------------
 # Draft check: AI tells plus distance from the person's own numbers
+
+def pick_profile(fp, lang, kind):
+    """Return (profile or None, warnings). Never silently compare against the wrong data."""
+    warnings = []
+    if not fp:
+        return None, ["no --fingerprint given: only AI tells were checked, not your own numbers."]
+    langs = fp.get("by_language", {})
+    if lang not in langs:
+        have = ", ".join(langs) or "none"
+        return None, [f"no profile for language '{lang}' (the fingerprint has: {have}). Only AI tells "
+                      f"were checked. Length, greeting, sign-off and punctuation were NOT checked. "
+                      f"Compare by hand with examples.md, or pass --lang if the language was misread."]
+    block = langs[lang]
+    if kind and kind in block:
+        return block[kind], warnings
+    if kind in OTHER_KINDS:
+        return None, [f"no '{kind}' numbers in the fingerprint, so email length, greeting and "
+                      f"punctuation checks were skipped. Use the {kind} rules in formats.md instead."]
+    if not block.get("all"):
+        return None, [f"fewer than 5 {lang} emails in the fingerprint, so length, greeting and "
+                      f"punctuation checks were skipped. Only AI tells were checked."]
+    if kind:
+        warnings.append(f"no '{kind}' profile in {lang} (fewer than 5 such emails), so this was "
+                        f"compared against all your {lang} emails.")
+    return block.get("all"), warnings
+
 
 def cmd_check(args):
     text = sys.stdin.read() if args.input == "-" else open(args.input, encoding="utf-8").read()
@@ -569,11 +937,12 @@ def cmd_check(args):
                 "bullet_share": 1 if own.get("bullets") else 0, "emoji_share": 1 if own.get("emoji") else 0,
                 "own_words": set(own.get("words", [])), "own_phrases": set(own.get("phrases", [])),
                 "sent_mean": None, "sent_mean_sd": 1}   # length drift is checked below instead
-    score, verdict, reasons = score_one({"body": text}, base)
+    score, verdict, reasons = score_one({"body": text}, base, draft=True)
+    placeholders = sorted(set(PLACEHOLDER_RE.findall(text)))
+    flat = straighten(text)                            # curly apostrophes count as contractions too
     notes = []
     lang = args.lang or detect_lang(text)
-    prof = fp.get("by_language", {}).get(lang, {})
-    p = prof.get(args.kind) or prof.get("all")
+    p, warnings = pick_profile(fp, lang, args.kind)
     n = len(text.split())
     if p and n < 25:
         notes.append(f"{n} words: one-liner, so rates and greeting checks are skipped.")
@@ -584,7 +953,7 @@ def cmd_check(args):
             notes.append(f"{n} words; you rarely go past {lw['p90']} (median {lw['median']}). Cut.")
         elif n < lw["p25"] // 2:
             notes.append(f"{n} words; much shorter than usual (median {lw['median']}).")
-        sl = [len(x.split()) for x in sentences(text)]
+        sl = [len(x.split()) for x in sentences(flat)]
         if sl:
             m = statistics.mean(sl)
             target = p["sentence_words"]["mean"]
@@ -596,19 +965,27 @@ def cmd_check(args):
             got = 100 * text.count(ch) / words
             if got > 2 * per[key] + 0.3:
                 notes.append(f"too many '{ch}' ({got:.1f}/100 words, you use {per[key]}).")
-        g, sgn = first_last_lines(text)
+        g, sgn = first_last_lines(flat)
         known_g = [x["value"] for x in p.get("greetings", [])]
         if g and known_g and g not in known_g:
             notes.append(f"greeting '{g}' isn't one you use. Yours: {', '.join(known_g[:3])}.")
         known_s = [x["value"] for x in p.get("signoffs", [])]
         if sgn and known_s and sgn not in known_s:
             notes.append(f"sign-off '{sgn}' isn't one you use. Yours: {', '.join(known_s[:3])}.")
-        contr = len(CONTRACTION_RE.findall(text))
-        expd = len(EXPANDABLE_RE.findall(text))
+        contr = len(CONTRACTION_RE.findall(flat))
+        expd = len(EXPANDABLE_RE.findall(flat))
         if lang == "en" and expd >= 2 and p["contraction_rate"] >= 0.6 and contr / max(contr + expd, 1) < 0.5:
             notes.append("too formal: you normally use contractions (I'll, don't, it's).")
-    print(json.dumps({"ai_score": score, "verdict": verdict, "ai_tells": reasons,
-                      "off_voice": notes or ["none found"]}, ensure_ascii=False, indent=2))
+    if not notes:
+        notes = ["none found"] if p else ["not checked: see warnings"]
+    result = {"ai_score": score, "verdict": verdict, "ai_tells": reasons, "off_voice": notes}
+    if warnings:
+        result["warnings"] = warnings
+    if placeholders:
+        result["fill_in_before_sending"] = placeholders
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    for w in warnings:                                 # also say it in plain text, so it isn't missed
+        print("WARNING: " + w, file=sys.stderr)
 
 
 # ---------------------------------------------------------------------------
@@ -617,26 +994,114 @@ def cmd_check(args):
 FILLERS = ["um", "uh", "erm", "like", "you know", "i mean", "basically", "actually", "literally",
            "right?", "okay?", "ok?", "so", "kind of", "sort of", "to be honest", "honestly",
            "fundamentally", "at the end of the day", "et cetera"]
-TURN_RE = re.compile(r"^\s*(?:\[?\(?\d{1,2}:\d{2}(?::\d{2})?(?:\.\d+)?\)?\]?(?:\([^)]*\))?\s*[-–]?\s*)?"
-                     r"(?:<v\s+)?([A-Za-zÀ-ÿ][\w.@'À-ÿ +-]{0,60}?)(?:>|:)\s*(.*)$")  # names, 'Speaker 2' or emails
+TS = r"\d{1,2}:\d{2}(?::\d{2})?(?:[.,]\d+)?"
+# 'Name: text', '[00:01] Name: text', '00:01:02 - Name: text', 'Name (00:01): text'
+INLINE_RE = re.compile(r"^\s*(?:[\[(]?" + TS + r"[\])]?\s*[-–]?\s*)?"
+                       r"([^\s:<>\[\]()][^:<>\[\]()]{0,59}?)\s*(?:[\[(]" + TS + r"[\])])?\s*:\s*(.*)$")
+VTT_VOICE_RE = re.compile(r"^\s*<v(?:\.[\w.-]+)?\s+([^>]+)>(.*)$")
+# Otter and similar: 'Jane Doe  0:03' or 'Speaker 1  1:02:07' on its own line, text below.
+HEADER_TS_RE = re.compile(r"^\s*([^\d:<>\[\]()][^:<>\[\]()]{0,59}?)\s+[\[(]?" + TS + r"[\])]?\s*$")
+CUE_LINE_RE = re.compile(r"-->|^\s*\d+\s*$|^\s*[0-9a-f]{8}-[0-9a-f-]{20,}(?:/\d+-\d+)?\s*$|^\s*(WEBVTT|NOTE)\b",
+                         re.IGNORECASE)
+NOT_SPEAKER = set("""next note notes nota nb n.b ps p.s step steps subject oggetto asunto betreff objet re fwd
+action actions agenda todo summary riassunto update question answer q example esempio important
+importante warning tip recap takeaway takeaways key bottom result results goal goals problem
+solution price prezzo budget timeline total totale date data time ora attenzione also and but then
+poi quindi ok okay yes no si sì thanks thank grazie hello hi ciao bye perfect perfetto great right
+sure exactly esatto step source link pros cons option opzione phase fase day giorno week settimana
+call meeting""".split())
+PARTICLES = {"de", "da", "di", "del", "della", "van", "von", "der", "den", "la", "le", "dos", "das",
+             "du", "y", "e", "bin", "al", "ten", "ter"}
 
 
-def read_turns(path):
-    """Parse 'Name: text', '[00:01] Name: text', VTT '<v Name>text' and 'Name\\ntext' blocks."""
-    raw = open(path, encoding="utf-8", errors="ignore").read()
-    raw = re.sub(r"^WEBVTT.*?\n\n", "", raw, flags=re.S)
-    raw = re.sub(r"^\d+\n\d\d:\d\d:\d\d[.,]\d+ --> .*\n", "", raw, flags=re.M)
+def name_like(label):
+    """Does a label look like a speaker: a name, 'Speaker 2' or an email, not 'Next step'?"""
+    s = label.strip()
+    if re.fullmatch(r"(speaker|participant|unknown speaker|relatore|orador|sprecher|interlocutor)\s*\w{0,3}",
+                    s, re.IGNORECASE):
+        return True
+    if re.fullmatch(r"[\w.+-]+@[\w-]+\.[\w.-]+", s):
+        return True
+    words = s.split()
+    if not 1 <= len(words) <= 4 or words[0].lower().strip(".") in NOT_SPEAKER:
+        return False
+    return all(w.lower() in PARTICLES or (w[0].isupper() and re.fullmatch(r"[\w'’.-]+", w)) for w in words)
+
+
+def read_text(path):
+    """utf-8 (with or without BOM) first, then Windows/Latin-1, so accents survive."""
+    raw = open(path, "rb").read()
+    for enc in ("utf-8-sig", "cp1252"):
+        try:
+            return raw.decode(enc)
+        except UnicodeDecodeError:
+            continue
+    return raw.decode("latin-1")
+
+
+def strip_tags(text):
+    return re.sub(r"</?[a-zA-Z][^>]*>", "", text).strip()
+
+
+def read_turns(path, wanted=()):
+    """Parse 'Name: text', '[00:01] Name: text', VTT '<v Name>text</v>', SRT cues,
+    Otter 'Name  0:03' headers and plain 'Name' header lines followed by text.
+
+    A label only counts as a speaker if it looks like a name and is not a common
+    sentence opener ('Next step:', 'Nota bene:'). A one-word label must recur in the file
+    or be one of the wanted speakers. Bare 'Name' lines with no colon or timestamp only
+    count in files with no 'Name: text' turns, where at least one of them recurs.
+    """
+    lines = read_text(path).replace("\r\n", "\n").replace("\r", "\n").split("\n")
+    wanted = {w.strip().lower() for w in wanted}
+    parsed = []                                        # (kind, label, text) per line
+    for i, line in enumerate(lines):
+        if CUE_LINE_RE.search(line):
+            parsed.append(("cue", None, None))
+            continue
+        m = VTT_VOICE_RE.match(line)
+        if m:
+            parsed.append(("voice", m.group(1).strip(), strip_tags(m.group(2))))
+            continue
+        m = HEADER_TS_RE.match(line)
+        if m:
+            parsed.append(("header", m.group(1).strip(), ""))
+            continue
+        m = INLINE_RE.match(line)
+        if m:
+            parsed.append(("inline", m.group(1).strip(), strip_tags(m.group(2))))
+            continue
+        prev_blank = i == 0 or not lines[i - 1].strip() or CUE_LINE_RE.search(lines[i - 1])
+        if prev_blank and line.strip() and len(line.split()) <= 4 and not re.search(r"[.!?,;]\s*$", line):
+            parsed.append(("bare", line.strip(), ""))
+            continue
+        parsed.append(("text", None, strip_tags(line)))
+    counts = collections.Counter(lab.lower() for k, lab, _ in parsed if lab)
+
+    def is_speaker(kind, label):
+        low = label.lower()
+        if kind == "voice" or low in wanted:
+            return True
+        if not name_like(label):
+            return False
+        return len(label.split()) > 1 or counts[low] >= 2
+
+    has_inline = any(k in ("inline", "voice") and is_speaker(k, lab) for k, lab, _ in parsed)
+    bare_format = not has_inline and any(k == "bare" and name_like(lab) and counts[lab.lower()] >= 2
+                                         for k, lab, _ in parsed)
     turns, cur = [], None
-    for line in raw.splitlines():
-        m = TURN_RE.match(line)
-        if m and m.group(2).strip():
-            cur = [m.group(1).strip(), m.group(2).strip()]
+    for (kind, label, text), line in zip(parsed, lines):
+        if kind == "cue":
+            continue
+        if kind == "bare" and not bare_format:
+            kind, text = "text", strip_tags(line)
+        if kind in ("voice", "inline", "header", "bare") and is_speaker(kind, label):
+            cur = [label, text or ""]
             turns.append(cur)
-        elif m and not m.group(2).strip():
-            cur = [m.group(1).strip(), ""]
-            turns.append(cur)
-        elif cur and line.strip() and not re.match(r"^[\d:.,\->\s]+$", line):
-            cur[1] += " " + line.strip()
+        elif cur and kind != "cue":
+            t = text if kind == "text" else strip_tags(line)
+            if t and t.strip():
+                cur[1] += " " + t.strip()
     return [(s, t.strip()) for s, t in turns if t.strip()]
 
 
@@ -648,18 +1113,19 @@ def cmd_transcript(args):
                       if f.lower().endswith((".txt", ".vtt", ".srt", ".md"))]
         else:
             paths.append(p)
-    want = [s.lower() for s in args.speaker]
-    mine, others, per_call = [], 0, []
+    want = {s.strip().lower() for s in args.speaker}   # exact label, any case: 'Speaker 1' is not 'Speaker 10'
+    mine, others, per_call, labels = [], 0, [], collections.Counter()
     for p in paths:
-        turns = read_turns(p)
-        me = [t for s, t in turns if any(w in s.lower() for w in want)]
-        other_words = sum(len(t.split()) for s, t in turns if not any(w in s.lower() for w in want))
+        turns = read_turns(p, want)
+        labels.update(s for s, _ in turns)
+        me = [t for s, t in turns if s.strip().lower() in want]
+        other_words = sum(len(t.split()) for s, t in turns if s.strip().lower() not in want)
         my_words = sum(len(t.split()) for t in me)
         per_call.append({"file": os.path.basename(p), "my_turns": len(me),
                          "talk_share": round(my_words / max(my_words + other_words, 1), 2)})
         mine += me
         others += other_words
-    text = " ".join(mine)
+    text = straighten(" ".join(mine))
     low = text.lower()
     nwords = max(len(text.split()), 1)
     sents = sentences(text)
@@ -676,17 +1142,20 @@ def cmd_transcript(args):
                              for f in FILLERS},
         "questions_per_1000": round(1000 * text.count("?") / nwords, 1),
         "top_sentence_starters": [{"start": s, "count": c} for s, c in starters.most_common(20)],
-        "signature_phrases": signature_phrases(mine, lang_stop, top=60),
+        "signature_phrases": signature_phrases([straighten(t) for t in mine], lang_stop, top=60),
     }
     if not mine:
-        out["warning"] = ("No turns matched the speaker name. Check the speaker label used in the "
-                          "transcripts (e.g. 'Speaker 1') and pass it with --speaker.")
+        found = ", ".join(f"'{s}'" for s, _ in labels.most_common(8)) or "none"
+        out["warning"] = (f"No turns matched the speaker name. Speaker labels found: {found}. "
+                          "Pass the person's exact label with --speaker (repeat it for several).")
     with open(args.output, "w", encoding="utf-8") as fh:
         json.dump(out, fh, ensure_ascii=False, indent=2)
     if args.turns_out:
         with open(args.turns_out, "w", encoding="utf-8") as fh:
             fh.write("\n\n".join(mine))
-    print(f"wrote {args.output}: {len(mine)} turns, {nwords} words from {len(paths)} files")
+    print(f"wrote {args.output}: {len(mine)} turns, {nwords if mine else 0} words from {len(paths)} files")
+    if not mine:
+        print("WARNING: " + out["warning"])
 
 
 # ---------------------------------------------------------------------------
@@ -700,18 +1169,34 @@ def write_jsonl(rows, path):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
-    for name, fn in (("clean", cmd_clean), ("score", cmd_score), ("fingerprint", cmd_fingerprint)):
-        p = sub.add_parser(name)
+    for name, fn, hlp in (("clean", cmd_clean, "strip quotes and signatures, drop templates and auto-replies"),
+                          ("score", cmd_score, "score each cleaned email for AI writing"),
+                          ("fingerprint", cmd_fingerprint, "measure the voice of the emails that passed")):
+        p = sub.add_parser(name, help=hlp)
         p.add_argument("input")
         p.add_argument("-o", "--output", required=True)
         p.set_defaults(fn=fn)
+    p = sub.add_parser("extract", help="read .mbox and .eml exports into the email JSONL")
+    p.add_argument("inputs", nargs="+", help=".mbox files, .eml files, or folders of them")
+    p.add_argument("-o", "--output", required=True)
+    p.add_argument("--from", dest="sender", action="append", default=[],
+                   help="keep only mail sent from this address (repeatable)")
+    p.set_defaults(fn=cmd_extract)
+    p = sub.add_parser("redact", help="replace names, companies, emails and amounts in a fingerprint")
+    p.add_argument("input", help="fingerprint.json")
+    p.add_argument("-o", "--output", required=True)
+    p.add_argument("--term", action="append", default=[],
+                   help="a client, company or person name to replace with [name] (repeatable)")
+    p.add_argument("--drop", action="append", default=[],
+                   help="a phrase, sentence starter, greeting or sign-off to remove entirely (repeatable)")
+    p.set_defaults(fn=cmd_redact)
     p = sub.add_parser("check", help="check a draft for AI tells and off-voice numbers")
     p.add_argument("input", help="draft text file, or - for stdin")
     p.add_argument("--fingerprint", help="fingerprint.json from the voice profile")
     p.add_argument("--lang", help="language code; detected when omitted")
-    p.add_argument("--kind", help="email kind to compare against, e.g. cold, reply")
+    p.add_argument("--kind", help="what the draft is: cold, followup, reply, new (email), or post, dm, comment")
     p.set_defaults(fn=cmd_check)
-    p = sub.add_parser("transcript")
+    p = sub.add_parser("transcript", help="pull one speaker's turns out of call transcripts")
     p.add_argument("inputs", nargs="+", help="transcript files or folders")
     p.add_argument("--speaker", action="append", required=True,
                    help="speaker label(s) for the person, repeatable (e.g. --speaker 'Jane Doe' --speaker 'Speaker 1')")

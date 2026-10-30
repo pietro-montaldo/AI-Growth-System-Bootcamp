@@ -23,10 +23,10 @@ The catch is that since 2023 a lot of sent email was drafted with AI. If Claude 
 
 ### What it does
 
-1. **Pulls your sent email** through Gmail or Outlook if connected, or from an export. It targets 150 to 300 emails.
+1. **Pulls your sent email** through Gmail or Outlook if connected, or from an export (.mbox or .eml, read by the script). It targets 150 to 300 emails.
 2. **Cleans it.** It strips quoted replies, signatures, calendar invites, auto-replies and templates.
 3. **Filters out AI-written email.** Every email after ChatGPT's launch (30 November 2022) gets a score with reasons. If you have older emails, those become your pre-AI baseline: if you always used em dashes or "Hope you're well", they don't count against you. You confirm the suspects yourself.
-4. **Measures your voice in numbers**, split by language and by kind of email: median length, sentence length, greetings, sign-offs, punctuation, and the phrases you actually use.
+4. **Measures your voice in numbers**, split by language and by kind of email: median length, sentence length, greetings, sign-offs, punctuation, and the phrases you actually use. Names and companies in those phrases are replaced, and you approve the list before it goes into your skill.
 5. **Mines your calls** (Fathom, Granola, Gong, Fireflies, Otter, Zoom or plain transcript files) for how you sell, explain and handle objections.
 6. **Writes your personal skill**, `<firstname>-voice`, with your profile, per-format rules (reply, cold email, follow-up, recap, LinkedIn post, DM, comment) and real redacted examples.
 7. **Runs a blind test.** It writes a few drafts and mixes in one real email of yours. If you can't spot the real one, the skill is ready. If you can, your corrections become rules.
@@ -34,10 +34,10 @@ The catch is that since 2023 a lot of sent email was drafted with AI. If Claude 
 Your personal skill then checks every draft before showing it to you:
 
 ```bash
-python3 scripts/voice_mine.py check draft.txt --fingerprint fingerprint.json --kind cold
+python3 <skill-folder>/scripts/voice_mine.py check draft.txt --fingerprint fingerprint.json --kind cold
 ```
 
-The check flags AI tells and anything off your own numbers. For example: "68 words, you rarely go past 41", "greeting 'Dear Anna,' isn't one you use", "too formal, you normally use contractions".
+The kinds are `cold`, `followup`, `reply` and `new` for email, plus `post`, `dm` and `comment`. The check flags AI tells and anything off your own numbers. For example: "68 words, you rarely go past 41", "greeting 'Dear Anna,' isn't one you use", "too formal, you normally use contractions".
 
 ### Install
 
@@ -66,7 +66,7 @@ Then ask Claude: "Learn my voice from my sent emails and sales calls."
 ### Privacy
 
 - Raw emails and transcripts stay in a local working folder and are deleted at the end unless you ask to keep them.
-- The finished skill holds only short excerpts with names, companies and amounts replaced by placeholders, and you approve each one.
+- The finished skill holds only short excerpts with names, companies and amounts replaced by placeholders, and you approve each one. The same goes for the phrase lists in your voice numbers.
 - Nothing is ever sent from your mailbox. The skills write drafts only.
 
 ### The AI tells list
@@ -85,7 +85,7 @@ plugins/voice-miner/
 ├── .claude-plugin/plugin.json        # plugin manifest
 └── skills/voice-miner/
     ├── SKILL.md                      # the mining workflow
-    ├── scripts/voice_mine.py         # clean, score, fingerprint, transcript, check
+    ├── scripts/voice_mine.py         # extract, clean, score, fingerprint, redact, transcript, check
     ├── references/
     │   ├── sources.md                # how to pull email and calls per tool
     │   ├── analysis-guide.md         # what to read for in emails and calls
@@ -103,7 +103,7 @@ This plugin builds that context with you. Most people already have a lot of it s
 
 ### Pick your version
 
-| | Notion + GitHub | GitHub only |
+| | Notion | GitHub only |
 |---|---|---|
 | Your context lives in | Notion, under one GTM Hub page | Markdown pages and CSV tables in your own private repo |
 | Good if | your team already works in Notion | you don't use Notion, or want everything in one place |
@@ -122,7 +122,7 @@ In Claude Code, add this repo as a plugin marketplace once:
 
 Then install your version and start it:
 
-| Notion + GitHub | GitHub only |
+| Notion | GitHub only |
 |---|---|
 | `/plugin install gtm-context-notion@ai-growth-system-bootcamp` | `/plugin install gtm-context-github@ai-growth-system-bootcamp` |
 | `/gtm-context-notion:build-gtm-context` | `/gtm-context-github:build-gtm-context` |
@@ -206,7 +206,7 @@ Three rules keep it fast and cheap for agents to read:
 
 ```
 .claude-plugin/marketplace.json   # the plugin marketplace for this repo
-plugins/gtm-context-notion/       # Notion + GitHub version
+plugins/gtm-context-notion/       # Notion version
 plugins/gtm-context-github/       # GitHub-only version
 shared/                           # text, agents and the helper scripts both versions use
 scripts/sync-shared.sh            # copies shared/ into the plugins
@@ -226,7 +226,7 @@ Once you run more than one outreach system (LinkedIn drafts, automated email, in
 2. **Finds the people.** Replies that said no, "not now" or unsubscribe, bounces, customers, open deals, plus partners, competitors and friends you name. LinkedIn no's are pasted in, never read automatically, to keep your account safe.
 3. **Shows you who it found** and saves them after your OK. Unclear replies are yours to decide.
 4. **Tells every later system about it.** A short note in Claude's memory says: check this list before contacting anyone.
-5. **Updates every week** and sends you a short summary. Anything that needs a decision, like a customer who left, waits for your review.
+5. **Updates every week** and sends you a short summary. Anything that needs a decision, like a customer who left, waits for your review. A cloud schedule can't read files on your computer or use Chrome, so for those sources it reminds you instead.
 
 ### Google Sheet or Notion?
 
@@ -251,7 +251,7 @@ Then, any time:
 | Say | What happens |
 |---|---|
 | "add jane@acme.com, said no" | Adds one person or company |
-| "check this lead list against do not contact" | Gives you a keep file and a drop file, with reasons |
+| "check this lead list against do not contact" | Gives you a keep file and a drop file, with reasons. Leads it couldn't check are marked in the keep file |
 | "make a blocklist for my sending tool" | A file to upload to your email tool's blocklist |
 | "review do-not-contact" | Goes through what the weekly update wasn't sure about |
 
@@ -260,6 +260,8 @@ Then, any time:
 - The list keeps emails, LinkedIn links and company domains only. No names, no message text.
 - Rows of people who said no, unsubscribed or bounced are never deleted automatically.
 - Share the Sheet with your team only. Temporary files go in `~/do-not-contact/.private/` and are deleted after each run.
+
+---
 
 ## License
 

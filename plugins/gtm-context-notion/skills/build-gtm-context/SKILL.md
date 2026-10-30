@@ -2,7 +2,7 @@
 name: build-gtm-context
 description: "Build your whole go-to-market context layer in Notion with you. First it finds where your GTM information already lives (Notion, CRM, course or payment platform, website, calls, email) and reads it, through a connector or by browsing. Then it drafts product and offer, customers, competitors, ICP, customer language, objections and shareable logos, and asks you only about real gaps. Everything lands in one GTM Hub page. At the end it sets up a scheduled task of your own that keeps the context current. Resumes where you left off. Use for \"build my GTM context\", \"set up my GTM Hub\", \"start the context layer\", \"help me define my ICP and messaging\", \"System 1\", \"set up my GTM updates\", or the first time you use this plugin. Not for redoing one section only (use the matching gtm-* skill, for example gtm-objections)."
 metadata:
-  version: "0.3.0"
+  version: "0.4.0"
 ---
 
 # Build your GTM context
@@ -42,7 +42,7 @@ Find the Hub link: the "GTM context" block in Claude's memory, or `gtm_home.py s
 2. See which other connectors exist from the tool names already listed in the session (for example `gmail`, `fathom`, `hubspot`, `google_drive`). Don't run one broad keyword search across all tools: it returns huge tool definitions and can miss the ones you need. Load a tool only when you use it, with a `select:` query.
 3. Show the bucket table from `source-map.md` and ask the user to reply in one message: for each bucket, a link, a tool name, or "none". Add the open question about any other GTM context to include (case studies, a pitch deck, a pricing sheet), and ask them to list every offer they sell (a rough list is fine).
 4. For each pointer, settle access using the order in `source-map.md`: connector, browser, export, paste. When there's no connector for a tool, say so plainly and offer to browse there (Claude in Chrome for signed-in dashboards) or to read an export.
-5. One AskUserQuestion to confirm: which conversation sources (email, call recorder, DMs) you may read, and whether to use Claude in Chrome or the built-in browser for the sources that need browsing.
+5. One AskUserQuestion to confirm: which conversation sources (email, call recorder, DMs, webinar recordings) you may read, and whether to use Claude in Chrome or the built-in browser for the sources that need browsing.
 6. **Offers in scope.** Follow "Offers: one or several?" in `source-map.md`: list every offer (theirs, plus any a quick look at their website shows), then one AskUserQuestion (multiSelect): which ones should the context cover. From here on, every section covers each offer in scope.
 7. **Where each item comes from, now and later.** Follow that section in `source-map.md`: for every item, settle how it was collected, where new information will come from, and who brings it in (`auto`, `auto, app only`, `you`, `none`). Propose an automatic route for every line you can, show one table, and ask only about what's left. It's recorded in the hub's Sources list in step 2, and the handover reuses it.
 
@@ -76,7 +76,7 @@ Run each section skill with the Skill tool, skipping its "Before starting" Hub c
 | Step | Skill | Pass forward |
 |---|---|---|
 | 4. Product & offer | `gtm-product` | the product summary (first lines of the page) |
-| 5. Customers | `gtm-customers`, part A only | B2B or B2C, "no customers yet", the clients' customers answer, best-customer signals |
+| 5. Customers | `gtm-customers`, part A only | B2B or B2C, "no customers yet", the clients' customers answer, best-customer rule |
 | 6. Competitors (optional) | `gtm-competitors`. If step 1 found none, ask once "Do buyers compare you with anyone?" and mark Skipped if not. With no customers either, recommend running it, because competitors' customers are then the only ICP evidence. | ICP evidence |
 | 7. ICP | `gtm-icp` | ICP names, and the facts from steps 3, 5 and 6 |
 | 8. Messaging | `gtm-messaging`, with the language-miner results from step 3 | the objections table |

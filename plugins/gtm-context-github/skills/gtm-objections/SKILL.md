@@ -2,7 +2,7 @@
 name: gtm-objections
 description: "Build or update the objections bank for your GTM context in your repo (gtm/objections.csv, or the objections log you already keep elsewhere): every reason people hesitate or say no, grouped by theme, with their exact words, how often it comes up, and the answer that works. Merges what already exists with objections mined from your calls, webinars, emails and DMs, and dedupes against the bank. Use for \"build my objections list\", \"what objections do I get\", \"update the objection bank\", \"how should I answer X\", \"refresh objections from my recent calls\", or as part of build-gtm-context. Not for handling a live objection in one specific deal."
 metadata:
-  version: "0.2.0"
+  version: "0.3.0"
 ---
 
 # Objections bank
@@ -13,6 +13,7 @@ Objections are the most useful context for outreach and follow-ups, and the most
 
 - `references/mining-playbook.md`: what counts as an objection, the themes, and the privacy rules.
 - `references/source-map.md`: where objections usually live and how to get in (connector, browser, export, paste).
+- `references/repo-structure.md`: the columns of `gtm/objections.csv`, the themes, and how the helper script writes them.
 - `scripts/gtm_csv.py`: query and update `gtm/objections.csv`. Call it by its full path in this skill's folder.
 
 ## Before starting
@@ -38,15 +39,15 @@ If the user has no list and no sources, ask them to name the 3 things prospects 
 ### 2. Normalise
 
 - One row per distinct objection, in plain words ("Too expensive for a team our size"), with the best verbatim quote.
-- Assign one theme from the bank's themes (the list in the guide's `repo-structure.md`, or the user's own), and the Offer it's about (offers in scope).
+- Assign one theme from the bank's themes (the list in `references/repo-structure.md`, or the user's own), and the Offer it's about (offers in scope).
 - **Our answer:** if a thread shows an answer that moved the deal forward, use it and set Answer status `works`. Otherwise draft one in the user's voice and set `draft`.
 
 ### 3. Dedupe against the bank
 
-If `gtm/objections.csv` doesn't exist yet, create it with `init` and the columns from `repo-structure.md`.
+If `gtm/objections.csv` doesn't exist yet, create it with `init` and the columns from `references/repo-structure.md`.
 
-Run one query for the themes in this batch: `query gtm/objections.csv --any "Theme=price|effort|..." --cols "Objection,Theme,Offer,Times seen,Answer status"`. Compare the results with the new rows by meaning, not exact wording, within the same offer:
-- **Same objection:** reuse the existing Objection text as the key, add to Times seen, set Last seen, keep the clearer quote, and keep an answer marked `works` unless the new evidence is better.
+Run one query for the themes in this batch: `query gtm/objections.csv --any "Theme=price|effort|..." --cols "Objection,Theme,Offer,Times seen,Answer status"`. Compare the results with the new rows by meaning, not exact wording, within the same offer. The same objection about another offer is its own row, with its own count:
+- **Same objection, same offer:** reuse the existing Objection text and Offer, so the upsert finds the row. Add to Times seen, set Last seen, keep the clearer quote, and keep an answer marked `works` unless the new evidence is better.
 - **New objection:** a new row.
 
 Never run one query per objection. One query per batch keeps it fast.
@@ -57,7 +58,7 @@ Show two short tables: "New" and "Updated". Then ask the user to review every an
 
 ### 5. Write
 
-Put the rows in a JSON file in `gtm/.private/` and write them with one `upsert --key Objection`. Delete the JSON file afterwards. Update the Objections row in the `gtm/README.md` table: one-line summary ("27 objections, top themes: price, effort, proof") and today's date.
+Put the rows in a JSON file in `gtm/.private/` and write them with one `upsert --key "Objection,Offer"`. Delete the JSON file afterwards. Update the Objections row in the `gtm/README.md` table: one-line summary ("27 objections, top themes: price, effort, proof") and today's date.
 
 ## How other agents should read the bank
 

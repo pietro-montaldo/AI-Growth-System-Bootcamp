@@ -4,6 +4,8 @@
 # carries its own copy. Edit shared/ only, then run this script.
 #
 #   shared/references/*  -> the skills listed in REFERENCES, in both GTM plugins
+#   shared/references/notion/* -> the skills listed in NOTION_REFERENCES (Notion plugin only)
+#   shared/references/github/* -> the skills listed in GITHUB_REFERENCES (GitHub plugin only)
 #   shared/agents/*      -> agents/ in both GTM plugins (not voice-miner)
 #   shared/scripts/*     -> the skills listed in SCRIPTS_ALL (every GTM plugin) and SCRIPTS (GitHub only)
 #   shared/do-not-contact/* -> every skill of the do-not-contact plugin
@@ -33,6 +35,20 @@ source-map.md:gtm-icp
 update-playbook.md:build-gtm-context
 handover.md:build-gtm-context
 context-home.md:build-gtm-context
+"
+
+# storage schema : skill that needs it, in one GTM plugin only
+# (the Hub and database layout for Notion, the gtm/ folder and CSV columns for GitHub)
+NOTION_REFERENCES="
+hub-structure.md:build-gtm-context
+hub-structure.md:gtm-customers
+hub-structure.md:gtm-objections
+"
+GITHUB_REFERENCES="
+repo-structure.md:build-gtm-context
+repo-structure.md:gtm-customers
+repo-structure.md:gtm-competitors
+repo-structure.md:gtm-objections
 "
 
 # shared script : skill that needs it, in every GTM plugin
@@ -78,6 +94,13 @@ for plugin in plugins/gtm-context-*/; do
   for pair in $SCRIPTS_ALL; do
     sync "shared/scripts/${pair%%:*}" "${plugin}skills/${pair##*:}/scripts"
   done
+done
+
+for pair in $NOTION_REFERENCES; do
+  sync "shared/references/notion/${pair%%:*}" "plugins/gtm-context-notion/skills/${pair##*:}/references"
+done
+for pair in $GITHUB_REFERENCES; do
+  sync "shared/references/github/${pair%%:*}" "plugins/gtm-context-github/skills/${pair##*:}/references"
 done
 
 for pair in $SCRIPTS; do

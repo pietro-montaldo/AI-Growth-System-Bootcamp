@@ -2,7 +2,7 @@
 name: gtm-messaging
 description: "Mine how your buyers really talk from your call recordings, webinars, emails, DMs and reviews, then write gtm/messaging.md in your repo: their pains and desired outcomes in their own words, value props, words to use and avoid, and your voice. Runs one mining agent per connected source in parallel, and works from pasted text when nothing is connected. Use for \"find my customer language\", \"how do my buyers describe the problem\", \"update my messaging\", \"mine my calls\", \"voice of customer\", or as part of build-gtm-context. Not for writing a specific email or post."
 metadata:
-  version: "0.2.0"
+  version: "0.3.0"
 ---
 
 # Messaging & customer language
