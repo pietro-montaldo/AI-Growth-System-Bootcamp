@@ -53,12 +53,19 @@ Record the answer under "Customer contacts" in `gtm/README.md`, so updates follo
 Use what the user gave first, then check what's missing. The ICP is the pattern in the best customers, so it can only be inferred and scored when their rows say who the buyer is and what company they're in.
 
 1. **Count the gaps** with one query or one pass over the batch:
-   - **Buyer** (matters most): role or title, seniority, function, time in role.
+   - **Buyer:** role or title, seniority, function, time in role.
    - **Company:** website, size, industry, location, stage or funding.
+
+   Both matter: the buyer's role says who decides, and the company says where they sit and what they can afford.
 
    Don't look up emails or phone numbers: the ICP doesn't need them. Contact details only come from the user's own sources (A1b).
 2. **Derive before you pay.** Fill what the data already implies, at no cost: seniority from the title ("Founder", "VP", "Manager"), industry from the company website or the existing segment or persona column. Only what's still missing after that counts toward enrichment.
-3. **Is it enough for the ICP?** Enough means the best customers, and a similar sample of the rest, have the buyer's role and seniority (plus size and industry for B2B) on most rows. If it is, enrichment is optional: offer it once and move on. If it isn't, enrichment is needed. Say so in one line: "Without the buyers' roles I can't tell what your best customers share, so the ICP would be a guess."
+3. **Is it enough for the ICP?** Enough means the best customers, and a similar sample of the rest, have these on most rows:
+   - **B2B:** the buyer's role and seniority, and the company's size and industry.
+   - **B2C sold to professionals** (a course, a tool for their job): the same, where the buyer has a company. Their employer often explains who buys as much as their title does.
+   - **B2C to consumers:** company fields don't apply, and enrichment rarely helps. The ICP uses situation and trigger instead.
+
+   If it is, enrichment is optional: offer it once and move on. If it isn't, enrichment is needed. Say so in one line: "Without the buyers' roles and companies I can't tell what your best customers share, so the ICP would be a guess."
 4. **Find the enrichment tool** from the tool names listed in the session: Clay first (the Clay connector or the Clay CLI), then any other enrichment connector, such as Apollo.
 5. **Ask about credits before any lookup.** Say how many people and companies you'd look up, which fields each lookup fills, and what that costs in that tool's credits. People are found by email or LinkedIn URL when contacts are kept, otherwise by name and company, which matches less often. Count unique companies, not rows: several buyers often share one company. Read the cost and the remaining balance from the tool when it reports them (Clay credits and quotas, Apollo credit usage); otherwise give an estimate and say it's one. If the balance is lower than the cost, say so and suggest the best customers first. Then one AskUserQuestion: enrich all rows, the best customers plus a similar sample, or skip. When the data isn't enough (step 3), the enrich options come first and "skip" says the ICP will be marked low confidence.
 6. **No enrichment tool connected:** if the data is enough, continue without enrichment. If it isn't, say so in one line and offer to connect the Clay connector (Claude's connector settings), then continue once it's connected. If the user says no, look up the best customers' public profiles yourself (name and company, read-only web search) for a small sample, read company websites, mark anything uncertain `(guess)`, and say the ICP will be lower confidence.
