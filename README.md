@@ -131,13 +131,14 @@ Then install your version and start it:
 
 About 30 minutes of your time, less if a lot already exists. You can stop at any step and pick up later.
 
-1. **Tell Claude where things already live.** Your website, a Notion page, your CRM, your course or payment platform, your call recorder, your inbox, plus anything else you'd like included, like case studies or a pitch deck. A rough pointer is enough. Where there's no connector (for example a Maven or Stripe dashboard), Claude says so and offers to browse there read-only with Claude in Chrome, or to read an export.
+1. **Tell Claude where things already live, and what you sell.** Your website, a Notion page, your CRM, your course or payment platform, your call recorder, your inbox, plus anything else you'd like included, like case studies or a pitch deck. A rough pointer is enough. If you sell several things, you pick which offers the context covers, and every section then covers each of them.
+   For every item, Claude also works out how it was collected and where new information will come from (for example "new customers show up in your payment dashboard"), so it can keep most of it current on its own later. Where there's no connector (for example a Maven or Stripe dashboard), Claude says so and offers to browse there read-only with Claude in Chrome, or to read an export.
 2. **Set up where it lives.** In Notion, one GTM Hub page that links to everything. In GitHub, a private `gtm-context` repo. Either way, Claude remembers where it is (see below), so you're never asked where to save. Customer and objection lists you already keep somewhere connected are linked, not copied.
 3. **Claude reads everything at once,** with parallel agents, then shows you what it found per section.
 4. **Product & offer,** drafted from your pages and docs.
 5. **Customers.** For long lists or B2C, "best customers" come from behaviour you choose (bought again, came back for more, left reviews) instead of picking names.
 6. **Competitors,** optional. Claude researches each one in parallel.
-7. **ICP,** built from your best customers, or from your competitors' customers if you have none yet. Signals are ones you can check in public company and profile data (headcount growth, job postings, time in role), so your outbound agent can score people before you talk to them.
+7. **ICP,** up to 5 scored ICPs per offer, built from your best customers (or your competitors' customers if you have none yet). Each one is a short battlecard: who they are, the filters to find them in a prospecting tool, the signals that score them, what triggers them, their words, what to lead with, the objection to expect, and one line to say. If your customer data is thin, Claude offers to enrich it with Clay or another enrichment tool you've connected, tells you the credit cost first, and never collects emails or phone numbers.
 8. **Customer language.** With your OK, Claude reads recent calls, webinars, emails and DMs and pulls out how buyers describe the problem in their own words.
 9. **Objections,** grouped by theme with the answers that work.
 10. **Logo permission:** which customers you may show publicly. Only the ones that said yes.

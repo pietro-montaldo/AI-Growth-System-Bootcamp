@@ -17,7 +17,8 @@ Every later system (outbound, inbound, content) reads these six sections before 
 2. **Specific beats complete.** "Founders of 5 to 30 person B2B agencies in the UK" is useful. "SMBs" is not.
 3. **Their words, not ours.** Customer language and objections are quoted verbatim, with a source tag, never paraphrased into marketing copy.
 4. **Evidence or a flag.** Every claim either has a source (a customer, a call, a page) or is marked `(guess, confirm)`.
-5. **Skip what doesn't apply.** A solo consultant doesn't need five personas. Leave a section short rather than padding it.
+5. **Every offer in scope.** When the business sells several things and more than one is in scope, each section covers each of them: one product section per offer, ICP cards per offer, value props per offer, and customers and objections tagged with their offer.
+6. **Skip what doesn't apply.** A solo consultant doesn't need five personas. Leave a section short rather than padding it.
 6. **Dated.** Each page shows when it was last updated, so a stale page is easy to spot.
 
 ## B2B vs B2C

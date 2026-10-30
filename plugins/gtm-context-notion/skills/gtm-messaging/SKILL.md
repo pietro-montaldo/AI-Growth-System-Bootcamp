@@ -20,6 +20,7 @@ The best copy uses the buyer's own words. This skill finds those words in real c
 1. Fetch the GTM Hub page: its link is in the "GTM context" block of Claude's memory. Its links table and "For agents" section hold every link you need. If no Hub link is known, run the build-gtm-context skill first, which sets up the Hub.
 2. Fetch the Product & offer and ICP pages by their links. You need the product summary and the ICP names.
 3. Fetch the Messaging page by its link. If it has content, summarise it and ask what to refresh.
+4. **On its own** (not inside build-gtm-context): when you find this section's sources, also settle where new customer language will come from and who brings it in (`auto`, `auto, app only`, `you`, `none`), as in "Where each item comes from, now and later" in `references/source-map.md`. Prefer an automatic route. Update its line in the hub's Sources list (the Hub's "For agents" section) after the user's OK.
 
 ## Steps
 
@@ -38,9 +39,9 @@ Say clearly what will be read: "external conversations from the last 90 days, no
 Start one `language-miner` agent per source, all in one message so they run in parallel. Give each a complete brief, since it starts with no context:
 - The source and how to reach it (connector name, or the pasted text, or the review URL).
 - The window: last 90 days.
-- The product summary, the name of the offer this context is about, and ICP names if known.
+- The product summary, the offers in scope (one line each), and ICP names if known. Ask the agent to tag each row with the offer it's about.
 - What to extract: `both` (language and objections).
-- Search hints for that source (keywords for the offer, typical buyer questions), so the agent finds buyer threads among newsletters and notifications.
+- Search hints for that source (keywords for each offer, typical buyer questions), so the agent finds buyer threads among newsletters and notifications.
 
 Run them in the background so the conversation can continue.
 
@@ -48,9 +49,9 @@ For pasted text over about 3,000 words, also use an agent, so the main conversat
 
 ### 3. Merge
 
-Combine the agents' tables. Merge repeats across sources and add up the counts. Keep rows about this offer first. Rows about the user's other offers stay only if the speaker matches the ICP, and the page summary says so. Then draft the page:
+Combine the agents' tables. Merge repeats across sources and add up the counts. Keep rows about the offers in scope; rows about other offers stay only if the speaker matches an ICP, and the page summary says so. Group pains, outcomes and value props by offer; voice and words are shared. Then draft the page:
 - **Pains** and **outcomes**: the 5 to 8 strongest quotes, most repeated first.
-- **Value props**: 3, each built from a pain, the product's answer and a proof point. Each one must trace to quotes.
+- **Value props**: per offer in scope, up to 3, each built from a pain, the offer's answer and a proof point. Each one must trace to quotes.
 - **Words they use / words to avoid**: from the `words` rows, plus any jargon in the product page that buyers never say.
 - **Voice**: 3 attributes with "means / doesn't mean", taken from how the user writes in the threads that worked. Mark it `(draft, confirm)`.
 

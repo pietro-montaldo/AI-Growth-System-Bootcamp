@@ -42,9 +42,11 @@ Run `gtm_home.py status`.
 ## Step 1. Map the sources
 
 1. See which connectors exist from the tool names already listed in the session (for example `gmail`, `fathom`, `hubspot`, `notion`, `google_drive`). Don't run one broad keyword search across all tools: it returns huge tool definitions and can miss the ones you need. Load a tool only when you use it, with a `select:` query.
-2. Show the bucket table from `source-map.md` and ask the user to reply in one message: for each bucket, a link, a tool name or "none". Add which offer this context is about, if they sell several, and the open question about any other GTM context to include (case studies, a pitch deck, a pricing sheet).
+2. Show the bucket table from `source-map.md` and ask the user to reply in one message: for each bucket, a link, a tool name or "none". Add the open question about any other GTM context to include (case studies, a pitch deck, a pricing sheet), and ask them to list every offer they sell (a rough list is fine).
 3. For each pointer, settle access using the order in `source-map.md`: connector, browser, export, paste. When there's no connector for a tool, say so plainly and offer to browse there (Claude in Chrome for signed-in dashboards) or to read an export placed in `gtm/.private/`.
 4. One AskUserQuestion to confirm: which conversation sources (email, call recorder, DMs, webinar recordings) you may read, and whether to use Claude in Chrome or the built-in browser for the sources that need browsing.
+5. **Offers in scope.** Follow "Offers: one or several?" in `source-map.md`: list every offer (theirs, plus any a quick look at their website shows), then one AskUserQuestion (multiSelect): which ones should the context cover. From here on, every section covers each offer in scope.
+6. **Where each item comes from, now and later.** Follow that section in `source-map.md`: for every item, settle how it was collected, where new information will come from, and who brings it in (`auto`, `auto, app only`, `you`, `none`). Propose an automatic route for every line you can, show one table, and ask only about what's left. It's recorded in the hub's Sources list in step 2, and the handover reuses it.
 
 ## Step 2. Set up the folder
 
@@ -52,14 +54,14 @@ Follow "Setting up the folder" in `repo-structure.md`:
 1. Create or reuse the private `gtm-context` repository at `~/gtm-context`, after one OK, and check it isn't public.
 2. Customers or objections that already live in a connected system are linked under "Sources", not copied (see "Reuse before you create").
 3. Create `gtm/README.md`, the three pages, and only the CSV banks that are needed, using the script's `init` with the exact columns from `repo-structure.md`. `.gitignore` covers `gtm/.private/` and `.private/`.
-4. Fill the "Sources" list: link and how to get in for each bucket. Add one row to the links table per extra resource (`Resource: <name>`).
+4. Fill the "Offers in scope" line and the "Sources" list with the item-by-item plan from step 1 (built from, how to get in, new information from, who brings it in). Add one row to the links table per extra resource (`Resource: <name>`).
 5. **Pointer in Claude's memory** (see `context-home.md`): show the block from `gtm_home.py pointer --repo <owner>/gtm-context --print` and explain it in one sentence: every Claude session will know where the GTM context is, without searching. Write it after one OK. Then offer `gtm_home.py allow`, so working in other projects doesn't ask for permission each time Claude reads the context.
 
 ## Step 3. Read everything
 
 Start all of these at once, so the user waits only once:
 - One `source-reader` agent per document, database, export or public page from step 1, in parallel, in the background.
-- One `language-miner` agent per approved conversation source (brief: see gtm-messaging step 2), in the background.
+- One `language-miner` agent per approved conversation source (brief: see gtm-messaging step 2, with the offers in scope), in the background.
 - Sources that need a signed-in browser: read them yourself in the main conversation, one page at a time, while the agents run.
 
 If conversation sources were already mined recently for the same window (the "Sources" list shows the date), reuse those results and mine only the new sources.
@@ -82,6 +84,8 @@ Run each section skill with the Skill tool, skipping its "Before starting" setup
 | 9. Objections | `gtm-objections`, with the objections from steps 3 and 8 | |
 | 10. Logo permission | `gtm-customers`, part B only. Skip if there are no customers. | |
 
+After step 9, complete the ICP cards: fill each card's "Their words", "Lead with" and "Expect" from the Messaging page and the objections, and show the filled cards in one review pass before writing.
+
 Between steps, write one line: "Done: <section>. Next: <section>." Then continue. If the user says "skip", mark the section "Skipped" in the hub table and move on.
 
 When the sources already answered most of product, ICP and messaging, draft those three together and show them in one review pass, with one approve-or-edit question per page. Going page by page is for when the user is answering from scratch.
@@ -98,7 +102,7 @@ When the sources already answered most of product, ICP and messaging, draft thos
 ## Step 12. Hand over: your own scheduled update
 
 The context goes stale within weeks: prices change, new customers buy, new objections show up. From now on the user only needs to keep it current, so the build ends with one scheduled task of their own, and the course plugin can go. Say that in two sentences, then follow `references/handover.md` step by step:
-1. Plan where new information comes from, for every source (live or snapshot, and who gets it).
+1. Confirm the item-by-item plan from step 1 (where new information comes from, and who brings it in), and settle anything still open.
 2. Pick where and when it runs, and email or Slack for alerts.
 3. Write the task prompt and the review guide from `references/update-task-template.md`, and create the schedule.
 4. Point Claude's memory at the review guide, offer a first run, then remove the course plugin.
@@ -113,4 +117,3 @@ Each step needs one OK. If they stop, they pick up later by saying "set up my GT
 - Browsing is read-only. The user signs in themselves, and you never click anything that changes data or sends messages.
 - Open files by the links in `gtm/README.md`. Query banks with the helper script, never read them whole.
 - No personal names, emails or profile URLs in any file. Raw exports stay in `gtm/.private/` and get deleted when you're done.
-- Don't name the enrichment tool to the user or in the files: say "public company data".

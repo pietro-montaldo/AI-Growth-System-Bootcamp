@@ -19,6 +19,7 @@ The ICP is what every outbound and inbound agent checks a person against. It has
 
 1. Fetch the GTM Hub page: its link is in the "GTM context" block of Claude's memory. Its links table and "For agents" section hold every link you need. If no Hub link is known, run the build-gtm-context skill first, which sets up the Hub.
 2. Fetch the Product & offer page and the ICP page by their links. If the ICP page has content, summarise it and ask what to change.
+3. **On its own** (not inside build-gtm-context): when you find this section's sources, also settle where new ICP evidence (best customers, public signals) will come from and who brings it in (`auto`, `auto, app only`, `you`, `none`), as in "Where each item comes from, now and later" in `references/source-map.md`. Prefer an automatic route. Update its line in the hub's Sources list (the Hub's "For agents" section) after the user's OK.
 
 ## Steps
 
@@ -43,15 +44,11 @@ If there are no customers and no competitor evidence, say the ICP will be a star
 
 Compare the best customers with each other and with the rest. Look for the 3 attributes they share that others don't: industry, size band, stage, role of the buyer, situation, tools, geography. For B2C, use situation and trigger instead of firmographics.
 
-Then enrich, so the scoring works before first contact. Look up the best group and a similar-sized sample of the rest on the public attributes in `icp-checks.md` (headcount growth, funding, job postings, tech stack, time in role, LinkedIn activity and so on):
-- With an enrichment connector available, use it, after telling the user how many lookups that is and getting their OK, because it uses credits.
-- Without one, read company websites and public LinkedIn pages for a small sample (about 10), and say the result is lighter.
-- Don't name the enrichment tool to the user or on any page. Say "public company data" instead.
-- Look up small and large companies separately, matching on exact domain. A large company's domain also matches its subsidiaries and old brands, so keep the record with the most employees. Tiny firms (1 to 10 people) are often missing from company data: for them, the person's title and LinkedIn profile carry the signal.
+Then check the best group (and a similar sample of the rest) has the public attributes in `icp-checks.md`: size, industry, stage, buyer role and seniority, and signals such as headcount growth, job postings or tech stack. If they're missing, run gtm-customers step A2 ("Fill and enrich"): it finds the enrichment tool (Clay first), quotes the credits, and asks before any lookup.
 
-Public attributes that clearly separate the best group become the hard filters and public scoring signals. What people only say on calls becomes conversation signals.
+Public attributes that clearly separate the best group become the "Find them" filters and the "Score" signals. What people only say on calls becomes conversation signals.
 
-Write one ICP for each distinct group the data shows, up to 5. A group is distinct when it has its own buyer, reason to buy or public signals, and enough customers to show a pattern (for example 3 or more best customers, or about 10% of the list). Start from groupings the data already has, such as a persona or segment column. Give each ICP a fit score from 1 to 5, based on the evidence: best-customer rate first, then coming back for more, then reviews or referrals. Keep a weaker group with a low score instead of dropping it, so later agents can weigh it. Strongest first.
+Work offer by offer (the offers in scope), using each offer's own customers and best group. For each offer, write one ICP for each distinct group the data shows, up to 5. A group is distinct when it has its own buyer, reason to buy or public signals, and enough customers to show a pattern (for example 3 or more best customers, or about 10% of the list). Start from groupings the data already has, such as a persona or segment column. Give each ICP a fit score from 1 to 5, based on the evidence: best-customer rate first, then coming back for more, then reviews or referrals. Keep a weaker group with a low score instead of dropping it, so later agents can weigh it. Strongest first.
 
 ### 3. Draft and check
 
@@ -73,7 +70,8 @@ Apply edits. Don't write on silence.
 
 ## Rules
 
-- Up to 5 ICPs, as many as the data supports, each with a fit score. Strongest first.
+- Up to 5 ICPs per offer in scope, as many as the data supports, each with a fit score. Strongest first.
+- Every ICP is a battlecard with the fixed labels in `icp-checks.md`, about 12 to 15 lines. Pull "Their words", "Lead with" and "Expect" from the Messaging page and the objections bank when they exist; inside build-gtm-context, fill them in after the messaging and objections steps.
 - Hard filters and public scoring signals must be checkable from public data or company data. "Ambitious" or "growth-minded" is not a filter. Each public signal says where to check it.
 - Every attribute shows its evidence: `(customers)`, `(from competitors, confirm)` or `(guess, confirm)`.
 - Query with filters, never read whole databases. Fetch by link, never search Notion.

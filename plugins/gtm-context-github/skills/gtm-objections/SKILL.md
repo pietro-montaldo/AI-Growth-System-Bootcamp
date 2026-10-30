@@ -19,6 +19,7 @@ Objections are the most useful context for outreach and follow-ups, and the most
 
 1. Read `~/gtm-context/gtm/README.md`. Every `gtm/` path in this skill is inside `~/gtm-context/`, the student's private gtm-context repo, whatever project they are in. If it's missing, run the build-gtm-context skill first, which sets up the folder.
 2. Check the "Sources" list: if objections already live in a connected log (a Notion or Airtable database, a Google Sheet), that log is the bank. Write new rows there, using its own columns and theme names, and don't create `gtm/objections.csv`.
+3. **On its own** (not inside build-gtm-context): when you find this section's sources, also settle where new objections will come from and who brings it in (`auto`, `auto, app only`, `you`, `none`), as in "Where each item comes from, now and later" in `references/source-map.md`. Prefer an automatic route. Update its line in the Sources list in `gtm/README.md` after the user's OK.
 
 ## Steps
 
@@ -37,14 +38,14 @@ If the user has no list and no sources, ask them to name the 3 things prospects 
 ### 2. Normalise
 
 - One row per distinct objection, in plain words ("Too expensive for a team our size"), with the best verbatim quote.
-- Assign one theme from the bank's themes (the list in the guide's `repo-structure.md`, or the user's own).
+- Assign one theme from the bank's themes (the list in the guide's `repo-structure.md`, or the user's own), and the Offer it's about (offers in scope).
 - **Our answer:** if a thread shows an answer that moved the deal forward, use it and set Answer status `works`. Otherwise draft one in the user's voice and set `draft`.
 
 ### 3. Dedupe against the bank
 
 If `gtm/objections.csv` doesn't exist yet, create it with `init` and the columns from `repo-structure.md`.
 
-Run one query for the themes in this batch: `query gtm/objections.csv --any "Theme=price|effort|..." --cols "Objection,Theme,Times seen,Answer status"`. Compare the results with the new rows by meaning, not exact wording:
+Run one query for the themes in this batch: `query gtm/objections.csv --any "Theme=price|effort|..." --cols "Objection,Theme,Offer,Times seen,Answer status"`. Compare the results with the new rows by meaning, not exact wording, within the same offer:
 - **Same objection:** reuse the existing Objection text as the key, add to Times seen, set Last seen, keep the clearer quote, and keep an answer marked `works` unless the new evidence is better.
 - **New objection:** a new row.
 

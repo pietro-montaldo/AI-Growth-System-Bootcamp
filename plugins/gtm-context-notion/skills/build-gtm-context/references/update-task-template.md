@@ -13,7 +13,9 @@ The handover (`handover.md`, step 3) fills this in. It has two parts: the task p
 
 Made by the AI Growth Systems Bootcamp setup on {{YYYY-MM-DD}}. This prompt is the whole update. To change it, edit this task, or ask Claude to "change my GTM update settings".
 
-Scheduled run of the GTM update. Do not ask questions. Alert: {{email to <address> | Slack DM to <member ID>}}.
+Scheduled run of the GTM update. Do not ask questions. Alert: {{email to <address> | Slack DM to <member ID>}}. Enrich new customers: {{no | yes, with <tool>, up to <n> lookups per run}}.
+
+Offers in scope: {{offer 1}} · {{offer 2}}. Tag every new row and quote with its offer.
 
 ## Where things live
 
@@ -47,22 +49,22 @@ Follow the update rules at the end: no questions, skip and log any source that f
    - `auto (app only)` lines: read them yourself with Claude in Chrome, one page at a time, read-only. If Chrome isn't available, log the source under "Couldn't read".
    - `you` lines: read only a new file in `~/gtm-context/.private/` or pasted text. Otherwise, when one is due, add a reminder to the alert.
 4. **Update the banks (automatic):**
-   - **Customers:** dedupe with one filtered query for this batch's company names. Create new rows at company level with Permission note `not asked yet`. Tick Best customer where the rule matches.
+   - **Customers:** dedupe with one filtered query for this batch's company names. Create new rows at company level with their offer and Permission note `not asked yet`. If "Enrich new customers" is yes, fill company and buyer fields for the new rows only, within the lookup limit above (never emails or phone numbers). Tick Best customer where the rule matches.
    - **Objections:** run one filtered query for the themes in this batch and compare by meaning, not exact wording. A repeat gets Times seen and Last seen updated (where those columns exist). A new one gets a row with Answer status `draft`.
    - **Quotes:** add the 5 to 10 strongest new quotes to a "New quotes (unreviewed, <date>)" section at the bottom of the Messaging page, with `insert_content` at the end. Never edit the top of the page.
-5. **Find what needs a decision (proposed updates only):** every difference the compare-mode readers returned, value props or word lists that new quotes contradict, ICP drift (full check), and staleness (passed dates, old drafts).
+5. **Find what needs a decision (proposed updates only):** every difference the compare-mode readers returned, value props or word lists that new quotes contradict, ICP drift per offer (full check), and staleness (passed dates, old drafts).
 6. **Write the report** as a child page of "Updates to review", titled `GTM update <date>`, in the format below. Then update the Hub callout's "Last refreshed" line, and the "Last run" line in the "For agents" section (anchor the edit on its plain-text label).
 7. **Send the alert** in the format below, with the report link, to the address on the Alert line above only. If sending fails, leave a draft and note it in the report.
 
 ## Reading briefs
 
-Start one general-purpose agent per source, all in one message, in the background, and give each the brief below with the source, how to reach it, the window, and this offer: {{offer name, and a one-line product summary}}. If agents aren't available in this run, read each source yourself with the same brief.
+Start one general-purpose agent per source, all in one message, in the background, and give each the brief below with the source, how to reach it, the window, and the offers in scope: {{each offer in scope, with a one-line summary}}. Tag every row with its offer. If agents aren't available in this run, read each source yourself with the same brief.
 
 **Conversation source** (calls, email, DMs). Read external conversations about the offer in the window, then return customer language and objections.
 
 PASTE `mining-playbook.md`: the sections "What to read", "What to extract", "Rules" and "Objection themes".
 
-Return a LANGUAGE table (Type, Quote, Who, Times, Source), an OBJECTIONS table (Theme, Objection, Quote, Stage, Answer given, Moved forward, Times, Source), and up to 3 lines of notes on what you couldn't read.
+Return a LANGUAGE table (Type, Quote, Who, Offer, Times, Source), an OBJECTIONS table (Theme, Objection, Quote, Offer, Stage, Answer given, Moved forward, Times, Source), and up to 3 lines of notes on what you couldn't read.
 
 **Product or proof source, compare mode** (full check only). Read the source, compare it with the baseline page you're given, and report only facts that differ. Ignore wording changes that don't change a fact. Return ADDED, REMOVED and CHANGED lines (`<bucket>: <field>: "<baseline value>" -> "<source value>" [source]`), one UNCHANGED line, and FLAGS for passed dates or contradictions. No personal data: role and company type only.
 

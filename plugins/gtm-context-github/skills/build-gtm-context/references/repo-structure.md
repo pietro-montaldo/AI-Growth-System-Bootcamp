@@ -55,9 +55,12 @@ Agents: open only the file you need from the table below. Query the CSV banks wi
 | Customers | [customers.csv](customers.csv) | Not started | |
 | Resource: <name> | <link> | one line on what it's for (one row per extra resource, linked, never copied) | |
 
+## Offers in scope
+<offer 1> · <offer 2> (the others are left out on purpose)
+
 ## Sources
-Where the context was built from, and how to get in.
-- <bucket>: <link or tool> | via: <connector name | Claude in Chrome | built-in browser | export file | pasted> | filter: <if the source is shared with other offers>
+One line per item: where it was built from, how to get in, where new information comes from, and who brings it in.
+- <item>: <link or tool> | via: <connector name | Claude in Chrome | built-in browser | export file | pasted> | filter: <if the source is shared with other offers> | new info from: <source> | who: <auto | auto, app only | you (how often) | none>
 
 ## Best-customer rule
 <for example: "came back for more, or left 2+ reviews">
@@ -94,11 +97,14 @@ Rules for every bank:
 | Column | Values |
 |---|---|
 | Company | company name; for B2C a segment ("New parents, Milan") |
+| Offer | the offers in scope they bought, `; ` between several |
 | Website | url |
 | ICP segment | the ICP names from icp.md, or `outside ICP` |
 | Size | `1`, `2-10`, `11-50`, `51-200`, `201-1000`, `1000+` |
 | Industry | text |
 | Type | `B2B`, `B2C` |
+| Buyer role | the buyer's title or function, never a name |
+| Seniority | `founder or owner`, `C-level`, `VP or director`, `manager`, `individual contributor` |
 | Best customer | `yes`, `no` |
 | Logo shareable | `yes` only with explicit permission, else `no` |
 | Permission note | how and when, or `not asked yet` |
@@ -111,6 +117,7 @@ Rules for every bank:
 | Column | Values |
 |---|---|
 | Objection | short, plain words |
+| Offer | the offer in scope it's about |
 | Theme | `price`, `timing`, `proof`, `fit`, `effort`, `existing-solution`, `approval`, `risk`, `other` (or the user's own themes, listed in the hub) |
 | What they said | verbatim quote |
 | Who | role and company type |
@@ -142,10 +149,11 @@ Rules for every bank:
 Each skill that touches a bank has `scripts/gtm_csv.py` in its own folder. Commands run from whatever project the user is in, so call the script by its full path (`<skill folder>` is the base directory shown when the skill loads) and give bank paths in full, under `~/gtm-context/gtm/`.
 
 ```bash
-python3 <skill folder>/scripts/gtm_csv.py init ~/gtm-context/gtm/objections.csv --cols "Objection,Theme,What they said,Who,Our answer,Answer status,Stage,Source,Times seen,Last seen,Reference"
+python3 <skill folder>/scripts/gtm_csv.py init ~/gtm-context/gtm/objections.csv --cols "Objection,Offer,Theme,What they said,Who,Our answer,Answer status,Stage,Source,Times seen,Last seen,Reference"
 python3 <skill folder>/scripts/gtm_csv.py query ~/gtm-context/gtm/objections.csv --where Theme=price --cols "Objection,Our answer,Answer status"
 python3 <skill folder>/scripts/gtm_csv.py query ~/gtm-context/gtm/customers.csv --where "Best customer=yes" --cols "Company,Size,Industry"
 python3 <skill folder>/scripts/gtm_csv.py count ~/gtm-context/gtm/customers.csv --by Size
+python3 <skill folder>/scripts/gtm_csv.py add-cols ~/gtm-context/gtm/customers.csv --cols "Offer,Buyer role,Seniority"
 python3 <skill folder>/scripts/gtm_csv.py upsert ~/gtm-context/gtm/objections.csv --key Objection --rows ~/gtm-context/gtm/.private/new-objections.json
 ```
 

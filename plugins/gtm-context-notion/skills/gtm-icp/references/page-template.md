@@ -1,45 +1,34 @@
 # ICP page template
 
-One section per ICP (up to 5), strongest first, with a score table at the top. Keep each section short so the page stays about two screens. Evidence tags stay on the page so later agents know what's confirmed.
+One block per offer in scope, with up to 5 ICP cards each, strongest first. Each card follows "Structure of one ICP: a battlecard" in `icp-checks.md`: fixed labels, about 12 to 15 lines. Evidence goes once, at the bottom. The summary and score table at the top let an agent pick the right card fast.
 
 ```markdown
-> **In short:** We sell best to <ICP 1 in one sentence>. We don't sell to <anti-ICP in a few words>.
-> **Built from:** <n best customers / competitors' customers / no data yet>
+> **In short:** <offer 1> sells best to <ICP 1 in one sentence>. <offer 2> sells best to <...>. We don't sell to <anti-ICP in a few words>.
+> **Built from:** <n best customers per offer / competitors' customers / no data yet>
 > Last updated: <YYYY-MM-DD>
 
-| ICP | Fit score | Customers | Best customers | Why this score |
-|---|---|---|---|---|
-| 1. <short name> | 5/5 | <n> | <n> | <best-customer rate, came back for more, reviews> |
+| Offer | ICP | Fit | Customers | Best | Why this score |
+|---|---|---|---|---|---|
+| <offer 1> | 1. <short name> | 5/5 | <n> | <n> | <best-customer rate, came back for more, reviews> |
 
-## ICP 1: <short name> (<score>/5)
-**Who:** <role + company type + situation, one sentence>
+## Offer: <offer 1>
 
-**Hard filters** (all must be true)
-- Geography: <...> (customers)
-- Company size: <...> (customers)
-- Industry: <...> (from competitors, confirm)
-- Buyer role: <...>
+### ICP 1: <short name> (fit <score>/5)
+Who: <role + company type + situation, one sentence>
+Find them: titles: <...> | seniority: <...> | headcount: <...> | industry: <...> | geo: <...> | tech: <... or leave out>
+Score: +2 <signal> · +2 <signal> · +1 <signal> · -1 <signal> · -2 <signal>
+Trigger: <moment that makes them look now>
+Their words: "<verbatim pain quote>"
+Lead with: <value prop> · proof: <one result, number or customer type>
+Expect: <top objection> → <answer that works>
+Not them: <who looks like a fit but isn't, and why>
+Say this: "<one line in their words>"
 
-**Public scoring signals** (checkable before first contact)
-| Points | Signal | Where to check |
-|---|---|---|
-| +2 | <strong signal> | <LinkedIn profile / company site / job postings / company data / customers database> |
-| +1 | <good signal> | |
-| -1 | <weak sign> | |
-| -2 | <strong negative> | |
+### ICP 2 to 5: <short name> (fit <score>/5)
+<same card, one per distinct group in this offer's data>
 
-**Conversation signals** (once they reply)
-- <what they say that confirms or rules them out>
-
-**Buying triggers**
-- <moment that makes them look now>
-
-**Anti-ICP:** <who looks like a fit but isn't, and why>
-
-**Say this:** "<one line in their words>"
-
-## ICP 2 to 5: <short name> (<score>/5)
-<same structure, one section per distinct group the data supports, up to 5 in all>
+## Offer: <offer 2>
+<same structure. If an ICP is the same as one above, write "Same as <offer 1>, ICP <n>: <name>" and only what differs (Lead with, Expect).>
 
 ---
 
@@ -47,5 +36,5 @@ One section per ICP (up to 5), strongest first, with a score table at the top. K
 <who they are, and what your client needs you to reach them>
 
 ## Evidence
-<the best customers or competitor customers this is based on, company names only>
+<per offer: the best customers or competitor customers each ICP is based on (company names only), and evidence tags: (customers), (from competitors, confirm), (guess, confirm)>
 ```

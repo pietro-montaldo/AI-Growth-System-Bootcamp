@@ -18,6 +18,7 @@ Objections are the most useful context for outreach and follow-ups, and the most
 
 1. Fetch the GTM Hub page: its link is in the "GTM context" block of Claude's memory. Its links table and "For agents" section hold every link you need. If no Hub link is known, run the build-gtm-context skill first, which sets up the Hub.
 2. Fetch the Objections bank by its link once, to read its columns and Theme options. Don't read its rows.
+3. **On its own** (not inside build-gtm-context): when you find this section's sources, also settle where new objections will come from and who brings it in (`auto`, `auto, app only`, `you`, `none`), as in "Where each item comes from, now and later" in `references/source-map.md`. Prefer an automatic route. Update its line in the hub's Sources list (the Hub's "For agents" section) after the user's OK.
 
 ## Steps
 
@@ -36,12 +37,12 @@ If the user has no list and no sources, ask them to name the 3 things prospects 
 ### 2. Normalise
 
 - One row per distinct objection, in plain words ("Too expensive for a team our size"), with the best verbatim quote.
-- Assign one theme from the bank's Theme options.
+- Assign one theme from the bank's Theme options, and the offer it's about (offers in scope; a linked log uses its own column, for example "Products").
 - **Our answer:** if a thread shows an answer that moved the deal forward, use it and set Answer status `works`. Otherwise draft one in the user's voice and set `draft`.
 
 ### 3. Dedupe against the bank
 
-Run one filtered query: Theme is any of the themes in this batch (and, if the bank is shared across offers, Products contains this offer). Select only the title, theme, reference and outcome columns. Compare the results with the new rows by meaning, not exact wording:
+Run one filtered query: Theme is any of the themes in this batch (and, when several offers are in scope, the offer column contains this batch's offers). Select only the title, theme, reference and outcome columns. Compare the results with the new rows by meaning, not exact wording, within the same offer:
 - **Same objection:** update the existing row: add to Times seen and set Last seen (if the bank has those columns), keep the clearer quote, and keep an answer marked `works` unless the new evidence is better. A linked log without a count column: skip the duplicate and say how many you skipped.
 - **New objection:** create a row.
 

@@ -20,6 +20,7 @@ It has two parts. Run both when used on its own. Inside build-gtm-context, part 
 
 1. Read `~/gtm-context/gtm/README.md`. Every `gtm/` path in this skill is inside `~/gtm-context/`, the student's private gtm-context repo, whatever project they are in. If it's missing, run the build-gtm-context skill first, which sets up the folder.
 2. Check the "Sources" list: if customers live in a connected system (CRM, Notion, Airtable, Sheets), work there and don't create `gtm/customers.csv`. Otherwise use the CSV.
+3. **On its own** (not inside build-gtm-context): when you find this section's sources, also settle where new customers will come from and who brings it in (`auto`, `auto, app only`, `you`, `none`), as in "Where each item comes from, now and later" in `references/source-map.md`. Prefer an automatic route. Update its line in the Sources list in `gtm/README.md` after the user's OK.
 
 ## Part A. Collect customers
 
@@ -38,9 +39,23 @@ If it isn't clear from the data, ask: "B2B, B2C, or both?" For B2C, don't list i
 
 If they are an agency, consultant or B2B2C business, ask one more question: "Who are your clients' customers?" Save the answer for the ICP step.
 
-### A2. Fill company details
+### A2. Fill and enrich
 
-For each company, fill Website, Size, Industry and Type. Use what the user gave first. For gaps, look up the company website or use an enrichment connector if one is connected (without naming it to the user). Mark anything uncertain `(guess)`. Companies only: no contact names, emails or LinkedIn profiles.
+Use what the user gave first, then check what's missing. The ICP needs it, so the scoring works before first contact.
+
+1. **Count the gaps** with one query or one pass over the batch:
+   - **Company:** website, size, industry, location, stage or funding.
+   - **Buyer:** role or title, seniority, function, time in role.
+
+   Never collect emails, phone numbers or personal profile URLs.
+2. **Derive before you pay.** Fill what the data already implies, at no cost: seniority from the title ("Founder", "VP", "Manager"), industry from the company website or the existing segment or persona column. Only what's still missing after that counts toward enrichment.
+3. **Find the enrichment tool** from the tool names listed in the session: Clay first (the Clay connector or the Clay CLI), then any other enrichment connector, such as Apollo.
+4. **Ask about credits before any lookup.** Say how many companies and buyers you'd look up, which fields each lookup fills, and what that costs in that tool's credits. Count unique companies, not rows: several students often share one company. Read the cost and the remaining balance from the tool when it reports them (Clay credits and quotas, Apollo credit usage); otherwise give an estimate and say it's one. If the balance is lower than the cost, say so and suggest the best customers first. Then one AskUserQuestion: enrich all rows, the best customers plus a similar sample, or skip.
+5. **No enrichment tool connected:** check whether the data is already enough for the ICP: the best customers have size, industry and buyer role on most rows. If it is, continue without enrichment. Only if it isn't, say so in one line and offer to connect the Clay connector (Claude's connector settings), then continue once it's connected or the user says no. Without enrichment, read company websites for a small sample and mark anything uncertain `(guess)`.
+6. **Match carefully.** Look up companies by exact domain. A large company's domain also matches its subsidiaries and old brands, so keep the record with the most employees. Tiny firms (1 to 10 people) are often missing from company data: for them, the buyer's title carries the signal.
+7. **Write back.** Write company and buyer fields with one `upsert` batch into `customers.csv` (columns in `repo-structure.md`, including Buyer role and Seniority). If an older `customers.csv` lacks those columns, add them first with `gtm_csv.py add-cols` (it keeps every row), after the user's OK. Note where the data came from, for example "Clay, 2026-10-30".
+
+Fill the Offer column with the offers each customer bought (offers in scope, `; ` between several). Never store contact names, emails or phone numbers in the context.
 
 ### A3. Best customers
 
@@ -54,6 +69,8 @@ Best customers drive the ICP. "Best" means they paid well, got results, came bac
 3. Apply that rule (with the helper's `count` and `--min` filters, or a query in the connected system). The best group is usually the top 10 to 20%. If the rule catches much more, show the count for the rule as picked and for one or two tighter versions ("2 or more reviews", "both signals"), and let the user choose. Then show how the chosen group differs from everyone else (roles, company size, location, how they found you).
 4. Leave out partners, co-instructors, team members and free seats, even when they match.
 5. After approval, mark Best customer on the matching rows in one `upsert` batch (or in the connected system), and write the rule itself under "Best-customer rule" in `gtm/README.md` so it can be reapplied next month.
+
+With several offers in scope, check whether the best buyers differ by offer. If they do, define the rule per offer (for example "course: came back for more; team training: renewed or expanded") and record each one.
 
 Either way, the result is a best group plus the reason it's best. The ICP step looks for what that group shares.
 

@@ -13,7 +13,9 @@ The handover (`handover.md`, step 3) fills this in. It has two parts: the task p
 
 Made by the AI Growth Systems Bootcamp setup on {{YYYY-MM-DD}}. This prompt is the whole update. To change it, edit this task, or ask Claude to "change my GTM update settings".
 
-Scheduled run of the GTM update. Do not ask questions. Alert: {{email to <address> | Slack DM to <member ID>}}. Git: {{commit yes|no · push yes|no}}.
+Scheduled run of the GTM update. Do not ask questions. Alert: {{email to <address> | Slack DM to <member ID>}}. Git: {{commit yes|no · push yes|no}}. Enrich new customers: {{no | yes, with <tool>, up to <n> lookups per run}}.
+
+Offers in scope: {{offer 1}} · {{offer 2}}. Tag every new row and quote with its offer.
 
 ## Where things live
 
@@ -45,23 +47,23 @@ Follow the update rules at the end: no questions, skip and log any source that f
    - `auto (app only)` lines: read them yourself with Claude in Chrome, one page at a time, read-only. If Chrome isn't available, log the source under "Couldn't read".
    - `you` lines: read only a new file in `gtm/.private/` or pasted text. Otherwise, when one is due, add a reminder to the alert.
 4. **Update the banks (automatic).** Put the rows in a JSON file in `gtm/.private/`, write them with one `upsert` per bank, then delete the JSON file.
-   - **Customers:** new companies get Permission note `not asked yet` and Logo shareable `no`. Set Best customer `yes` where the rule matches.
+   - **Customers:** new companies get their Offer, Permission note `not asked yet` and Logo shareable `no`. If "Enrich new customers" is yes, fill company and buyer fields for the new rows only, within the lookup limit above (never emails or phone numbers). Set Best customer `yes` where the rule matches.
    - **Objections:** run one `--any` query for the themes in this batch and compare by meaning, not exact wording. A repeat reuses the existing Objection key, with Times seen increased and Last seen updated. A new one gets Answer status `draft`.
    - **Quotes:** append the 5 to 10 strongest new quotes under a "New quotes (unreviewed, <date>)" heading at the end of `gtm/messaging.md`. Never edit the top of the page.
-5. **Find what needs a decision (proposed updates only):** every difference the compare-mode readers returned, value props or word lists that new quotes contradict, ICP drift (full check), and staleness (passed dates, old drafts).
+5. **Find what needs a decision (proposed updates only):** every difference the compare-mode readers returned, value props or word lists that new quotes contradict, ICP drift per offer (full check), and staleness (passed dates, old drafts).
 6. **Write the report** to `gtm/updates/<YYYY-MM-DD>.md` in the format below. Then update the "Last refreshed" line and the "Last run" dates in `gtm/README.md`.
 7. **Git**, only as allowed on the Git line above{{cloud only: (a cloud run always commits and pushes to `gtm-updates`)}}: stage only the files this run changed, never `git add -A`. Commit with `gtm: update <date>`, then push if allowed.
 8. **Send the alert** in the format below, with the report's path (or its GitHub link if pushed), to the address on the Alert line above only. If sending fails, leave a draft and note it in the report.
 
 ## Reading briefs
 
-Start one general-purpose agent per source, all in one message, in the background, and give each the brief below with the source, how to reach it, the window, and this offer: {{offer name, and a one-line product summary}}. If agents aren't available in this run, read each source yourself with the same brief.
+Start one general-purpose agent per source, all in one message, in the background, and give each the brief below with the source, how to reach it, the window, and the offers in scope: {{each offer in scope, with a one-line summary}}. Tag every row with its offer. If agents aren't available in this run, read each source yourself with the same brief.
 
 **Conversation source** (calls, email, DMs). Read external conversations about the offer in the window, then return customer language and objections.
 
 PASTE `mining-playbook.md`: the sections "What to read", "What to extract", "Rules" and "Objection themes".
 
-Return a LANGUAGE table (Type, Quote, Who, Times, Source), an OBJECTIONS table (Theme, Objection, Quote, Stage, Answer given, Moved forward, Times, Source), and up to 3 lines of notes on what you couldn't read.
+Return a LANGUAGE table (Type, Quote, Who, Offer, Times, Source), an OBJECTIONS table (Theme, Objection, Quote, Offer, Stage, Answer given, Moved forward, Times, Source), and up to 3 lines of notes on what you couldn't read.
 
 **Product or proof source, compare mode** (full check only). Read the source, compare it with the baseline file you're given, and report only facts that differ. Ignore wording changes that don't change a fact. Return ADDED, REMOVED and CHANGED lines (`<bucket>: <field>: "<baseline value>" -> "<source value>" [source]`), one UNCHANGED line, and FLAGS for passed dates or contradictions. No personal data: role and company type only.
 

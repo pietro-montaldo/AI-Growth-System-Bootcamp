@@ -36,25 +36,36 @@ If they say "it's somewhere in my Notion / Drive" and that connector is availabl
 4. **Export a file.** Most platforms can export customers or students as CSV. Ask the user to attach it or export it into the private folder for raw exports (`~/gtm-context/.private/` in the Notion version, `~/gtm-context/gtm/.private/` in the GitHub version). Don't keep it in the project folder. It's often faster than browsing many pages.
 5. **Paste.** Always works.
 
-## Will each source stay current?
+## Offers: one or several?
 
-The build reads each source once. Later updates need to know where new information will come from, which is not always the same place. Sort every source into one of two kinds, and use judgement instead of asking about the obvious ones:
+Before anything is drafted, list every offer the sources show: courses, services, products, workshops, retainers, with a one-line description and price where known. Then ask with AskUserQuestion (multiSelect): "Which of these should your GTM context cover?" Offer the full list (up to 4 options; list more in the chat), with "All of them" first.
 
-- **Live:** it keeps changing on its own. A CRM, an inbox, a call recorder, a course or payment dashboard, the website, a Notion or Airtable database the team keeps adding to. Later updates read it again for what's new since the last run.
-- **Snapshot:** it was true on the day it was shared and won't change by itself. An uploaded or exported file, a pasted list, a one-off doc, a log nobody adds to anymore. For each one, ask where that information will show up from now on and how you can get it. For example: "You gave me a customer list as a file. Where do new customers show up from now on: a payment dashboard, the CRM, an email when someone buys?" Or: "Does your team still add to this objections log? If not, where did these objections come from: calls, email, DMs?" Then map it to a live source when one exists.
+The answer is the **offers in scope**. Record it in the hub summary and in the hub's settings ("Offers in scope"), and pass it to every section and every reading agent. Every section then covers each offer in scope: the product page has one section per offer, customers and objections are tagged with their offer, the ICP page has one block per offer, and messaging has value props per offer. Offers left out get one line each on the product page, nothing more.
 
-For every bucket, settle one line: where new information comes from, how you get in, and who does it:
-- **auto:** a connector, or a public page. Works in any scheduled run.
-- **auto, app only:** needs Claude in Chrome (a signed-in dashboard), so it works only in a scheduled task in the Claude app, while the computer is on and Chrome is signed in.
-- **you:** no way to get it unattended. The user drops a fresh export or pastes it, and each update alert reminds them when it's due (for example monthly).
-- **none:** it doesn't change (a past case study). Never reread.
+## Where each item comes from, now and later
 
-Show the whole plan as one table with your proposal for each line, and ask only about the snapshots and anything you couldn't settle, in one message.
+The build reads each source once. Updates later need to know, item by item, how the information was collected, where new information will come from, and who brings it in. Settle this right after access (build step 1.6), for every item: products and offers, customers, objections, customer language, proof and logos, competitors, and every extra resource. The goal is that you can keep most items current yourself.
+
+For each item, settle three things, using judgement instead of asking about the obvious ones:
+1. **How it was collected.** Read the source's description, columns and notes. For example: "objections log filled by hand from Fathom calls and Gmail", "customers database built from Maven exports", "case studies written once on the website".
+2. **Where new information will come from.** A **live** source keeps changing on its own (a CRM, an inbox, a call recorder, a course or payment dashboard, the website, a database the team keeps adding to): read it again later. A **snapshot** was true on the day it was shared (an uploaded or exported file, a pasted list, a one-off doc, a log nobody adds to anymore): go to its origin. For example: "You gave me a customer list as a file. Where do new customers show up from now on: a payment dashboard, the CRM, an email when someone buys?" Or: "Does your team still add to this objections log? If not, I'll read new objections straight from your calls and email."
+3. **Who brings it in:**
+   - **auto:** a connector, or a public page. Works in any scheduled run.
+   - **auto, app only:** needs a signed-in browser (Claude in Chrome or the app's built-in browser), so it works only in a scheduled task in the Claude app, while the computer is on.
+   - **you (how often):** no way to get it unattended. The user drops a fresh export or pastes it, and each update alert reminds them when it's due.
+   - **none:** it doesn't change (a past case study). Never reread.
+
+A local folder (screenshots, a proof index, files on the user's computer) can only be read when that computer is connected: link it from the hub as a `Resource:` row, mark its line `auto, app only`, and keep any upkeep of the folder itself as its own separate task.
+
+Prefer automatic. For every line that would be `you`, first look for an automatic route and propose it: a connector for the same tool, notification emails the platform sends (new sale, new enrolment, new review) read through the email connector, a public page, or the origin of a hand-kept log. Only leave it as `you` when nothing else works.
+
+Show the whole plan as one table (item, how it was collected, new information from, who), with your proposal on every line, and ask only about the lines you couldn't settle, in one message. Record each line in the hub's Sources list:
+`- <item>: <built from> · via: <how to get in> · new info from: <source> · who: <auto | auto, app only | you (how often) | none>`
 
 ## After reading
 
 - Show a short "What I found" table: bucket, sources read, found / partly / nothing.
-- Record each source in the hub's "Sources" list (the Notion Hub's "For agents" section, or `gtm/README.md` in the GitHub version): its link, and how to get in (connector, browser, export). This is what the build read; the handover then plans where new information comes from ("Will each source stay current?"). Links only, never the content.
+- Every source is already in the hub's "Sources" list from step 1.6 (the Notion Hub's "For agents" section, or `gtm/README.md` in the GitHub version): what the build read, how to get in, where new information comes from and who brings it in. Links only, never the content.
 - Every section skill then drafts from what was found and asks only about what's still missing.
 
 ## Privacy

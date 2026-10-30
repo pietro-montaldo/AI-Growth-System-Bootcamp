@@ -5,6 +5,7 @@ Read only the rows you need, and change rows without breaking the file.
 Standard library only, so it runs anywhere Python 3 does.
 
   gtm_csv.py init FILE --cols "Company,Website,Size"
+  gtm_csv.py add-cols FILE --cols "Offer,Seniority"   add missing columns, empty, keep every row
   gtm_csv.py query FILE [filters] [--cols A,B] [--limit N]
   gtm_csv.py count FILE --by COL [filters]
   gtm_csv.py upsert FILE --key COL (--row '{"Company": "Acme"}' | --rows rows.json)
@@ -81,6 +82,16 @@ def cmd_init(args):
     print(f"created {args.file}")
 
 
+def cmd_add_cols(args):
+    cols, rows = read(args.file)
+    new = [c.strip() for c in args.cols.split(",") if c.strip() and c.strip() not in cols]
+    if not new:
+        print("no new columns")
+        return
+    write(args.file, cols + new, rows)
+    print(f"added {', '.join(new)} to {args.file}")
+
+
 def cmd_query(args):
     cols, rows = read(args.file)
     check_cols(cols, filter_cols(args))
@@ -140,13 +151,14 @@ def cmd_upsert(args):
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = p.add_subparsers(dest="command", required=True)
-    for name in ("init", "query", "count", "upsert"):
+    for name in ("init", "add-cols", "query", "count", "upsert"):
         s = sub.add_parser(name)
         s.add_argument("file")
         if name in ("query", "count"):
             for flag in ("--where", "--contains", "--any", "--min"):
                 s.add_argument(flag, action="append", default=[])
     sub.choices["init"].add_argument("--cols", required=True)
+    sub.choices["add-cols"].add_argument("--cols", required=True)
     sub.choices["query"].add_argument("--cols")
     sub.choices["query"].add_argument("--limit", type=int)
     sub.choices["count"].add_argument("--by", required=True)
@@ -155,7 +167,7 @@ def main():
     group.add_argument("--row")
     group.add_argument("--rows")
     args = p.parse_args()
-    {"init": cmd_init, "query": cmd_query, "count": cmd_count, "upsert": cmd_upsert}[args.command](args)
+    {"init": cmd_init, "add-cols": cmd_add_cols, "query": cmd_query, "count": cmd_count, "upsert": cmd_upsert}[args.command](args)
 
 
 if __name__ == "__main__":
