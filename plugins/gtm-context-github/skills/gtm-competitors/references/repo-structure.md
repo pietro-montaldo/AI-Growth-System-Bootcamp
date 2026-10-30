@@ -20,7 +20,7 @@ gtm/
 
 Ask first whether customers or objections already live somewhere with a connector (a CRM, a Notion or Airtable database, a Google Sheet). If they do, link that source under "Sources" in `gtm/README.md` with the filter that selects the right rows, query it there, and don't create the CSV. One source of truth beats a copy that goes stale.
 
-Create a CSV bank when the data has no other home, or lives only in a platform without a connector (then read an export and keep company-level rows only). Don't create a file for a section the user skips. Add a "Skipped" row to the links table instead.
+Create a CSV bank when the data has no other home, or lives only in a platform without a connector (then read an export and write its rows, with the buyers' contact details only if the user chose to keep them, gtm-customers A1). Don't create a file for a section the user skips. Add a "Skipped" row to the links table instead.
 
 ## Setting up the folder
 
@@ -64,6 +64,9 @@ Agents: open only the file you need from the table below. Query the CSV banks wi
 One line per item: where it was built from, how to get in, where new information comes from, and who brings it in.
 - <item>: <built from: link or tool> · via: <connector name | Claude in Chrome | built-in browser | export file | pasted> · filter: <only if the source also holds other offers> · new info from: <source> · who: <auto | auto, app only | you (how often) | none>
 
+## Customer contacts
+<kept in customers.csv | not kept> (decided <date>, gtm-customers A1)
+
 ## Best-customer rule
 <for example: "came back for more, or left 2+ reviews">
 
@@ -92,20 +95,23 @@ Rules for every bank:
 - UTF-8, comma separated, header row exactly as below. A file saved from Excel works too. Dates `YYYY-MM-DD`. Yes/no columns hold `yes` or `no`. Several values in one cell are separated by `; `.
 - Select columns only take the listed values, so filters work.
 - Write and update with the helper script's `upsert`, never by hand, so quotes and commas stay valid.
-- Companies and roles only. No personal names, emails, phone numbers or profile URLs.
+- No personal names, emails, phone numbers or profile URLs, with one exception: `customers.csv` keeps each buyer's name, email and LinkedIn URL when the student chose that (gtm-customers A1). That's another reason the repo must stay private.
 
 **customers.csv**
 
 | Column | Values |
 |---|---|
-| Company | company name; for B2C a segment ("New parents, Milan") |
-| Offer | the offers in scope they bought, `; ` between several. One row per company: a second offer is added to this cell (`upsert --merge Offer`), not a second row |
+| Customer | the buyer's name when contacts are kept; otherwise the company, or for B2C a segment ("New parents, Milan") |
+| Company | the buyer's company; blank for an individual |
+| Email | only when contacts are kept |
+| LinkedIn URL | only when contacts are kept, `linkedin.com/in/<name>` |
+| Offer | the offers in scope they bought, `; ` between several. One row per buyer (or per company when contacts aren't kept): a second offer is added to this cell (`upsert --merge Offer`), not a second row |
 | Website | url |
 | ICP segment | the ICP names from icp.md, or `outside ICP` |
 | Size | `1`, `2-10`, `11-50`, `51-200`, `201-1000`, `1000+` |
 | Industry | text |
 | Type | `B2B`, `B2C` |
-| Buyer role | the buyer's title or function, never a name |
+| Buyer role | the buyer's title or function |
 | Seniority | `founder or owner`, `C-level`, `VP or director`, `manager`, `individual contributor` |
 | Best customer | `yes`, `no` |
 | Logo shareable | `yes` only with explicit permission, else `no` |
@@ -113,6 +119,7 @@ Rules for every bank:
 | Quote | public testimonial, only if permission covers it |
 | Result | a number or outcome, only if shareable |
 | Case study | url |
+| Enriched | where company and buyer fields came from, for example `Clay, 2026-10-30` |
 | <signal columns> | optional, one per best-customer signal (for example `Purchases`, `Reviews`): a number, or `yes` / `no`. Added with `add-cols` when the best-customer rule needs them (gtm-customers A3) |
 
 **objections.csv**
@@ -154,22 +161,22 @@ Each skill that touches a bank has `scripts/gtm_csv.py` in its own folder. Comma
 ```bash
 python3 <skill folder>/scripts/gtm_csv.py init ~/gtm-context/gtm/objections.csv --cols "Objection,Offer,Theme,What they said,Who,Our answer,Answer status,Stage,Source,Times seen,Last seen,Reference"
 python3 <skill folder>/scripts/gtm_csv.py query ~/gtm-context/gtm/objections.csv --where Theme=price --cols "Objection,Our answer,Answer status"
-python3 <skill folder>/scripts/gtm_csv.py query ~/gtm-context/gtm/customers.csv --where "Best customer=yes" --cols "Company,Size,Industry"
+python3 <skill folder>/scripts/gtm_csv.py query ~/gtm-context/gtm/customers.csv --where "Best customer=yes" --cols "Customer,Company,Size,Industry,Buyer role"
 python3 <skill folder>/scripts/gtm_csv.py count ~/gtm-context/gtm/customers.csv --by Size
-python3 <skill folder>/scripts/gtm_csv.py query ~/gtm-context/gtm/customers.csv --min Purchases=2 --cols "Company,Offer,Purchases"
-python3 <skill folder>/scripts/gtm_csv.py add-cols ~/gtm-context/gtm/customers.csv --cols "Offer,Buyer role,Seniority"
+python3 <skill folder>/scripts/gtm_csv.py query ~/gtm-context/gtm/customers.csv --min Purchases=2 --cols "Customer,Offer,Purchases"
+python3 <skill folder>/scripts/gtm_csv.py add-cols ~/gtm-context/gtm/customers.csv --cols "Customer,Email,LinkedIn URL,Buyer role,Seniority,Enriched"
 python3 <skill folder>/scripts/gtm_csv.py upsert ~/gtm-context/gtm/objections.csv --key "Objection,Offer" --rows ~/gtm-context/gtm/.private/new-objections.json
-python3 <skill folder>/scripts/gtm_csv.py upsert ~/gtm-context/gtm/customers.csv --key Company --merge Offer --rows ~/gtm-context/gtm/.private/new-customers.json
+python3 <skill folder>/scripts/gtm_csv.py upsert ~/gtm-context/gtm/customers.csv --key "Email|LinkedIn URL|Customer" --merge Offer --rows ~/gtm-context/gtm/.private/new-customers.json
 python3 <skill folder>/scripts/gtm_csv.py upsert ~/gtm-context/gtm/competitors.csv --key Name --rows ~/gtm-context/gtm/.private/competitors.json
 ```
 
 Filters: `--where COL=VALUE`, `--contains COL=TEXT`, `--any COL=A|B`, `--min COL=NUMBER`. They combine and are case-insensitive. `--min` skips blank and non-numeric cells. A customer's Offer cell can hold several offers, so filter it with `--contains Offer=<offer>`.
 
-`upsert` updates rows whose key matches (ignoring case) and appends the rest. It never changes the key itself, and it refuses unknown columns. The key per bank:
+`upsert` updates rows whose key matches (ignoring case) and appends the rest. It never changes a key value that's already there, and it refuses unknown columns. A key written `A|B|C` tries each column in turn and takes the first match. The key per bank:
 
 | Bank | Key | Why |
 |---|---|---|
-| customers.csv | `--key Company --merge Offer` | one row per company; a new offer is added to its Offer cell |
+| customers.csv | `--key "Email\|LinkedIn URL\|Customer" --merge Offer` | one row per buyer, matched by email, then LinkedIn URL, then name (just the name, which is the company, when contacts aren't kept); a new offer is added to its Offer cell |
 | objections.csv | `--key "Objection,Offer"` | the same objection about another offer is its own row, with its own Times seen |
 | competitors.csv | `--key Name` | one row per competitor |
 

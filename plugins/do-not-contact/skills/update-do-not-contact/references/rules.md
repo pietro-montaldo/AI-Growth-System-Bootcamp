@@ -40,7 +40,7 @@ Each outreach system may keep its own record of who it already contacted, if it 
 
 ## Privacy
 
-- **This list is the one place in the course where emails and profile links are kept on purpose.** That's because it has to identify people in order to protect them. Keep only the columns in `storage.md`: no names, no message text.
+- **This list keeps emails and profile links on purpose,** because it has to identify people in order to protect them. (The only other place is the GTM customer database, when the student chose to keep customer contacts there.) Keep only the columns in `storage.md`: no names, no message text.
 - **Never copy rows into the GTM context, a prompt file, a skill, or a public repo.** Other files only link to the list.
 - **A Sheet is shared with the team only,** never "anyone with the link".
 - **Temporary files** go in `~/do-not-contact/.private/` and are deleted at the end of every run.

@@ -66,7 +66,7 @@ Apply edits. Don't write on silence.
 ### 5. Write
 
 - Write `gtm/icp.md` with the approved draft. Add a changelog line at the bottom.
-- If the ICP names changed, update the ICP segment values in `gtm/customers.csv` with one `upsert --key Company` batch, after asking. If customers live in a connected system with its own segment or persona field, don't add a new one: write on the ICP page which of its values map to each ICP.
+- If the ICP names changed, update the ICP segment values in `gtm/customers.csv` with one `upsert --key "Email|LinkedIn URL|Customer"` batch, after asking. If customers live in a connected system with its own segment or persona field, don't add a new one: write on the ICP page which of its values map to each ICP.
 - Update the ICP row in the `gtm/README.md` table.
 
 ## Rules

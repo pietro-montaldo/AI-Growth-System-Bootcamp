@@ -19,7 +19,7 @@ Many users already keep customers or objections in Notion. Copying them into the
 
 - "Do you already keep your customers in a Notion database?" and "Do you already log objections somewhere in Notion?"
 - **Yes:** they paste the link. Fetch its schema once and link it from the Hub (links table and "For agents" section) instead of creating a new database. Record the filter that selects the rows for the offers in scope (for example `Products paid contains "AI Growth Systems Bootcamp"`), and which column holds the offer.
-- **Missing columns:** if the existing database lacks a column a skill needs (for customers: Best customer, Logo shareable, Permission note), show the list and add only those, with the user's OK (`notion-update-data-source`). Never rename or remove their columns.
+- **Missing columns:** if the existing database lacks a column a skill needs (for customers: Best customer, Logo shareable, Permission note, and Email and LinkedIn URL when contacts are kept), show the list and add only those, with the user's OK (`notion-update-data-source`). Never rename or remove their columns.
 - **Their vocabulary wins:** use their existing theme, persona and stage options instead of the defaults below. Map new rows onto them.
 - Create a new database only for what doesn't exist yet.
 - Don't create a page or database for a section the user skips (for example no competitors). Add a "Skipped" row to the Hub links table instead.
@@ -98,14 +98,17 @@ Create only the ones the user doesn't already have (see "Reuse before you create
 
 | Column | Type | Notes |
 |---|---|---|
-| Company | title | for B2C, a segment name instead, for example "New parents, Milan" |
-| Offer | multi-select | the offers in scope they bought. One row per company: a second offer is added to this column, not a second row |
+| Customer | title | the buyer's name when contacts are kept; otherwise the company, or for B2C a segment ("New parents, Milan") |
+| Company | text | the buyer's company; blank for an individual |
+| Email | email | only when contacts are kept |
+| LinkedIn URL | url | only when contacts are kept |
+| Offer | multi-select | the offers in scope they bought. One row per buyer (or per company when contacts aren't kept): a second offer is added to this column, not a second row |
 | Website | url | |
 | ICP segment | select | the ICP names from the ICP page, plus "outside ICP" |
 | Size | select | 1, 2-10, 11-50, 51-200, 201-1000, 1000+ |
 | Industry | text | |
 | Type | select | B2B, B2C |
-| Buyer role | text | the buyer's title or function, never a name |
+| Buyer role | text | the buyer's title or function |
 | Seniority | select | founder or owner, C-level, VP or director, manager, individual contributor |
 | Best customer | checkbox | one of the ones the user would clone |
 | Logo shareable | checkbox | ticked only with explicit permission |
@@ -113,6 +116,7 @@ Create only the ones the user doesn't already have (see "Reuse before you create
 | Quote | text | public testimonial, only if permission covers it |
 | Result | text | a number or outcome, only if shareable |
 | Case study | url | |
+| Enriched | text | where company and buyer fields came from, for example "Clay, 2026-10-30" |
 | <signal properties> | number or checkbox | optional, one per best-customer signal (for example Purchases, Reviews), added when the best-customer rule needs them (gtm-customers A3) |
 
 ## The "For agents" section (the map)
@@ -138,6 +142,8 @@ Read this instead of searching. Settings only, no content. Kept current by the G
 
 **Sources** (one line per item: where it was built from, how to get in, where new information comes from, and who brings it in)
 - <item>: <built from: link or tool> · via: <connector name | Claude in Chrome | built-in browser | export file | pasted> · filter: <only if the source also holds other offers> · new info from: <source> · who: <auto | auto, app only | you (how often) | none>
+
+**Customer contacts:** <kept in the Customers database | not kept> (decided <date>, gtm-customers A1)
 
 **Best-customer rule:** <for example "came back for more, or left 2+ reviews">
 

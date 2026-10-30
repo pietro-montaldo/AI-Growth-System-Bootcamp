@@ -70,5 +70,6 @@ Show the whole plan as one table (item, how it was collected, new information fr
 
 ## Privacy
 
-- Read customer lists for patterns (roles, company types, sizes, engagement), not to copy people into the context. Personal names, emails and profile URLs stay where they are.
+- **Customer contacts** (the buyer's name, email and LinkedIn URL) have one home: the customer database. They go there only after the user says yes (gtm-customers A1). Recommend yes: an export is deleted after reading, so without them that information is lost, and people can't be enriched later. A CRM that already holds them keeps them.
+- **Everywhere else** (pages, quotes, objections, agent results, reports): role and company type only, never names, emails or profile URLs.
 - Exported files with personal data stay out of any public repo.

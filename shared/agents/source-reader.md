@@ -33,7 +33,7 @@ You read one source that a business already has, and report what it tells us abo
 
 1. Facts only, each with a source tag: the page title or file name, and a section or row filter if useful.
 2. Quotes stay verbatim, up to 25 words.
-3. No personal data: role and company type instead of names, emails or profile URLs.
+3. No personal data in what you return: role and company type instead of names, emails or profile URLs. Don't return customer rows either: the customers step reads them from the source itself.
 4. Note anything that looks out of date (old prices, dates long past) or contradicts another part of the source.
 
 ## Return exactly this, nothing else

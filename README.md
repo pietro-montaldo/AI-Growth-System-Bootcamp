@@ -198,7 +198,8 @@ Three rules keep it fast and cheap for agents to read:
 ### Privacy
 
 - Claude reads your email, calls and DMs only if you choose those sources, and only for this build.
-- Quotes are saved with role and company type ("Founder, 8-person agency"), never names, emails or profile links.
+- Your customers' names, emails and LinkedIn links are kept in your customer database only, and only if you say yes, so nothing is lost when an export is deleted.
+- Quotes and objections are saved with role and company type ("Founder, 8-person agency"), never names, emails or profile links.
 - Customer logos are marked shareable only when you confirm the customer gave permission.
 - In the GitHub version, raw exports go in `gtm/.private/`, which git ignores, and are deleted once read.
 

@@ -23,7 +23,7 @@ Then settle, with AskUserQuestion where it's a choice:
 - **Where it runs.** If any line is `auto, app only`, recommend a scheduled task in the Claude app (runs on their computer while the app is open, can use Claude in Chrome). Otherwise offer both: the app task, or a cloud scheduled task (runs even when the computer is off, connectors only). Two lines each, then ask.
 - **When.** Default every Monday at 08:00 local time. One task: the run decides when the monthly full check is due.
 - **Alert.** Email (a Gmail or Outlook connector that can send, to their own address) or Slack (a DM to themself; find their member ID with the Slack connector). Confirm the address. Offer one test message, sent only on a clear yes.
-- **Enrich new customers?** Only if an enrichment tool is connected (Clay first). Say what it would cost per week (new customers per week from the build's numbers, times the credits per lookup) and ask once: yes with a weekly lookup limit, or no. Default no.
+- **Enrich new customers?** Only if an enrichment tool is connected (Clay first). Say what it would cost per week (new customers per week from the build's numbers, times the credits per lookup) and ask once: yes with a weekly lookup limit, or no. Recommend yes when the build had to enrich people: new customers will arrive just as thin, and a row without the buyer's role can't be scored.
 - **GitHub version only: git.** "May update runs commit?" and, only if yes, "May they also push?" A cloud task must commit and push to a `gtm-updates` branch, or its work is lost, so say so instead of asking.
 
 ## 2. Prepare the hub
