@@ -60,7 +60,7 @@ A local folder (screenshots, a proof index, files on the user's computer) can on
 Prefer automatic. For every line that would be `you`, first look for an automatic route and propose it: a connector for the same tool, notification emails the platform sends (new sale, new enrolment, new review) read through the email connector, a public page, or the origin of a hand-kept log. Only leave it as `you` when nothing else works.
 
 Show the whole plan as one table (item, how it was collected, new information from, who), with your proposal on every line, and ask only about the lines you couldn't settle, in one message. Record each line in the hub's Sources list:
-`- <item>: <built from> · via: <how to get in> · new info from: <source> · who: <auto | auto, app only | you (how often) | none>`
+`- <item>: <built from: link or tool> · via: <connector name | Claude in Chrome | built-in browser | export file | pasted> · filter: <only if the source also holds other offers> · new info from: <source> · who: <auto | auto, app only | you (how often) | none>`
 
 ## After reading
 

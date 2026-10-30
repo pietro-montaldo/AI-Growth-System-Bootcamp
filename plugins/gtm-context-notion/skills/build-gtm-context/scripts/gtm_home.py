@@ -7,10 +7,12 @@ private gtm-context repo at ~/gtm-context. Either way, a short pointer in
 Claude's global memory tells every session where it is. Standard library only.
 
   gtm_home.py status                      where things are, as JSON
-  gtm_home.py init                        create ~/gtm-context (GitHub version, or for temporary exports)
+  gtm_home.py init                        create ~/gtm-context and .private/ (for temporary exports)
+  gtm_home.py init --github               also create gtm/.private/ and make git ignore both
   gtm_home.py pointer --notion-hub URL    write the pointer for the Notion version
   gtm_home.py pointer --repo OWNER/NAME   write the pointer for the GitHub version
   gtm_home.py pointer ... --updates URL   Notion: add the line that points to the review guide
+                                          (kept on later runs without --updates)
   gtm_home.py pointer ... --print         show the pointer without writing it
   gtm_home.py allow                       let Claude Code read ~/gtm-context without asking each time
 
@@ -35,11 +37,23 @@ def claude_dir():
     return os.path.abspath(os.path.expanduser(os.environ.get("CLAUDE_CONFIG_DIR", "~/.claude")))
 
 
+UPDATES_LINE = "To review GTM updates or change their settings, follow the guide on the Updates to review page: "
+IGNORED = [".private/", "gtm/.private/"]
+
+
 def pointer_block():
     text = read(os.path.join(claude_dir(), "CLAUDE.md"))
-    if START in text and END in text:
+    if START in text and END in text.split(START, 1)[1]:
         return text.split(START, 1)[1].split(END, 1)[0]
     return ""
+
+
+def notion_updates():
+    """The Updates to review link already in the pointer, so a rerun without --updates keeps it."""
+    for line in pointer_block().splitlines():
+        if line.startswith(UPDATES_LINE):
+            return line[len(UPDATES_LINE):].strip() or None
+    return None
 
 
 def notion_hub():
@@ -109,7 +123,19 @@ def cmd_status(args):
 def cmd_init(args):
     h = home()
     os.makedirs(os.path.join(h, ".private"), exist_ok=True)
-    print(f"ready: {h}")
+    github = args.github or os.path.isdir(os.path.join(h, ".git")) or mode(h) == "github"
+    if github:
+        os.makedirs(os.path.join(h, "gtm", ".private"), exist_ok=True)
+        path = os.path.join(h, ".gitignore")
+        text = read(path)
+        have = {line.strip().lstrip("/") for line in text.splitlines()}
+        missing = [p for p in IGNORED if p not in have]
+        if missing:
+            write(path, (text.rstrip("\n") + "\n" if text.strip() else "") + "\n".join(missing) + "\n")
+            print(f"added {', '.join(missing)} to {path}")
+        print(f"ready: {h} (raw exports go in gtm/.private/, which git ignores)")
+    else:
+        print(f"ready: {h} (raw exports go in .private/)")
 
 
 def pointer_text(args):
@@ -119,9 +145,9 @@ def pointer_text(args):
                 f"- GTM Hub (Notion): {args.notion_hub} . Its links table and its \"For agents\" section "
                 "hold every page, database and setting.\n"
                 "Before any GTM, sales, outreach or content task, fetch the Hub and open only the pages you need.")
-        if args.updates:
-            body += ("\nTo review GTM updates or change their settings, follow the guide on the "
-                     f"Updates to review page: {args.updates}")
+        updates = args.updates or notion_updates()
+        if updates:
+            body += f"\n{UPDATES_LINE}{updates}"
     else:
         body = (f"My go-to-market context (product, ICP, messaging, objections, customers) lives in {h}.\n"
                 f"- GitHub: private repo {args.repo}, cloned at {h}\n"
@@ -143,7 +169,13 @@ def cmd_pointer(args):
         return
     memory = os.path.join(claude_dir(), "CLAUDE.md")
     text = read(memory)
-    if START in text and END in text:
+    if text.count(START) > 1:
+        sys.exit(f"{memory} has the GTM context start marker more than once. Keep one block "
+                 "(from the start marker to the end marker), delete the others, then run this again.")
+    if START in text and END not in text.split(START, 1)[1]:
+        sys.exit(f"{memory} has the GTM context start marker but no end marker after it, so the old "
+                 f"block can't be replaced safely. Add this line where the block ends, then run this again:\n{END}")
+    if START in text:
         before, rest = text.split(START, 1)
         after = rest.split(END, 1)[1]
         text = before + block + after
@@ -177,7 +209,8 @@ def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = p.add_subparsers(dest="command", required=True)
     sub.add_parser("status")
-    sub.add_parser("init")
+    sub.add_parser("init").add_argument("--github", action="store_true",
+                                        help="GitHub version: also create gtm/.private/ and gitignore it")
     sub.add_parser("allow")
     pt = sub.add_parser("pointer")
     group = pt.add_mutually_exclusive_group()

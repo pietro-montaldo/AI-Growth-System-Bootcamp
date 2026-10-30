@@ -2,7 +2,7 @@
 name: gtm-competitors
 description: "Research your core competitors and save them to gtm/competitors.md and gtm/competitors.csv in your repo: what each sells, to whom, at what price, which customers they show publicly, and how you differ. Runs one research agent per competitor in parallel. When you have no customers yet, their public customers become the evidence for your ICP. Optional: skip it if you have no notable competitors. Use for \"research my competitors\", \"who else sells this\", \"update my competitor list\", \"how are we different from X\", or as part of build-gtm-context. Not for ongoing monitoring or battle cards for sales calls."
 metadata:
-  version: "0.2.0"
+  version: "0.3.0"
 ---
 
 # Competitors
@@ -12,6 +12,7 @@ A competitor here is someone who sells the same result to the same or similar bu
 ## Reference files
 
 - `references/source-map.md`: where competitor notes usually live and how to get in.
+- `references/repo-structure.md`: the columns of `gtm/competitors.csv` and how the helper script writes them.
 - `scripts/gtm_csv.py`: query and update `gtm/competitors.csv`. Call it by its full path in this skill's folder.
 
 ## Before starting
@@ -54,8 +55,8 @@ Show the table and the differences in the chat. Ask the user to correct "How we 
 
 ### 5. Write
 
-- If `gtm/competitors.csv` doesn't exist, create it with `init` and the columns from the guide's `repo-structure.md`.
-- Write all rows with one `upsert` keyed on Name. Set Last checked to today.
+- If `gtm/competitors.csv` doesn't exist, create it with `init` and the columns from `references/repo-structure.md`.
+- Write all rows with one `upsert --key Name`. Set Last checked to today.
 - Write `gtm/competitors.md`:
 
 ```markdown

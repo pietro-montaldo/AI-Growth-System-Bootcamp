@@ -1,6 +1,6 @@
 # Product & offer page template
 
-Fill this in Notion. Keep it to one or two screens. Delete any heading that doesn't apply.
+Fill this in `gtm/product.md`. Keep it to one or two screens. Delete any heading that doesn't apply.
 
 ```markdown
 > **In short:** <What it is, for whom, and the result, in one sentence.>

@@ -51,7 +51,7 @@ Check for a rerun with `list_scheduled_tasks` (a task titled "Weekly GTM update"
 
 **Older setups:** if the hub's Updates block names an update plugin (`my-gtm-context`, from a `gtm-update` repo), carry its settings over from that plugin's `SKILL.md` (`~/gtm-update/plugins/my-gtm-context/skills/update-gtm-context/SKILL.md`): links, source plan, run steps for their own databases, alert and git settings. Afterwards, tell the user the plugin is no longer needed: they remove it in Customize > Plugins and can delete the `gtm-update` repo themselves.
 
-Record it under "Updates" in the hub (format in `hub-structure.md` or `repo-structure.md`).
+Record it under "Updates" in the hub, in the format this skill's hub or repo structure reference gives (in its `references/` folder).
 
 ## 5. Pointer: how to review
 

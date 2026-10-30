@@ -1,7 +1,7 @@
 {
   "name": "voice-miner",
   "displayName": "Voice Miner",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Learn your real voice from your sent emails and sales call transcripts, filter out anything AI-written, and build a personal <name>-voice skill that writes email replies, cold outreach and LinkedIn posts that sound like you. From the NotLinear AI Growth Systems Bootcamp.",
   "author": { "name": "NotLinear", "url": "https://www.notlinear.ai" },
   "homepage": "https://maven.com/pietro-montaldo/ai-growth-system-bootcamp-claude",

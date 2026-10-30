@@ -16,7 +16,7 @@ Last researched: 2026-10-26. These tells change with every model generation, so 
 - "Certainly!", "Of course!", "Great question!", "You're absolutely right"
 - "I hope this helps", "Let me know if you'd like me to...", "Want me to...?", "If you want, I can also..."
 - "Here's a shorter version...", or any assistant preamble left in the text
-- Unfilled placeholders: "[Company]", "{{firstName}}"
+- Unfilled placeholders in a sent email: "[Company]", "{{firstName}}". In a draft they are fine on purpose: `check` lists them under "fill in before sending" and doesn't score them.
 - `utm_source=chatgpt.com` or `oaicite` left in a link
 
 ### Email openers and closers

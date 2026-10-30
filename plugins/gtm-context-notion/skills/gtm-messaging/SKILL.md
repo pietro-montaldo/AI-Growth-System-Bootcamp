@@ -1,8 +1,8 @@
 ---
 name: gtm-messaging
-description: "Mine how your buyers really talk from your call recordings, emails and DMs, then write the Messaging & customer language page of your Notion GTM Hub: their pains and desired outcomes in their own words, value props, words to use and avoid, and your voice. Runs one mining agent per connected source in parallel, and works from pasted text when nothing is connected. Use for \"find my customer language\", \"how do my buyers describe the problem\", \"update my messaging\", \"mine my calls\", \"voice of customer\", or as part of build-gtm-context. Not for writing a specific email or post."
+description: "Mine how your buyers really talk from your call recordings, webinars, emails, DMs and reviews, then write the Messaging & customer language page of your Notion GTM Hub: their pains and desired outcomes in their own words, value props, words to use and avoid, and your voice. Runs one mining agent per connected source in parallel, and works from pasted text when nothing is connected. Use for \"find my customer language\", \"how do my buyers describe the problem\", \"update my messaging\", \"mine my calls\", \"voice of customer\", or as part of build-gtm-context. Not for writing a specific email or post."
 metadata:
-  version: "0.1.0"
+  version: "0.3.0"
 ---
 
 # Messaging & customer language
@@ -30,7 +30,7 @@ Inside build-gtm-context, the sources were approved in its step 1 and the miners
 
 On its own: see which connectors exist from the tool names already listed in the session (email, call recorder, DMs). Don't run one broad keyword search across all tools. Then one AskUserQuestion, multiSelect: "Which of these can I read for buyer conversations?" List the connected ones, plus:
 - **Paste transcripts or emails**: always offered. Good for anyone whose company blocks connectors.
-- **Customer reviews**: a link to G2, Trustpilot, Google reviews or testimonials on their site.
+- **Customer reviews**: a link to G2, Trustpilot, Google reviews, course platform reviews or testimonials on their site.
 
 Say clearly what will be read: "external conversations from the last 90 days, nothing is sent, and no names end up in Notion."
 
@@ -64,7 +64,7 @@ Show the page and a coverage line ("Read 34 email threads and 9 calls from Jul 2
 ### 5. Write
 
 - Replace the Messaging page content with the approved draft (`notion-update-page`).
-- Update the Messaging row in the Hub links table.
+- Update the Messaging row in the Hub links table, and the date the sources were mined in the Sources list (the Hub's "For agents" section).
 
 ## Rules
 

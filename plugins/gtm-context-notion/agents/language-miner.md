@@ -37,7 +37,7 @@ If fewer than 10 useful conversations fall in the window, extend it to 12 months
 2. **Source tag on every row:** `[call 2026-09-14]`, `[email 2026-08-02]`, `[DM 2026-10-01]` or `[pasted]`.
 3. **No personal data.** Write "Head of Growth, 40-person SaaS", never a name, email, phone number or profile URL.
 4. **Merge repeats.** Same idea in several conversations: keep the clearest quote and count the times.
-5. **Objections get context:** the stage (first call, after proposal, renewal), what the seller answered if visible, and whether the deal moved forward (yes / no / unknown).
+5. **Objections get context:** the stage (first contact, call, proposal or renewal), what the seller answered if visible, and whether the deal moved forward (yes / no / unknown).
 6. **Objection themes:** price, timing, proof, fit, effort, existing-solution, approval, risk, other. Use the user's own theme names if the brief gives them.
 
 ## Return exactly this, nothing else
@@ -47,7 +47,7 @@ Source: <email | calls | DMs | pasted> · Window: <dates> · Read: <n> conversat
 
 LANGUAGE
 | Type | Quote | Who | Offer | Times | Source |
-|---|---|---|---|---|
+|---|---|---|---|---|---|
 | pain | "..." | Founder, 8-person agency | <offer> | 3 | [call 2026-09-14] |
 
 OBJECTIONS

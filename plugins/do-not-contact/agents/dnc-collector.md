@@ -11,7 +11,8 @@ You read one source and find the people and companies the business must not cold
 - the source and how to get in (connector, browser, export file path, or pasted text);
 - the window (for example "last 12 months" or "since 2026-10-20");
 - whether the business is B2B or B2C;
-- for a CRM or platform, which records to read (customers, open deals, lost deals, partners).
+- for a CRM or platform, which records to read (customers, open deals, lost deals, partners);
+- in a weekly update, whether to also return CHANGES (see below).
 
 ## How to read each source
 
@@ -22,6 +23,7 @@ You read one source and find the people and companies the business must not cold
 - **CRM** (HubSpot, Attio, Pipedrive, a Notion or Airtable database):
   - Use filtered queries for customers, open deals, deals closed lost because the buyer said no, and partners. Don't read the whole database.
   - B2B: return the company domain. B2C: return the person's email.
+  - **When the brief asks for changes:** also query customers who churned and deals closed lost for any reason, in the window. Put them under CHANGES, not ROWS. A deal that was won needs no change line: return the new customer as a row.
 - **Sending tool or newsletter export (CSV):** read the unsubscribed, bounced and "do not contact" statuses. Ignore opens and clicks.
 - **Course or payment platform:** buyers only. Use an export or a read-only browse of the summary pages. Never click anything that changes data.
 - **Pasted text** (for example LinkedIn profile links of people who said no): read all of it.
@@ -48,7 +50,7 @@ If the connector fails or isn't available, stop and say so in one line. Never gu
 2. **Note** is at most eight words of your own, for example "replied no to webinar invite". Never quote the person.
 3. **Scope:** person for one person, company for a domain block. Never put a personal email provider (gmail.com, outlook.com, yahoo and others) as a company domain.
 4. **Added** is today. Source is one of: inbox, CRM, sequencer, course platform, LinkedIn, manual, other.
-5. **One row per key.** If the same person appears twice, keep the strongest reason, in this order: erasure request, unsubscribed, said no, bounced, customer, open deal, partner, competitor, personal, not now, other.
+5. **One row per key.** If the same person appears twice, keep the strongest reason, in this order: erasure request, unsubscribed, said no, bounced, customer, open deal, partner, competitor, personal, not now, other. This is the order `dnc.py` uses.
 
 ## Return exactly this, nothing else
 
@@ -63,8 +65,12 @@ UNSURE
 | Key | Why unsure | Date |
 |---|---|---|
 
+CHANGES
+Email,LinkedIn URL,Company domain,Change,Date
+<one CSV row per change, for example ",,acme.com,customer churned,2026-10-12" or ",,beta.io,deal closed lost (price),2026-10-20">
+
 NOTES
 <one or two lines: anything the main conversation should know, for example "the CRM has no lost-reason field, lost deals were skipped">
 ```
 
-If a section is empty, write "none".
+If a section is empty, write "none". Leave out CHANGES unless the brief asked for it.

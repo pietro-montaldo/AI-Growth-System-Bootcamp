@@ -2,7 +2,7 @@
 name: build-gtm-context
 description: "Build your whole go-to-market context layer in a private gtm-context repo on your GitHub, kept at ~/gtm-context so every project can use it, no Notion needed. First it finds where your GTM information already lives (website, CRM, course or payment platform, docs, calls, email) and reads it, through a connector or by browsing. Then it drafts product and offer, customers, competitors, ICP, customer language, objections and shareable logos, and asks you only about real gaps. Everything lands in a gtm/ folder: short markdown pages plus CSV banks that agents query instead of reading whole. At the end it sets up a scheduled task of your own that keeps the context current. Resumes where you left off. Use for \"build my GTM context\", \"set up my GTM context in GitHub\", \"start the context layer\", \"help me define my ICP and messaging\", \"System 1\", \"set up my GTM updates\", or the first time you use this plugin. Not for redoing one section only (use the matching gtm-* skill, for example gtm-objections)."
 metadata:
-  version: "0.3.0"
+  version: "0.4.0"
 ---
 
 # Build your GTM context (GitHub)
@@ -53,7 +53,7 @@ Run `gtm_home.py status`.
 Follow "Setting up the folder" in `repo-structure.md`:
 1. Create or reuse the private `gtm-context` repository at `~/gtm-context`, after one OK, and check it isn't public.
 2. Customers or objections that already live in a connected system are linked under "Sources", not copied (see "Reuse before you create").
-3. Create `gtm/README.md`, the three pages, and only the CSV banks that are needed, using the script's `init` with the exact columns from `repo-structure.md`. `.gitignore` covers `gtm/.private/` and `.private/`.
+3. Run `gtm_home.py init --github`: it creates `gtm/.private/` and makes git ignore it. Then create `gtm/README.md`, the three pages, and only the CSV banks that are needed, using `gtm_csv.py init` with the exact columns from `repo-structure.md`.
 4. Fill the "Offers in scope" line and the "Sources" list with the item-by-item plan from step 1 (built from, how to get in, new information from, who brings it in). Add one row to the links table per extra resource (`Resource: <name>`).
 5. **Pointer in Claude's memory** (see `context-home.md`): show the block from `gtm_home.py pointer --repo <owner>/gtm-context --print` and explain it in one sentence: every Claude session will know where the GTM context is, without searching. Write it after one OK. Then offer `gtm_home.py allow`, so working in other projects doesn't ask for permission each time Claude reads the context.
 

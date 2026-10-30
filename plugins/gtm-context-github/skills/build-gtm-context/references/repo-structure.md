@@ -1,6 +1,6 @@
 # The gtm/ folder (GitHub only)
 
-All the context lives in a `gtm/` folder inside a private repository called `gtm-context` on the student's GitHub, cloned at `~/gtm-context`. It's one fixed place, outside any project, decided for the student and never asked (see `context-home.md`). `gtm/README.md` is the hub: it links to everything, so skills open the exact file they need and never search. The repository must be private, because the banks hold customer and objection data. All `gtm/` paths in the skills are inside `~/gtm-context/`.
+All the context lives in a `gtm/` folder inside a private repository called `gtm-context` on the student's GitHub, cloned at `~/gtm-context`. It's one fixed place, outside any project, decided for the student and never asked (the pointer in Claude's memory says where it is). `gtm/README.md` is the hub: it links to everything, so skills open the exact file they need and never search. The repository must be private, because the banks hold customer and objection data. All `gtm/` paths in the skills are inside `~/gtm-context/`.
 
 ```
 gtm/
@@ -24,13 +24,15 @@ Create a CSV bank when the data has no other home, or lives only in a platform w
 
 ## Setting up the folder
 
+Only build-gtm-context does this.
+
 1. Run `gtm_home.py status`. If `~/gtm-context` is already a git repository, use it and go to step 3.
 2. Otherwise, say in one line: "I'll create a private repository called gtm-context on your GitHub and keep it at ~/gtm-context, so every project can use it." On OK:
    - **A `gtm-context` repo already exists on their GitHub** (`gh repo view gtm-context` works): if `~/gtm-context` is missing or empty, `gh repo clone gtm-context ~/gtm-context`. If the folder already has files (for example a `.private/` folder from the Notion version), clone won't work there: run `git init ~/gtm-context`, `git -C ~/gtm-context remote add origin <its URL>`, then `git -C ~/gtm-context pull origin main`.
    - **No repo yet:** `git init ~/gtm-context` (fine if the folder already exists). With the GitHub CLI signed in (`gh auth status`), also run `gh repo create gtm-context --private --source ~/gtm-context --remote origin`. That creates the empty private repo and links it. Nothing is pushed yet.
    - **No GitHub CLI:** keep the local repo, and say they can publish it as a private repo later (the guide's last step offers that).
 3. Check the visibility (`gh repo view --json visibility -q .visibility`, run inside `~/gtm-context`). "No git remotes found" means it's local for now: fine. If it's `PUBLIC`, stop and say so: customer and objection data shouldn't be public. Offer to make it private (the user confirms the command).
-4. Create `gtm/` and the files below. `.gitignore` gets `gtm/.private/` and `.private/`.
+4. Run `gtm_home.py init --github`: it creates `gtm/.private/` and adds `gtm/.private/` and `.private/` to `.gitignore`. Then create the files below in `gtm/`.
 5. Never commit or push without the user's OK. At the end, offer one commit with a message like `gtm: build context layer` and ask before pushing. Scheduled updates commit or push only as the user allowed at the handover (recorded in the Updates block and in the task prompt).
 
 ## gtm/README.md (the hub)
@@ -60,7 +62,7 @@ Agents: open only the file you need from the table below. Query the CSV banks wi
 
 ## Sources
 One line per item: where it was built from, how to get in, where new information comes from, and who brings it in.
-- <item>: <link or tool> | via: <connector name | Claude in Chrome | built-in browser | export file | pasted> | filter: <if the source is shared with other offers> | new info from: <source> | who: <auto | auto, app only | you (how often) | none>
+- <item>: <built from: link or tool> · via: <connector name | Claude in Chrome | built-in browser | export file | pasted> · filter: <only if the source also holds other offers> · new info from: <source> · who: <auto | auto, app only | you (how often) | none>
 
 ## Best-customer rule
 <for example: "came back for more, or left 2+ reviews">
@@ -87,7 +89,7 @@ Last updated: <YYYY-MM-DD>
 ## CSV banks
 
 Rules for every bank:
-- UTF-8, comma separated, header row exactly as below. Dates `YYYY-MM-DD`. Yes/no columns hold `yes` or `no`. Several values in one cell are separated by `; `.
+- UTF-8, comma separated, header row exactly as below. A file saved from Excel works too. Dates `YYYY-MM-DD`. Yes/no columns hold `yes` or `no`. Several values in one cell are separated by `; `.
 - Select columns only take the listed values, so filters work.
 - Write and update with the helper script's `upsert`, never by hand, so quotes and commas stay valid.
 - Companies and roles only. No personal names, emails, phone numbers or profile URLs.
@@ -97,7 +99,7 @@ Rules for every bank:
 | Column | Values |
 |---|---|
 | Company | company name; for B2C a segment ("New parents, Milan") |
-| Offer | the offers in scope they bought, `; ` between several |
+| Offer | the offers in scope they bought, `; ` between several. One row per company: a second offer is added to this cell (`upsert --merge Offer`), not a second row |
 | Website | url |
 | ICP segment | the ICP names from icp.md, or `outside ICP` |
 | Size | `1`, `2-10`, `11-50`, `51-200`, `201-1000`, `1000+` |
@@ -111,13 +113,14 @@ Rules for every bank:
 | Quote | public testimonial, only if permission covers it |
 | Result | a number or outcome, only if shareable |
 | Case study | url |
+| <signal columns> | optional, one per best-customer signal (for example `Purchases`, `Reviews`): a number, or `yes` / `no`. Added with `add-cols` when the best-customer rule needs them (gtm-customers A3) |
 
 **objections.csv**
 
 | Column | Values |
 |---|---|
 | Objection | short, plain words |
-| Offer | the offer in scope it's about |
+| Offer | the offer in scope it's about. One row per objection and offer: the same objection about two offers is two rows |
 | Theme | `price`, `timing`, `proof`, `fit`, `effort`, `existing-solution`, `approval`, `risk`, `other` (or the user's own themes, listed in the hub) |
 | What they said | verbatim quote |
 | Who | role and company type |
@@ -153,10 +156,23 @@ python3 <skill folder>/scripts/gtm_csv.py init ~/gtm-context/gtm/objections.csv 
 python3 <skill folder>/scripts/gtm_csv.py query ~/gtm-context/gtm/objections.csv --where Theme=price --cols "Objection,Our answer,Answer status"
 python3 <skill folder>/scripts/gtm_csv.py query ~/gtm-context/gtm/customers.csv --where "Best customer=yes" --cols "Company,Size,Industry"
 python3 <skill folder>/scripts/gtm_csv.py count ~/gtm-context/gtm/customers.csv --by Size
+python3 <skill folder>/scripts/gtm_csv.py query ~/gtm-context/gtm/customers.csv --min Purchases=2 --cols "Company,Offer,Purchases"
 python3 <skill folder>/scripts/gtm_csv.py add-cols ~/gtm-context/gtm/customers.csv --cols "Offer,Buyer role,Seniority"
-python3 <skill folder>/scripts/gtm_csv.py upsert ~/gtm-context/gtm/objections.csv --key Objection --rows ~/gtm-context/gtm/.private/new-objections.json
+python3 <skill folder>/scripts/gtm_csv.py upsert ~/gtm-context/gtm/objections.csv --key "Objection,Offer" --rows ~/gtm-context/gtm/.private/new-objections.json
+python3 <skill folder>/scripts/gtm_csv.py upsert ~/gtm-context/gtm/customers.csv --key Company --merge Offer --rows ~/gtm-context/gtm/.private/new-customers.json
+python3 <skill folder>/scripts/gtm_csv.py upsert ~/gtm-context/gtm/competitors.csv --key Name --rows ~/gtm-context/gtm/.private/competitors.json
 ```
 
-Filters: `--where COL=VALUE`, `--contains COL=TEXT`, `--any COL=A|B`, `--min COL=NUMBER`. They combine and are case-insensitive. `upsert` updates rows whose key matches (ignoring case) and appends the rest. It never changes the key itself, and it refuses unknown columns.
+Filters: `--where COL=VALUE`, `--contains COL=TEXT`, `--any COL=A|B`, `--min COL=NUMBER`. They combine and are case-insensitive. `--min` skips blank and non-numeric cells. A customer's Offer cell can hold several offers, so filter it with `--contains Offer=<offer>`.
+
+`upsert` updates rows whose key matches (ignoring case) and appends the rest. It never changes the key itself, and it refuses unknown columns. The key per bank:
+
+| Bank | Key | Why |
+|---|---|---|
+| customers.csv | `--key Company --merge Offer` | one row per company; a new offer is added to its Offer cell |
+| objections.csv | `--key "Objection,Offer"` | the same objection about another offer is its own row, with its own Times seen |
+| competitors.csv | `--key Name` | one row per competitor |
+
+In the JSON rows, `null` or `""` leaves a cell as it is (empty on a new row), `true` and `false` become `yes` and `no`, and a list becomes `a; b`.
 
 If Python 3 isn't available, use `grep` on the file for a single filter. Never read a whole bank into the conversation.

@@ -1,6 +1,6 @@
 # GTM Hub structure (Notion)
 
-One GTM Hub page links to everything. Four short pages and three databases sit under it. The Hub page is also the map for agents: its links table and its collapsed "For agents" section hold every link, ID and setting, so skills never search Notion and no local file is needed. The Hub link itself lives in Claude's memory (see `context-home.md`).
+One GTM Hub page links to everything. Four short pages and three databases sit under it. The Hub page is also the map for agents: its links table and its collapsed "For agents" section hold every link, ID and setting, so skills never search Notion and no local file is needed. The Hub link itself lives in Claude's memory (the "GTM context" pointer block).
 
 ```
 GTM Hub (page)
@@ -82,14 +82,14 @@ Create only the ones the user doesn't already have (see "Reuse before you create
 | Column | Type | Notes |
 |---|---|---|
 | Objection | title | short, in plain words |
-| Offer | multi-select | the offers in scope it's about |
+| Offer | multi-select | the offer in scope it's about. One row per objection and offer: the same objection about another offer is its own row, with its own Times seen |
 | Theme | select | price, timing, proof, fit, effort, existing-solution, approval, risk, other |
 | What they said | text | verbatim quote, no names |
 | Who | text | role and company type |
 | Our answer | text | the answer that works best |
 | Answer status | select | works, draft, unknown |
 | Stage | select | first contact, call, proposal, renewal |
-| Source | select | call, email, DM, form, pasted |
+| Source | select | call, email, DM, form, webinar, pasted |
 | Times seen | number | |
 | Last seen | date | |
 | Reference | text | source tag, for example [call 2026-09-14] |
@@ -99,7 +99,7 @@ Create only the ones the user doesn't already have (see "Reuse before you create
 | Column | Type | Notes |
 |---|---|---|
 | Company | title | for B2C, a segment name instead, for example "New parents, Milan" |
-| Offer | multi-select | the offers in scope they bought |
+| Offer | multi-select | the offers in scope they bought. One row per company: a second offer is added to this column, not a second row |
 | Website | url | |
 | ICP segment | select | the ICP names from the ICP page, plus "outside ICP" |
 | Size | select | 1, 2-10, 11-50, 51-200, 201-1000, 1000+ |
@@ -113,12 +113,13 @@ Create only the ones the user doesn't already have (see "Reuse before you create
 | Quote | text | public testimonial, only if permission covers it |
 | Result | text | a number or outcome, only if shareable |
 | Case study | url | |
+| <signal properties> | number or checkbox | optional, one per best-customer signal (for example Purchases, Reviews), added when the best-customer rule needs them (gtm-customers A3) |
 
 ## The "For agents" section (the map)
 
 The Hub page is the only map of the context. Its links table lists every page and database. A collapsed section at the very bottom holds what agents need beyond that: data source IDs, filters, sources, the best-customer rule and the update settings. Settings only, never content.
 
-Because the map lives in Notion, any session on any surface (Claude Code, Cowork, a cloud routine, another computer) needs only the Hub link: one fetch gives it everything. The Hub link itself sits in Claude's memory (see `context-home.md`) and in every scheduled prompt.
+Because the map lives in Notion, any session on any surface (Claude Code, Cowork, a cloud routine, another computer) needs only the Hub link: one fetch gives it everything. The Hub link itself sits in Claude's memory (the "GTM context" pointer block) and in every scheduled prompt.
 
 Write it as a toggle heading, so people reading the Hub don't see it unless they open it:
 
@@ -136,7 +137,7 @@ Read this instead of searching. Settings only, no content. Kept current by the G
 **Offers in scope:** <offer 1> · <offer 2> (the others are left out on purpose)
 
 **Sources** (one line per item: where it was built from, how to get in, where new information comes from, and who brings it in)
-- <item>: <link or tool> · via: <connector name | Claude in Chrome | built-in browser | export file | pasted> · new info from: <source> · who: <auto | auto, app only | you (how often) | none>
+- <item>: <built from: link or tool> · via: <connector name | Claude in Chrome | built-in browser | export file | pasted> · filter: <only if the source also holds other offers> · new info from: <source> · who: <auto | auto, app only | you (how often) | none>
 
 **Best-customer rule:** <for example "came back for more, or left 2+ reviews">
 
@@ -157,4 +158,4 @@ If a link stops working (page moved or deleted), ask the user for the new link. 
 
 ## Older setups: gtm-hub.md
 
-Earlier versions kept this map in a local file, `gtm-hub.md`, in the project folder or in `~/gtm-context/`. If one is found (`gtm_home.py status` lists them), copy its database lines, sources and update settings into the "For agents" section, update the pointer in Claude's memory to the Hub link, and tell the user the file is no longer needed. Delete it only on their OK.
+Only build-gtm-context does this. Earlier versions kept this map in a local file, `gtm-hub.md`, in the project folder or in `~/gtm-context/`. If one is found (`gtm_home.py status` lists them), copy its database lines, sources and update settings into the "For agents" section, update the pointer in Claude's memory to the Hub link, and tell the user the file is no longer needed. Delete it only on their OK.

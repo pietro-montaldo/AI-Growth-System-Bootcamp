@@ -2,7 +2,7 @@
 name: gtm-competitors
 description: "Research your core competitors and save them to the Competitors page and database in your Notion GTM Hub: what each sells, to whom, at what price, which customers they show publicly, and how you differ. Runs one research agent per competitor in parallel. When you have no customers yet, their public customers become the evidence for your ICP. Use for \"research my competitors\", \"who else sells this\", \"update my competitor list\", \"how are we different from X\", or as part of build-gtm-context. Not for ongoing monitoring or battle cards for sales calls."
 metadata:
-  version: "0.1.0"
+  version: "0.3.0"
 ---
 
 # Competitors

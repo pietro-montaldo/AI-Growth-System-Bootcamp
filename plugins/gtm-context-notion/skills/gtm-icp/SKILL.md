@@ -1,8 +1,8 @@
 ---
 name: gtm-icp
-description: "Define or refine your ideal customer profile (ICP) on the ICP page of your Notion GTM Hub, using your best existing customers, or your competitors' customers when you have none. Produces one section per ICP with hard filters, scoring signals, buying triggers, an anti-ICP and a one-line hook, checked for specificity before you approve it. Use for \"define my ICP\", \"who is my ideal customer\", \"refine my ICP\", \"my ICP is too broad\", \"who should I target\", or as part of build-gtm-context. Not for scoring a specific lead list (that is the outbound system's job)."
+description: "Define or refine your ideal customer profile (ICP) on the ICP page of your Notion GTM Hub, using your best existing customers, or your competitors' customers when you have none. Produces one battlecard per ICP: hard filters and public scoring signals you can check before any contact, buying triggers, their words, what to lead with, the objection to expect, an anti-ICP and a one-line hook, checked for specificity before you approve it. Use for \"define my ICP\", \"who is my ideal customer\", \"refine my ICP\", \"my ICP is too broad\", \"who should I target\", or as part of build-gtm-context. Not for scoring a specific lead list (that is the outbound system's job)."
 metadata:
-  version: "0.1.0"
+  version: "0.3.0"
 ---
 
 # ICP
@@ -46,7 +46,7 @@ Compare the best customers with each other and with the rest. Look for the 3 att
 
 Then check the best group (and a similar sample of the rest) has the public attributes in `icp-checks.md`: size, industry, stage, buyer role and seniority, and signals such as headcount growth, job postings or tech stack. If they're missing, run gtm-customers step A2 ("Fill and enrich"): it finds the enrichment tool (Clay first), quotes the credits, and asks before any lookup.
 
-Public attributes that clearly separate the best group become the "Find them" filters and the "Score" signals. What people only say on calls becomes conversation signals.
+Public attributes that clearly separate the best group become the "Find them" filters and the "Score" signals. What people only say on calls goes into "Expect" or "Not them".
 
 Work offer by offer (the offers in scope), using each offer's own customers and best group. For each offer, write one ICP for each distinct group the data shows, up to 5. A group is distinct when it has its own buyer, reason to buy or public signals, and enough customers to show a pattern (for example 3 or more best customers, or about 10% of the list). Start from groupings the data already has, such as a persona or segment column. Give each ICP a fit score from 1 to 5, based on the evidence: best-customer rate first, then coming back for more, then reviews or referrals. Keep a weaker group with a low score instead of dropping it, so later agents can weigh it. Strongest first.
 

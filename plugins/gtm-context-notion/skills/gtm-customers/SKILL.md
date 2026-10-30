@@ -2,7 +2,7 @@
 name: gtm-customers
 description: "Build or update the Customers database in your Notion GTM Hub: who already buys from you, which ICP segment each belongs to, which ones you would clone, and which logos you have permission to show publicly. Takes a pasted list, a CSV, a CRM, or a description. Use for \"add my customers\", \"which logos can I show\", \"update my customer list\", \"we have a new client\", \"customers I can share publicly\", or as part of build-gtm-context. Not for leads or prospects (those belong in a lead ledger or CRM) and not for the ICP itself (use gtm-icp)."
 metadata:
-  version: "0.1.0"
+  version: "0.3.0"
 ---
 
 # Customers
@@ -14,6 +14,7 @@ It has two parts. Run both when used on its own. Inside build-gtm-context, part 
 ## Reference files
 
 - `references/source-map.md`: where customers usually live and how to get in (connector, browser, export, paste).
+- `references/hub-structure.md`: the Customers database columns, and "Reuse before you create" for a database the user already has.
 
 ## Before starting
 
@@ -28,7 +29,7 @@ It has two parts. Run both when used on its own. Inside build-gtm-context, part 
 **Inside build-gtm-context:** use the customer findings it hands you. If the customers already live in a Notion database, it's already linked.
 
 **On its own:** ask where customers live today, and read them using the access order in `references/source-map.md`:
-- **A CRM or database** (Notion, Airtable, HubSpot, Attio, Pipedrive): read won deals or customer records only. If it's a Notion database, link it instead of copying (see "Reuse before you create" in build-gtm-context's `hub-structure.md`). Add only the missing columns (Best customer, Logo shareable, Permission note) with the user's OK, and use its existing segment or persona column as the ICP segment.
+- **A CRM or database** (Notion, Airtable, HubSpot, Attio, Pipedrive): read won deals or customer records only. If it's a Notion database, link it instead of copying (see "Reuse before you create" in `references/hub-structure.md`). Add only the missing columns (Best customer, Logo shareable, Permission note) with the user's OK, and use its existing segment or persona column as the ICP segment.
 - **A course, shop or payment platform** (Maven, Stripe, Shopify, Kajabi, Teachable, Gumroad): there's usually no connector, so say so. Offer to browse the customer or student list with Claude in Chrome (the user is already signed in there), or ask for a CSV export into `~/gtm-context/.private/`.
 - **A list or spreadsheet**: they paste it or upload it.
 - **Only in their head**: they name them.
@@ -65,7 +66,7 @@ Best customers drive the ICP. "Best" means they paid well, got results, came bac
 **B2C, or many individual buyers:** don't ask the user to pick names. With dozens of individuals it's hard and the pick is mostly memory. Define "best" by behaviour instead:
 1. List the signals the data actually has, with counts. Examples: bought twice or more, came back with a bigger request, referred someone, left a review, finished or used the product a lot, spent the most, never refunded.
 2. Ask (multiSelect): "Which of these mean a great customer to you?"
-3. Apply that rule with one query. The best group is usually the top 10 to 20%. If the rule catches much more (common signals like "left a review" do), show the count for the rule as picked and for one or two tighter versions ("2 or more reviews", "both signals"), and let the user choose. Then show how the chosen group differs from everyone else (roles, company size, location, how they found you).
+3. Apply that rule with one query. If a chosen signal isn't a column of the database yet, add it first (a number or checkbox, with `notion-update-data-source`, after the user's OK) and fill it from the source, then query. The best group is usually the top 10 to 20%. If the rule catches much more (common signals like "left a review" do), show the count for the rule as picked and for one or two tighter versions ("2 or more reviews", "both signals"), and let the user choose. Then show how the chosen group differs from everyone else (roles, company size, location, how they found you).
 4. Leave out partners, co-instructors, team members and free seats, even when they match.
 5. After approval, tick Best customer on the matching rows and record the rule itself ("came back for more or left 2+ reviews") under "Best-customer rule" in the Hub's "For agents" section, so it can be reapplied next month. Each row is a separate update, so above about 30 rows say so before starting.
 
@@ -76,8 +77,9 @@ Either way, the result is a best group plus the reason it's best. The ICP step l
 ### A4. Pause, then write
 
 Show the table in the chat. After approval:
-- **Dedupe in one go:** query the database once with a filter matching all company names in this batch. Update rows that exist, create the rest.
+- **Dedupe in one go:** query the database once with a filter matching all company names in this batch. Update rows that exist, create the rest. One row per company: when a company already there bought another offer, add that offer to its Offer values and keep the ones it has.
 - Set Permission note to `not asked yet` on new rows, Logo shareable unticked.
+- Delete the raw export from `~/gtm-context/.private/` once the rows are in, and say so.
 - Update the Customers row in the Hub links table.
 
 ## Part B. Logo permission

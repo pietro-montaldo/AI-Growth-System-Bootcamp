@@ -19,7 +19,7 @@ Every later system (outbound, inbound, content) reads these six sections before 
 4. **Evidence or a flag.** Every claim either has a source (a customer, a call, a page) or is marked `(guess, confirm)`.
 5. **Every offer in scope.** When the business sells several things and more than one is in scope, each section covers each of them: one product section per offer, ICP cards per offer, value props per offer, and customers and objections tagged with their offer.
 6. **Skip what doesn't apply.** A solo consultant doesn't need five personas. Leave a section short rather than padding it.
-6. **Dated.** Each page shows when it was last updated, so a stale page is easy to spot.
+7. **Dated.** Each page shows when it was last updated, so a stale page is easy to spot.
 
 ## B2B vs B2C
 

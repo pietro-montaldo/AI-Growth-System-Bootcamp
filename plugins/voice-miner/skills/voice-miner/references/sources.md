@@ -28,11 +28,18 @@ Work in batches of 20 to 30 threads and append to the JSONL as you go, so a long
 
 ### Outlook / Microsoft 365
 
-Same buckets. Use the Sent Items folder. If there's no connector, have them export: Outlook desktop, then File, then Open & Export, then Import/Export, then export a .pst of Sent Items. A .pst needs a converter. The easier route is to select 150 sent emails, drag them into a folder, and save them as .msg or .eml files, which Claude can parse.
+Same buckets. Use the Sent Items folder. If there's no connector, have them export: Outlook desktop, then File, then Open & Export, then Import/Export, then export a .pst of Sent Items. A .pst needs a converter. The easier route is to select 150 sent emails and drag them into a folder. On a Mac that saves .eml files, which the `extract` command below reads. Outlook for Windows saves .msg files, which the script can't read. There, use the connector or the paste fallback below.
 
 ### Fallback: export
 
-- Gmail: Google Takeout, then Mail, then only the "Sent" label. You get an .mbox file. Parse it with Python's `mailbox` module and convert to JSONL. Use `message.get_payload(decode=True)` and prefer the text/plain part.
+- Gmail: Google Takeout, then Mail, then only the "Sent" label. You get an .mbox file. Apple Mail exports .mbox too.
+- Turn .mbox and .eml files into the JSONL with the script. Call it by its full path in the skill folder:
+
+  ```bash
+  python3 "<skill-folder>/scripts/voice_mine.py" extract Sent.mbox more-emails/ -o voice-mining/emails.jsonl --from jane@acme.com
+  ```
+
+  It reads plain text and HTML-only emails in any charset, prefers the plain text part, turns HTML into text, and drops the quoted thread and attachments. `--from` keeps only mail the person sent. Without it, the summary lists the top senders so you can check. Each row gets a `thread` hint: `reply` if it answers an earlier message, `first` if it starts a thread. Use it to set `kind` below: a `first` row is `cold` or `new`, a `reply` row is `reply` or `followup`. Never parse the files by hand: multipart and HTML mail need the script.
 - Any client: the person forwards 50 sent emails to themselves or pastes them into a doc. That's slow but enough for a first version.
 
 ### JSONL format
@@ -43,14 +50,18 @@ One email per line:
 {"id": "18c2f...", "date": "2025-03-14", "to": "anna@acme.com", "subject": "Re: proposal", "kind": "reply", "body": "Hi Anna,\n\n..."}
 ```
 
-`kind`, set by you:
+`kind`, set by you. Use exactly these four for email. The script and the personal skill use the same words:
 
 - `cold`: first message in a thread, to someone who has never written to them. Check the thread and their inbox for earlier contact.
 - `followup`: they wrote again with no reply in between, a nudge or a bump.
-- `reply`: answering someone outside the company.
-- `internal`: a colleague at the same domain. Used for contrast only, not for the profile's main numbers.
+- `reply`: answering someone who wrote to them.
+- `new`: first message in a thread to someone they already know, like a client, partner or past lead.
 
-Dates are ISO `YYYY-MM-DD`. The pre-AI baseline depends on them, so never guess a date.
+Leave out emails to colleagues at their own company. They're a different register and would blur the numbers.
+
+LinkedIn posts and DMs they confirmed they wrote can go in the same file with `kind` set to `post` or `dm`. With 5 or more of a kind, `fingerprint` measures them separately and `check` uses those numbers. With fewer, `check` skips the length and greeting checks for that kind and says so.
+
+Dates are ISO `YYYY-MM-DD`. The pre-AI baseline depends on them, so never guess a date. If you can't find one, write `"date": null`. Undated emails are still scored, but they never count as pre-AI.
 
 ## Call transcripts
 
@@ -70,7 +81,14 @@ Dates are ISO `YYYY-MM-DD`. The pre-AI baseline depends on them, so never guess 
 - **Fireflies, Otter, tl;dv, Zoom, Teams**: if there's no connector, export the transcript as .txt or .vtt and drop the files into `voice-mining/calls/`.
 - **No recorder**: ask for 2 or 3 voice memos where they explain their offer and answer a typical objection, and transcribe them. Or ask for a YouTube or podcast link where they speak. Even 20 minutes is useful.
 
-Save each call as `voice-mining/calls/YYYY-MM-DD-<type>.txt`, with lines like `Name: text` or `[00:01:02] Name: text`. The transcript command also reads WebVTT `<v Name>` lines.
+Save each call as `voice-mining/calls/YYYY-MM-DD-<type>.txt` (or keep the .vtt or .srt). The transcript command reads:
+
+- `Name: text`, `[00:01:02] Name: text` and `Name (00:01): text` lines.
+- WebVTT `<v Name>text</v>` (Teams) and `Name: text` cues (Zoom), and .srt files.
+- Otter style: `Name  0:03` on its own line, then the text below.
+- A name on its own line, then the text below, with a blank line between turns.
+
+Files can be UTF-8 or Windows/Latin-1. `--speaker` must match the label exactly (case doesn't matter), so `Speaker 1` never picks up `Speaker 10`. If nothing matches, the command prints the labels it found. Lines like "Next step: ..." or "Nota bene: ..." are read as speech, not as a new speaker.
 
 AI summaries, action items and "key takeaways" from recorders are AI-written. Never mine them. Only the person's own spoken words count.
 
