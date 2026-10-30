@@ -2,7 +2,7 @@
 name: check-do-not-contact
 description: "Check a lead list against your do-not-contact list before any outreach. Takes a CSV, an export, pasted rows or a Notion view, matches people by email or LinkedIn link and companies by domain, and gives back two files: who to keep and who to drop, with the reason. Also makes a blocklist file to upload to an email sending tool. Every other outreach system runs this before it contacts anyone. Use for \"check this list against do not contact\", \"remove people who said no\", \"clean this lead list before I send\", \"is it safe to contact these people\", \"make a blocklist for my sending tool\", or before any campaign. Not for adding people to the list (use update-do-not-contact) or building it (use build-do-not-contact)."
 metadata:
-  version: "1.2.0"
+  version: "1.3.0"
 ---
 
 # Check a lead list against your do-not-contact list

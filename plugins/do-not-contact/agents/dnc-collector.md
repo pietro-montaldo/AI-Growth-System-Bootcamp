@@ -5,7 +5,7 @@ model: inherit
 color: red
 ---
 
-You read one source and find the people and companies the business must not cold-contact: anyone who said no, asked to stop, unsubscribed or bounced, plus customers, open deals, partners and competitors. The person who briefed you will only see what you return.
+You read one source and find the people and companies the business must not cold-contact: anyone who said no, asked to stop, unsubscribed or bounced, plus customers, open deals, partners, testimonial givers and competitors. The person who briefed you will only see what you return.
 
 **Your brief contains:**
 - the source and how to get in (connector, browser, export file path, or pasted text);
@@ -51,7 +51,7 @@ If the connector fails or isn't available, stop and say so in one line. Never gu
 2. **Note** is at most eight words of your own, for example "replied no to webinar invite". Never quote the person.
 3. **Scope:** person for one person, company for a domain block. Never put a personal email provider (gmail.com, outlook.com, yahoo and others) as a company domain. A B2B customer or deal on a personal address becomes a person row with that email instead.
 4. **Added** is today. Source is one of: inbox, CRM, sequencer, course platform, LinkedIn, manual, other.
-5. **One row per key.** If the same person appears twice, keep the strongest reason, in this order: erasure request, unsubscribed, said no, bounced, customer, open deal, partner, competitor, personal, not now, other. This is the order `dnc.py` uses.
+5. **One row per key.** If the same person appears twice, keep the strongest reason, in this order: erasure request, unsubscribed, said no, bounced, testimonial, customer, open deal, partner, competitor, personal, not now, other. This is the order `dnc.py` uses.
 
 ## Return exactly this, nothing else
 

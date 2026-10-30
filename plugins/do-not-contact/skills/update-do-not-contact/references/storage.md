@@ -29,7 +29,7 @@ Ask with AskUserQuestion: "Google Sheet (Recommended)" and "Notion", each with o
 | LinkedIn URL | text | url | `linkedin.com/in/<name>` |
 | Company domain | text | text | only for company-wide blocks, for example `acme.com` |
 | Scope | text | select: person, company | company blocks everyone at that domain |
-| Reason | text | select: said no, not now, unsubscribed, bounced, customer, open deal, partner, competitor, personal, erasure request, other | |
+| Reason | text | select: said no, not now, unsubscribed, bounced, customer, open deal, partner, testimonial, competitor, personal, erasure request, other | |
 | Until | date | date | blank means forever |
 | Source | text | select: inbox, CRM, sequencer, course platform, LinkedIn, manual, other | |
 | Added | date | date | |

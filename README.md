@@ -8,7 +8,7 @@ Claude skills from the AI Growth Systems Bootcamp by [Pietro Montaldo](https://w
 |---|---|
 | [voice-miner](plugins/voice-miner/skills/voice-miner) (plugin) | Learns your real voice from your sent emails and sales calls, and builds you a personal skill that writes emails, cold outreach and LinkedIn posts that sound like you, not like AI. |
 | [GTM context](#gtm-context) (plugin) | Builds your go-to-market context layer with you: what you sell, your ideal customer, competitors, how your buyers talk, objections and shareable customers. It reads what you already have first, then asks only about gaps. Lives in Notion or in your own GitHub repo. |
-| [do-not-contact](#do-not-contact) (plugin) | Builds one list of everyone your outreach must skip, starting from your own description: people who said no, unsubscribed or bounced, customers, open deals, friends, family and partners. It reads only the places you point it to, keeps the list in a Google Sheet or Notion, updates every week, and checks every lead list before you send. If your CRM already holds all of it, it tells you that's your list. |
+| [do-not-contact](#do-not-contact) (plugin) | Builds one list of everyone your outreach must skip, starting from your own description: people who said no, unsubscribed or bounced, customers, open deals, testimonial givers, friends, family and partners. It reads only the places you point it to, keeps the list in a Google Sheet or Notion, updates every week, and checks every lead list before you send. If your CRM already holds all of it, it tells you that's your list. |
 
 ---
 
@@ -222,7 +222,7 @@ Once you run more than one outreach system (LinkedIn drafts, automated email, in
 
 ### What it does
 
-1. **Asks who you never want to contact.** You describe them in your own words. Claude helps you think it through and suggests groups you might have missed: customers, open deals, friends and family, partners, competitors, people who said no, unsubscribed or bounced. You pick.
+1. **Asks who you never want to contact.** You describe them in your own words. Claude helps you think it through and suggests groups you might have missed: customers, open deals, testimonial givers, friends and family, partners, competitors, people who said no, unsubscribed or bounced. You pick.
    If your CRM already holds all of them, Claude tells you a second list isn't needed, gives you a few tips to keep the CRM working as your list, notes in Claude's memory that your CRM is the list (after your OK), and stops there.
 2. **Asks where those people are.** You point the way: your CRM, payment platform, sending tool, inbox, or a list you paste. Claude reads only what you name, and asks where new ones will show up, so the weekly update knows where to look. LinkedIn no's are pasted in, never read automatically, to keep your account safe.
 3. **Shows you who it found** and saves them after your OK. Unclear replies are yours to decide.

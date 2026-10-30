@@ -1,8 +1,8 @@
 ---
 name: build-do-not-contact
-description: "Build your do-not-contact list with you, starting from your own description of who your outreach must never reach. It interviews you about those people (people who said no, customers, open deals, friends, family, partners and others) and advises you, then reads only the places you point it to, and saves the list in a Google Sheet or a Notion database, your choice. If your CRM already holds all of this, it tells you a second list isn't needed and stops. Otherwise it tells every later system to check the list before contacting anyone, and schedules a weekly update from the sources you named. Use for \"build my do-not-contact list\", \"set up a suppression list\", \"make sure I never message people who said no\", \"stop double-texting people\", \"who shouldn't I contact\", or the first time you use this plugin. Not for adding one person (use update-do-not-contact) or checking a lead list (use check-do-not-contact)."
+description: "Build your do-not-contact list with you, starting from your own description of who your outreach must never reach. It interviews you about those people (people who said no, customers, open deals, testimonial givers, friends, family, partners and others) and advises you, then reads only the places you point it to, and saves the list in a Google Sheet or a Notion database, your choice. If your CRM already holds all of this, it tells you a second list isn't needed and stops. Otherwise it tells every later system to check the list before contacting anyone, and schedules a weekly update from the sources you named. Use for \"build my do-not-contact list\", \"set up a suppression list\", \"make sure I never message people who said no\", \"stop double-texting people\", \"who shouldn't I contact\", or the first time you use this plugin. Not for adding one person (use update-do-not-contact) or checking a lead list (use check-do-not-contact)."
 metadata:
-  version: "1.2.0"
+  version: "1.3.0"
 ---
 
 # Build your do-not-contact list

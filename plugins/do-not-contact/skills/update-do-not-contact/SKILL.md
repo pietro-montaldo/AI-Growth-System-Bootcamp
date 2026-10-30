@@ -2,7 +2,7 @@
 name: update-do-not-contact
 description: "Keep your do-not-contact list current. Adds one person or company in seconds (\"add jane@acme.com, said no\"), runs the weekly update that finds new no's, unsubscribes, bounces, customers and open deals since the last run, and walks you through anything that needs a decision. Works with the Google Sheet or Notion list made by build-do-not-contact. Use for \"add <email or LinkedIn link> to do not contact\", \"they said no\", \"don't contact them again\", \"update my do-not-contact list\", \"review do-not-contact\", \"change my do-not-contact sources\", or when the scheduled run starts. Not for building the list the first time (use build-do-not-contact) or checking a lead list (use check-do-not-contact)."
 metadata:
-  version: "1.2.0"
+  version: "1.3.0"
 ---
 
 # Update your do-not-contact list
@@ -29,7 +29,7 @@ Pick the mode from how you were called.
 
 The student names a person or company: "add jane@acme.com, said no", "never contact anyone at acme.com, they're a partner", or a LinkedIn link.
 
-1. `dnc.py clean <value>` gives the key. Work out the reason from their words (`storage.md` lists them; "friend" or "family" is personal, "investor" is partner), and the scope: company if they said "anyone at", otherwise person. If the reason is unclear, use "said no".
+1. `dnc.py clean <value>` gives the key. Work out the reason from their words (`storage.md` lists them; "friend" or "family" is personal, "investor" is partner, "testimonial", "case study" or "reference" is testimonial), and the scope: company if they said "anyone at", otherwise person. If the reason is unclear, use "said no".
 2. Put the row in `new.csv`. Source is one of the values in `storage.md`: a payment or course platform is "course platform", a sending tool is "sequencer", a call or anything else is "manual". Read the key columns (Sheet) or query that key (Notion) into `existing.csv`, and run `dnc.py merge new.csv --existing existing.csv -o add.csv`. Never compare by hand.
 3. `add.csv` empty: say it's already listed, in one line, with its reason. Otherwise write the row and confirm in one line. A stronger reason is added as a new row, for example "unsubscribed" for someone listed as "not now". The old row stays.
 
@@ -50,7 +50,7 @@ Never ask anything. One failed source never stops the run: note it and go on.
 6. **Write:**
    - every row of `add.csv` to the list;
    - every UNSURE item to `To review`, with Proposed "add";
-   - every row of `changes/drop.csv` to `To review`, with Proposed "remove", the listed reason, and the change as why. For example "customer churned 2026-10". Changes are never applied in a scheduled run: don't change or delete the row itself (`rules.md`).
+   - every row of `changes/drop.csv` whose `DNC reason` is customer or open deal to `To review`, with Proposed "remove", the listed reason, and the change as why. Skip the others: a stronger reason, like testimonial or said no, still holds. For example "customer churned 2026-10". Changes are never applied in a scheduled run: don't change or delete the row itself (`rules.md`).
 7. Update Last run for each source that was read.
 8. **Send the summary** to the address in the prompt, and only there:
 

@@ -37,8 +37,8 @@ KEYS = ["Email", "LinkedIn URL", "Company domain"]
 # Strongest first. When one key has several rows, the strongest one counts.
 # agents/dnc-collector.md (rule 5) repeats this order. Change both together.
 REASONS = [
-    "erasure request", "unsubscribed", "said no", "bounced", "customer", "open deal",
-    "partner", "competitor", "personal", "not now", "other",
+    "erasure request", "unsubscribed", "said no", "bounced", "testimonial", "customer",
+    "open deal", "partner", "competitor", "personal", "not now", "other",
 ]
 SOURCES = ["inbox", "CRM", "sequencer", "course platform", "LinkedIn", "manual", "other"]
 SCOPES = ["person", "company"]
