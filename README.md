@@ -8,7 +8,7 @@ Claude skills from the AI Growth Systems Bootcamp by [Pietro Montaldo](https://w
 |---|---|
 | [voice-miner](plugins/voice-miner/skills/voice-miner) (plugin) | Learns your real voice from your sent emails and sales calls, and builds you a personal skill that writes emails, cold outreach and LinkedIn posts that sound like you, not like AI. |
 | [GTM context](#gtm-context) (plugin) | Builds your go-to-market context layer with you: what you sell, your ideal customer, competitors, how your buyers talk, objections and shareable customers. It reads what you already have first, then asks only about gaps. Lives in Notion or in your own GitHub repo. |
-| [do-not-contact](#do-not-contact) (plugin) | Builds one list of everyone your outreach must skip: people who said no, unsubscribed or bounced, plus customers and open deals. It finds them in your inbox, CRM and tools, keeps them in a Google Sheet or Notion, updates every week, and checks every lead list before you send. |
+| [do-not-contact](#do-not-contact) (plugin) | Builds one list of everyone your outreach must skip, starting from your own description: people who said no, unsubscribed or bounced, customers, open deals, friends, family and partners. It reads only the places you point it to, keeps the list in a Google Sheet or Notion, updates every week, and checks every lead list before you send. If your CRM already holds all of it, it tells you that's your list. |
 
 ---
 
@@ -218,15 +218,16 @@ Inspired by Corey Haines' [product-marketing skill](https://github.com/coreyhain
 
 ## do-not-contact
 
-Once you run more than one outreach system (LinkedIn drafts, automated email, inbound replies), the same person can hear from you twice, or after they already said no. You don't need a full CRM to stop that. You need one shared list that every system checks before it contacts anyone, and that grows whenever someone says no.
+Once you run more than one outreach system (LinkedIn drafts, automated email, inbound replies), the same person can hear from you twice, or after they already said no. If you already keep everyone in a full CRM, that CRM is your list and you don't need this. If not, you need one shared list that every system checks before it contacts anyone, and that grows whenever someone says no.
 
 ### What it does
 
-1. **Asks where things live.** Your inbox, your CRM, your sending tool, your course or payment platform. A rough pointer is enough.
-2. **Finds the people.** Replies that said no, "not now" or unsubscribe, bounces, customers, open deals, plus partners, competitors and friends you name. LinkedIn no's are pasted in, never read automatically, to keep your account safe.
+1. **Asks who you never want to contact.** You describe them in your own words. Claude helps you think it through and suggests groups you might have missed: customers, open deals, friends and family, partners, competitors, people who said no, unsubscribed or bounced. You pick.
+   If your CRM already holds all of them, Claude tells you a second list isn't needed, gives you a few tips to keep the CRM working as your list, notes in Claude's memory that your CRM is the list (after your OK), and stops there.
+2. **Asks where those people are.** You point the way: your CRM, payment platform, sending tool, inbox, or a list you paste. Claude reads only what you name, and asks where new ones will show up, so the weekly update knows where to look. LinkedIn no's are pasted in, never read automatically, to keep your account safe.
 3. **Shows you who it found** and saves them after your OK. Unclear replies are yours to decide.
 4. **Tells every later system about it.** A short note in Claude's memory says: check this list before contacting anyone.
-5. **Updates every week** and sends you a short summary. Anything that needs a decision, like a customer who left, waits for your review. A cloud schedule can't read files on your computer or use Chrome, so for those sources it reminds you instead.
+5. **Updates every week** from the places you named, for the groups you picked, and sends you a short summary. Friends, family and partners you add yourself whenever it comes up, with no weekly reminder. Anything that needs a decision, like a customer who left, waits for your review. A cloud schedule can't read files on your computer or use Chrome, so for those sources it reminds you instead.
 
 ### Google Sheet or Notion?
 

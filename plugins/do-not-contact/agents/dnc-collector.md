@@ -11,6 +11,7 @@ You read one source and find the people and companies the business must not cold
 - the source and how to get in (connector, browser, export file path, or pasted text);
 - the window (for example "last 12 months" or "since 2026-10-20");
 - whether the business is B2B or B2C;
+- the groups the student picked for this source (for example customers and open deals). Return rows for those groups only, even if you notice others;
 - for a CRM or platform, which records to read (customers, open deals, lost deals, partners);
 - in a weekly update, whether to also return CHANGES (see below).
 
@@ -48,7 +49,7 @@ If the connector fails or isn't available, stop and say so in one line. Never gu
 
 1. **Keys only.** Return an email, a LinkedIn profile URL or a company domain. No names, no phone numbers, no message text.
 2. **Note** is at most eight words of your own, for example "replied no to webinar invite". Never quote the person.
-3. **Scope:** person for one person, company for a domain block. Never put a personal email provider (gmail.com, outlook.com, yahoo and others) as a company domain.
+3. **Scope:** person for one person, company for a domain block. Never put a personal email provider (gmail.com, outlook.com, yahoo and others) as a company domain. A B2B customer or deal on a personal address becomes a person row with that email instead.
 4. **Added** is today. Source is one of: inbox, CRM, sequencer, course platform, LinkedIn, manual, other.
 5. **One row per key.** If the same person appears twice, keep the strongest reason, in this order: erasure request, unsubscribed, said no, bounced, customer, open deal, partner, competitor, personal, not now, other. This is the order `dnc.py` uses.
 

@@ -516,6 +516,9 @@ def cmd_merge(args):
         except ValueError as e:
             bad.append(f"line {n}: {e}")
             continue
+        if not active(row, args.today):
+            bad.append(f"line {n}: Until {row['Until']} has already passed, so it would block no one")
+            continue
         keys = {c: match_key(c, row[c]) for c in scope_columns(row["Scope"]) if row[c]}
         covered = {c: covering(index, c, row[c])[1] for c in keys}
         missing = [c for c in keys if not covered[c]]
