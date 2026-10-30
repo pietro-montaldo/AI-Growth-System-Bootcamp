@@ -4,13 +4,13 @@ One GTM Hub page links to everything. Four short pages and three databases sit u
 
 ```
 GTM Hub (page)
-├── Product & offer (page)
-├── ICP (page)
-├── Messaging & customer language (page)
-├── Competitors (page: summary on top, then the Competitors database inline)
+├── 📦 Product & offer (page)
+├── 🎯 ICP (page)
+├── 💬 Messaging & customer language (page)
+├── ⚔️ Competitors (page: summary on top, then the Competitors database inline)
 ├── Objections bank (database)
 ├── Customers (database)
-└── Updates to review (page, added at the handover: the review guide, then one child page per update report)
+└── 🔄 Updates to review (page, added at the handover: the review guide, then one child page per update report)
 ```
 
 ## Reuse before you create
@@ -41,22 +41,22 @@ Tool names vary slightly by connector version. Use the matching tool:
 `notion-search` across the whole workspace is used once, and only if the user wants help finding a parent page. Never use it to find GTM Hub pages.
 
 Editing tips that save a failed call:
-- Read `notion://docs/notion-flavored-markdown-spec` once (with `notion-fetch`) before the first write.
+- Read `notion://docs/notion-flavored-markdown-spec` once (with `notion-fetch`) before the first write, and follow `page-style.md` for how every page looks.
 - Before a targeted edit of the Hub links table, fetch the Hub page and copy the row exactly. Notion stores bold as `<b>` tags, turns domains like `Acme.AI` into links, and rewrites a mention when its target moves to Trash. Mentions of databases often don't match even when copied from a fetch, so anchor the edit on the plain text after the mention (for example `Linked, not copied | 2026-10-26 |`), adding the start of the next row when that text appears twice.
 - Fetching a database schema returns a lot of text. Fetch it once per run and reuse what you learned.
 
 ## Hub page
 
-Title: `GTM Hub`. Content, in this order:
+Title: `GTM Hub`, icon 🧭. Content, in this order (format in `page-style.md`):
 
-1. A callout with the summary: what the business sells in one sentence, the primary ICP in one sentence, and the "say this" line. Updated by the guide at the end of each run. Once updates are scheduled, it ends with one more line, kept current by the student's scheduled update: `Last refreshed: <date> · <n> new customers, <n> objections, <n> quotes · <n> updates to review`.
+1. A `blue_bg` callout with the summary, one bold label per line: what the business sells in one sentence, the primary ICP in one sentence, and the "say this" line. Updated by the guide at the end of each run. Once updates are scheduled, it ends with one more line, kept current by the student's scheduled update: `Last refreshed: <date> · <n> new customers, <n> objections, <n> quotes · <n> updates to review`.
 2. A short paragraph: "Agents: read the page you need by its link below. Query the databases with a filter. Don't copy this content anywhere else."
-3. A table: `Section | Link | One-line summary | Last updated`. One row per child page and database. A new section shows "Not started" in the summary column. Extra resources the user shared (case studies, a deck, a pricing sheet) get one row each, named `Resource: <name>`, linked and never copied.
+3. A styled table with a gray header row: `Section | Link | One-line summary | Last updated`. Links are page and database mentions. Dates in gray. One row per child page and database. A new section shows "Not started" in the summary column. Extra resources the user shared (case studies, a deck, a pricing sheet) get one row each, named `Resource: <name>`, linked and never copied.
 4. At the very bottom, the collapsed "For agents: links and settings" section (format below).
 
 ## Pages
 
-Create each page with the title above and a single line, `Not started. Run build-gtm-context or the matching section skill.` The section skills replace that line with their template.
+Create each page with the title and icon above (icons in `page-style.md`) and a single line, `Not started. Run build-gtm-context or the matching section skill.` The section skills replace that line with their template.
 
 ## Databases
 

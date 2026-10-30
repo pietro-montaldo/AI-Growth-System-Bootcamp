@@ -12,6 +12,7 @@ A competitor here is someone who sells the same result to the same or similar bu
 ## Reference files
 
 - `references/source-map.md`: where competitor notes usually live and how to get in.
+- `references/page-style.md`: how pages look in Notion (summary callout, toggles, label tables, tokens, colours) and how to edit them safely.
 
 ## Before starting
 
@@ -55,12 +56,25 @@ Show the table and the differences in the chat. Ask the user to correct "How we 
 ### 5. Write
 
 - **Dedupe:** one filtered query for all competitor names in this batch. Update existing rows, create the rest. Set Last checked to today.
-- **Competitors page:** replace the summary block at the top (above the inline database) with:
+- **Competitors page:** replace the summary block at the top (above the inline database) with this, in the Notion format from `references/page-style.md`:
 
-```markdown
-> **In short:** We mostly compete with <names>. Buyers choose us when <reason>. They choose others when <reason>.
-> **Who they sell to:** <the segment that shows up most across competitors>
-> Last updated: <YYYY-MM-DD>
+```
+<callout icon="⚔️" color="blue_bg">
+<b>In short:</b> We mostly compete with <names>.<br /><b>Who they sell to:</b> <the segment that shows up most across competitors><br /><span color="gray">Last updated: <YYYY-MM-DD></span>
+</callout>
+
+<columns>
+<column>
+**Buyers choose us when**
+
+- <reason>
+</column>
+<column>
+**They choose others when**
+
+- <reason>
+</column>
+</columns>
 ```
 
 - Update the Competitors row in the Hub links table.

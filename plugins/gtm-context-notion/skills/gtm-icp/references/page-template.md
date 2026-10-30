@@ -1,40 +1,108 @@
 # ICP page template
 
-One block per offer in scope, with up to 5 ICP cards each, strongest first. Each card follows "Structure of one ICP: a battlecard" in `icp-checks.md`: fixed labels, about 12 to 15 lines. Evidence goes once, at the bottom. The summary and score table at the top let an agent pick the right card fast.
+One block per offer in scope, with up to 5 ICP cards each, strongest first. Each card follows "Structure of one ICP: a battlecard" in `icp-checks.md`: the fixed labels, in that order, one table row each. Evidence goes once, at the bottom. The summary and the scoreboard at the top let an agent, or a person, pick the right card fast.
 
-```markdown
-> **In short:** <offer 1> sells best to <ICP 1 in one sentence>. <offer 2> sells best to <...>. We don't sell to <anti-ICP in a few words>.
-> **Built from:** <n best customers per offer / competitors' customers / no data yet>
-> Last updated: <YYYY-MM-DD>
+Write it in Notion's format, following `page-style.md`: the summary callout, a coloured scoreboard, one closed toggle per ICP with its label table, and tokens for filters. In the chat, show the same content as plain markdown.
 
-| Offer | ICP | Fit | Customers | Best | Why this score |
-|---|---|---|---|---|---|
-| <offer 1> | 1. <short name> | 5/5 | <n> | <n> | <best-customer rate, came back for more, reviews> |
+```
+<callout icon="🎯" color="blue_bg">
+<b>In short:</b> <offer 1> sells best to <ICP 1 in one sentence>. <offer 2> sells best to <...>.<br /><b>We don't sell to:</b> <anti-ICP in a few words><br /><b>Built from:</b> <n best customers per offer / competitors' customers / no data yet><br /><span color="gray">Last updated: <YYYY-MM-DD></span>
+</callout>
+
+## Scoreboard
+
+<table header-row="true" fit-page-width="true">
+<tr color="gray_bg">
+<td>Offer</td>
+<td>ICP</td>
+<td>Fit</td>
+<td>Customers</td>
+<td>Best</td>
+<td>Why this score</td>
+</tr>
+<tr>
+<td><offer 1></td>
+<td>1. <short name></td>
+<td color="green_bg">`5/5`</td>
+<td><n></td>
+<td><n></td>
+<td><best-customer rate, came back for more, reviews></td>
+</tr>
+</table>
 
 ## Offer: <offer 1>
 
-### ICP 1: <short name> (fit <score>/5)
-Who: <role + company type + situation, one sentence>
-Find them: titles: <...> | seniority: <...> | headcount: <...> | industry: <...> | geo: <...> | tech: <... or leave out>
-Score: +2 <signal> · +2 <signal> · +1 <signal> · -1 <signal> · -2 <signal>
-Trigger: <moment that makes them look now>
-Their words: "<verbatim pain quote>"
-Lead with: <value prop> · proof: <one result, number or customer type>
-Expect: <top objection> → <answer that works>
-Not them: <who looks like a fit but isn't, and why>
-Say this: "<one line in their words>"
+<one line: what this offer is and its price, as tokens: `USD 699`>
 
-### ICP 2 to 5: <short name> (fit <score>/5)
-<same card, one per distinct group in this offer's data>
+<toggle heading="h3">
+ICP 1: <short name> (fit <score>/5)
+
+<table header-column="true" fit-page-width="true">
+<colgroup>
+<col width="140" color="gray_bg" />
+<col />
+</colgroup>
+<tr>
+<td>Who</td>
+<td><role + company type + situation, one sentence></td>
+</tr>
+<tr>
+<td>Find them</td>
+<td>`titles: <...>` `seniority: <...>` `headcount: <...>` `industry: <...>` `geo: <...>` `tech: <... or leave out>`</td>
+</tr>
+<tr>
+<td>Score</td>
+<td><span color="green">+2</span> <signal (where to check)><br /><span color="green">+1</span> <signal><br /><span color="red">-1</span> <signal><br /><span color="red">-2</span> <signal></td>
+</tr>
+<tr>
+<td>Trigger</td>
+<td><moment that makes them look now></td>
+</tr>
+<tr>
+<td>Their words</td>
+<td><i>"<verbatim pain quote>"</i></td>
+</tr>
+<tr>
+<td>Lead with</td>
+<td><value prop><br /><b>Proof:</b> <one result, number or customer type></td>
+</tr>
+<tr>
+<td>Expect</td>
+<td><top objection> → <answer that works></td>
+</tr>
+<tr>
+<td>Not them</td>
+<td><span color="red"><who looks like a fit but isn't, and why></span></td>
+</tr>
+<tr>
+<td>Say this</td>
+<td><b>"<one line in their words>"</b></td>
+</tr>
+</table>
+</toggle>
+
+<toggle heading="h3">
+ICP 2: <short name> (fit <score>/5)
+
+<same table, one card per distinct group in this offer's data, up to 5>
+</toggle>
 
 ## Offer: <offer 2>
-<same structure. If an ICP is the same as one above, write "Same as <offer 1>, ICP <n>: <name>" and only what differs (Lead with, Expect).>
+
+<same structure. If an ICP is the same as one above, its toggle holds one line, "Same as <offer 1>, ICP <n>: <name>", and a table with only the rows that differ (Lead with, Expect).>
 
 ---
 
 ## For agencies and B2B2C: your clients' customers
+
 <who they are, and what your client needs you to reach them>
 
-## Evidence
-<per offer: the best customers or competitor customers each ICP is based on (company names only), and evidence tags: (customers), (from competitors, confirm), (guess, confirm)>
+<toggle heading="h2">
+Evidence
+
+- <per offer and ICP: the best customers or competitor customers it's based on (company names only), with evidence tags: (customers), (from competitors, confirm), (guess, confirm)>
+- <how the ICP names map to the Customers database's ICP segment values>
+</toggle>
 ```
+
+Fit colours on the scoreboard: `green_bg` for 5, `yellow_bg` for 3 and 4, `gray_bg` for 1 and 2. One offer only: drop the "Offer" headings and the Offer column.

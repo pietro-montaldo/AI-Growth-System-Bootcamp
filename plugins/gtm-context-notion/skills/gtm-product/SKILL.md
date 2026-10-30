@@ -12,6 +12,7 @@ Every other section builds on this page: the ICP says who it's for, messaging sa
 ## Reference files
 
 - `references/page-template.md`: the page layout to fill.
+- `references/page-style.md`: how pages look in Notion (summary callout, toggles, label tables, tokens, colours) and how to edit them safely.
 - `references/sections.md`: the quality bar for every GTM section.
 - `references/source-map.md`: where this usually lives and how to get in (connector, browser, export, paste).
 

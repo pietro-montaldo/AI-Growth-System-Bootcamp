@@ -16,7 +16,7 @@ Look for that pattern in **public attributes**, not only in what customers said.
 
 ## Structure of one ICP: a battlecard
 
-Each ICP is one card an agent can act on and a person can read in 20 seconds: about 12 to 15 lines, with fixed labels so agents can parse it. Anything longer (evidence, rationale) goes in the page's single "Evidence" section at the bottom.
+Each ICP is one card an agent can act on and a person can read in 20 seconds: about 12 to 15 lines, with fixed labels so agents can parse it. The page template sets the layout (one row per label in a Notion table, one line per label in a markdown file), but the labels and their order never change. Anything longer (evidence, rationale) goes in the page's single "Evidence" section at the bottom.
 
 - **Who:** role + company type + situation, one sentence. Example: "Founder-CEO of a 5 to 30 person B2B services firm who still runs sales personally."
 - **Find them:** the hard filters, written as filters a prospecting tool (Clay, Apollo, Sales Navigator) can run directly: `titles: ... | seniority: ... | headcount: ... | industry: ... | geo: ... | tech: ...`. All must be true. 3 to 6 filters, all checkable in public data.
