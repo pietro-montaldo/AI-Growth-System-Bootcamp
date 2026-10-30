@@ -13,7 +13,7 @@ Every step below is shown first and done after one OK. The student can stop at a
 - **One more line in the pointer** in Claude's memory, so "review GTM updates" works from any project.
 - **GitHub version only:** `gtm_csv.py` committed to `~/gtm-context/scripts/`, so runs can query and update the CSV banks.
 
-The task ID is fixed for every student: `gtm-update`. Never ask.
+The task is named "Weekly GTM update", with the ID `gtm-update`. Never ask. If that ID is taken (a deleted task can leave its folder behind), `create_scheduled_task` names a free one, such as `gtm-update-2`: use it, and write the real ID wherever the task is named (the hub's Updates block and the review guide).
 
 ## 1. Plan the updates
 
@@ -29,11 +29,11 @@ Then settle, with AskUserQuestion where it's a choice:
 
 - Create the "Updates to review" page under the Hub (Notion) or the `gtm/updates/` folder (GitHub), if it doesn't exist. Its link goes into the task prompt.
 - Add the "Last refreshed" line to the end of the hub summary (the Hub callout, or the summary block in `gtm/README.md`), so every run has a line to update.
-- **GitHub version only:** copy `gtm_csv.py` from this skill's `scripts/` to `~/gtm-context/scripts/gtm_csv.py`. It's committed with the rest at the end of the handover.
+- **GitHub version only, when any bank is a CSV file:** copy `gtm_csv.py` from this skill's `scripts/` to `~/gtm-context/scripts/gtm_csv.py`. It's committed with the rest at the end of the handover. Skip it when every bank lives in a linked system (Notion, a CRM).
 
 ## 3. Write the task prompt and the review guide
 
-Fill in `references/update-task-template.md` as its header says. It has two parts:
+Fill in `references/update-task-template.md` as its header says. Paste the playbook sections as they are, headings included: the report and alert formats inside them must stay word for word. It has two parts:
 - **The task prompt** (between the task markers): where things live, where new information comes from, the run steps, the reading briefs, and the update rules pasted in from `update-playbook.md` and `mining-playbook.md`.
 - **The review guide** (between the guide markers): how to review a report and how to change the settings.
 
@@ -46,7 +46,9 @@ Write the review guide onto the "Updates to review" page (Notion, below its firs
 - **App task:** `create_scheduled_task` with taskId `gtm-update`, title "Weekly GTM update", the cron expression (for example `0 8 * * 1`) and the filled task prompt.
 - **Cloud task:** run the `/schedule` skill with the same prompt and timing. Select a repository: `gtm-context` in the GitHub version (the run writes there). In the Notion version a cloud task still needs one repository; any repo of theirs works, because the run doesn't change it. Leave on the connectors the plan uses, plus the alert one.
 
-If a `gtm-update` task already exists, this is a rerun: read its current prompt, carry over its settings unless the user changes them, show the diff, and update it (`update_scheduled_task`, or `/schedule` for a cloud task).
+Check for a rerun with `list_scheduled_tasks` (a task titled "Weekly GTM update"), not by looking at task folders: a deleted task can leave its folder behind. If one exists, read its current prompt, carry over its settings unless the user changes them, show the diff, and update it (`update_scheduled_task`, or `/schedule` for a cloud task). If the hub's Updates block names a task that no longer exists, say so and create a new one.
+
+**Older setups:** if the hub's Updates block names an update plugin (`my-gtm-context`, from a `gtm-update` repo), carry its settings over from that plugin's `SKILL.md` (`~/gtm-update/plugins/my-gtm-context/skills/update-gtm-context/SKILL.md`): links, source plan, run steps for their own databases, alert and git settings. Afterwards, tell the user the plugin is no longer needed: they remove it in Customize > Plugins and can delete the `gtm-update` repo themselves.
 
 Record it under "Updates" in the hub (format in `hub-structure.md` or `repo-structure.md`).
 
