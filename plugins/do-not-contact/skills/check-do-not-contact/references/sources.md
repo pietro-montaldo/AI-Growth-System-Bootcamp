@@ -18,7 +18,7 @@ The student decides who goes on the list. Claude interviews, advises and reads o
 | Open deals | open deal | company for B2B, person for B2C | A cold email in the middle of a deal confuses the buyer | CRM pipeline |
 | Friends and family | personal | person | Automated outreach to people close to you is awkward | Their head, phone contacts, a list they paste |
 | Partners and investors | partner | person or company | They expect a personal message, not a sequence | Their head, a partners list, CRM tags |
-| Testimonial givers and references | testimonial | person | They vouch for you in public, so a cold pitch to them feels careless. Listed on their own, they stay protected even if they never bought or stop buying | Your website's testimonials or case studies page, review platforms (Maven reviews, G2, Trustpilot), a testimonials doc, the GTM context customers bank |
+| Customers who gave a testimonial | testimonial | person | They vouch for you in public. Listed on their own, they stay protected even after they stop buying | Their customer records (CRM, payment or course platform), matched to the names on the testimonials or case studies page, reviews, or a testimonials doc. The records give the email; the page only says who. |
 | Competitors | competitor | company | Pitching them gives away your playbook | A competitors list, the GTM context |
 | People who said no or asked to stop | said no | person | Contacting them again costs trust and can get you reported | Email replies, LinkedIn DMs, CRM notes, deals lost as "not interested" |
 | "Not now, maybe later" | not now, Until = 6 months from the reply | person | They asked for time, so you wait | Email replies, DMs, CRM notes |
