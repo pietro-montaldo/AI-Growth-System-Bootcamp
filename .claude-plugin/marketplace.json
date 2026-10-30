@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Claude plugins from the AI Growth Systems Bootcamp. Voice Miner: learn your real voice from your sent email and sales calls, without the AI tells. GTM context: build your go-to-market context layer (product, ICP, competitors, customer language, objections, shareable customers) in Notion or in GitHub only. Do not contact: one list of people your outreach must skip, kept in a Google Sheet or Notion and checked before every send.",
-    "version": "0.8.0"
+    "version": "0.8.1"
   },
   "plugins": [
     {
@@ -30,8 +30,8 @@
     {
       "name": "do-not-contact",
       "source": "./plugins/do-not-contact",
-      "description": "One do-not-contact list every outreach system checks first: people who said no, unsubscribed or bounced, plus customers and open deals. Collected from your inbox, CRM, sending tool and platforms, kept in a Google Sheet or Notion, updated weekly.",
-      "version": "1.1.0"
+      "description": "One do-not-contact list every outreach system checks first, built from your own description of who must never be contacted: people who said no, unsubscribed or bounced, customers, open deals, friends, family and partners. Read only from the places you name, kept in a Google Sheet or Notion, updated weekly. If your CRM already holds it all, that stays your list.",
+      "version": "1.2.0"
     }
   ]
 }

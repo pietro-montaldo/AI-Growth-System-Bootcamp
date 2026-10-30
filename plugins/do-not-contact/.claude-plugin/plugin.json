@@ -1,8 +1,8 @@
 {
   "name": "do-not-contact",
   "displayName": "Do Not Contact",
-  "version": "1.1.0",
-  "description": "Build and keep one do-not-contact list that every outreach system checks first: people who said no, unsubscribed or bounced, plus customers and open deals. Collects them from your inbox, CRM, sending tool and platforms, saves them in a Google Sheet or Notion, updates weekly, and checks lead lists before you send. From the NotLinear AI Growth Systems Bootcamp.",
+  "version": "1.2.0",
+  "description": "Build and keep one do-not-contact list that every outreach system checks first, starting from your own description of who must never be contacted: people who said no, unsubscribed or bounced, customers, open deals, friends, family and partners. Reads only the places you point to, saves the list in a Google Sheet or Notion, updates weekly, and checks lead lists before you send. If your CRM already holds it all, it says so and uses the CRM instead. From the NotLinear AI Growth Systems Bootcamp.",
   "author": { "name": "NotLinear", "url": "https://www.notlinear.ai" },
   "homepage": "https://maven.com/pietro-montaldo/ai-growth-system-bootcamp-claude",
   "license": "MIT",

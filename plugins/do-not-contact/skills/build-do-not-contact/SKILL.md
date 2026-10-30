@@ -1,18 +1,18 @@
 ---
 name: build-do-not-contact
-description: "Build your do-not-contact list with you: everyone your outreach must skip. It finds them where they already are (email replies that said no or unsubscribe, bounces, your CRM's customers and open deals, your sending tool's unsubscribes, your course or payment platform's buyers) and saves them in a Google Sheet or a Notion database, your choice. Then it tells every later system to check the list before contacting anyone, and schedules a weekly update. Use for \"build my do-not-contact list\", \"set up a suppression list\", \"make sure I never message people who said no\", \"stop double-texting people\", \"who shouldn't I contact\", or the first time you use this plugin. Not for adding one person (use update-do-not-contact) or checking a lead list (use check-do-not-contact)."
+description: "Build your do-not-contact list with you, starting from your own description of who your outreach must never reach. It interviews you about those people (people who said no, customers, open deals, friends, family, partners and others) and advises you, then reads only the places you point it to, and saves the list in a Google Sheet or a Notion database, your choice. If your CRM already holds all of this, it tells you a second list isn't needed and stops. Otherwise it tells every later system to check the list before contacting anyone, and schedules a weekly update from the sources you named. Use for \"build my do-not-contact list\", \"set up a suppression list\", \"make sure I never message people who said no\", \"stop double-texting people\", \"who shouldn't I contact\", or the first time you use this plugin. Not for adding one person (use update-do-not-contact) or checking a lead list (use check-do-not-contact)."
 metadata:
-  version: "1.1.0"
+  version: "1.2.0"
 ---
 
 # Build your do-not-contact list
 
-One list that every outreach system checks before it contacts anyone. It holds people who said no, unsubscribed or bounced, plus customers, open deals and anyone the student keeps off-limits. This guide finds them where they already are, saves them in a Google Sheet or Notion, and keeps the list growing every week.
+One list that every outreach system checks before it contacts anyone. The student decides who goes on it. This guide interviews them, advises, reads only the places they point to, saves the list in a Google Sheet or Notion, and keeps it growing every week from those same places.
 
 ## Reference files
 
+- `references/sources.md`: the interview, the groups people usually keep off-limits and where they tend to be, the CRM check, how to get into each source, and what counts as a no.
 - `references/storage.md`: Google Sheet or Notion, with the pros and cons table, the columns, the tabs or databases, the tools, and the pointer block.
-- `references/sources.md`: who belongs on the list, where they usually are, how to get into each source, and what counts as a no.
 - `references/rules.md`: matching, what is never deleted, approvals, privacy, and sending tools.
 - `scripts/dnc.py`: cleans keys, merges new rows without duplicates, checks lead lists and writes blocklists. Run it with `python3` by its full path in this skill's folder. `--help` lists the commands.
 
@@ -21,50 +21,67 @@ Temporary files go in `~/do-not-contact/.private/` (create it). Delete them at t
 ## Start
 
 Explain in three lines:
-- What they'll end up with: one list every system checks first, so nobody who said no hears from them again, and no customer gets a cold pitch.
-- How it works: "Tell me where your replies, customers and unsubscribes live. I'll read them, show you who I found, and save the list after your OK." About 15 minutes of their time.
-- Nothing is ever sent. The list keeps emails and profile links only, never names or messages.
+- What they'll end up with: one list every system checks first, so nobody they want to protect hears from them by mistake.
+- How it works: "Tell me who you never want your outreach to reach. I'll help you think it through, you tell me where those people are, and I'll build the list from there." About 15 minutes of their time.
+- Nothing is ever sent. The list keeps emails, profile links and domains only, never names or messages.
 
 ## Step 0. Check what exists
 
-- Look for a `do-not-contact:start` block in `~/.claude/CLAUDE.md`. If it's there, the list exists. Say so and offer:
-  - collect again from all sources (steps 2, 4 and 5 only; the list, pointer and schedule already exist, and the merge skips what's listed);
+- Look for a `do-not-contact:start` block in `~/.claude/CLAUDE.md`.
+- If it says the CRM is the list, say so. Offer to run the interview again (things may have changed), or stop.
+- If it links a list, the list exists. Say so and offer:
+  - collect again from the same sources (steps 5 and 6 only; the list, pointer and schedule already exist, the source plan holds the groups and B2B or B2C, and the merge skips what's listed);
   - change the sources or the schedule (use update-do-not-contact, settings);
   - stop.
-- If they use the GTM context kit (a `gtm-context:start` block), read its "Sources". The CRM, inbox and platforms are already known.
+- If they use the GTM context kit (a `gtm-context:start` block), read its "Sources" quietly. Use it only to make better suggestions in steps 1 and 2. The student still decides.
 
-## Step 1. Pick where it lives
+## Step 1. The interview: who must never hear from you
+
+Follow "The interview" in `sources.md`. In short:
+1. Ask the open question first and let them answer in their own words: "Who should your outreach never reach?"
+2. Play their answer back as groups, then suggest the groups they didn't mention from "Groups people usually keep off-limits", as advice, one line each on why. They pick. Never add a group they didn't confirm.
+3. Ask "B2B or B2C?" only if it isn't obvious.
+
+**The CRM check.** Then ask about the groups they picked, by name: "Do you already keep all of these in a CRM?"
+- **Yes, all of it:** the CRM already is their do-not-contact list, so a second list would only drift out of date. Say so plainly, give the tips in `sources.md` ("When the CRM is the list"), offer the CRM pointer after one OK, and stop here. Build nothing else.
+- **Partly, or no:** carry on. A CRM that holds some groups becomes one of the sources.
+
+## Step 2. Where each group lives
+
+The student guides, Claude advises (`sources.md`, "Where each group lives"):
+- For each group they picked, ask where those people are today. Offer the usual places as suggestions ("customers are often in your payment platform"), but read only what the student names.
+- For each place, also ask where new people of that group will show up from now on. This becomes the weekly update plan: `auto`, `auto (app only)`, `you` or `you (when it happens)` (`sources.md`, "Will each source stay current?").
+- Settle access per place, in the order in `sources.md`: connector, browser (read-only), export, paste.
+- Groups that live only in their head (friends, family, some partners) are typed or pasted now, as emails or profile links, never names. They're `you (when it happens)`: no weekly reminder. LinkedIn is paste only.
+
+Show the plan as one short table (source, groups, how we read it, who keeps it current) and get an OK before moving on.
+
+## Step 3. Pick where it lives
 
 Show the pros and cons table from `storage.md` and recommend, following its rules: Google Sheet for most students, Notion when their CRM is in Notion and they don't send from an email tool. Ask with AskUserQuestion.
 
 Then check the connector: Google Sheets (and Drive) for a Sheet, Notion for Notion. If it's missing, say so and say where to turn it on. For a Sheet, offer the no-connector path in `storage.md` as a fallback.
 
-## Step 2. Map the sources
-
-- Show the "What to collect" table from `sources.md`. Ask for each row in one message: a tool, a link, or "none". Ask "B2B or B2C?" only if it isn't obvious.
-- Then settle access per source, using the order in `sources.md`: connector, browser (read-only), export, paste.
-- LinkedIn is paste only. Ask them to paste the profile links of people who said no there, if they remember any.
-
-## Step 3. Create the list
+## Step 4. Create the list
 
 Follow `storage.md`:
 - **Sheet:** create it with three tabs (`Do not contact`, `To review`, `Read me`) and the header rows.
 - **Notion:** the `Do not contact` page with the two databases. Ask for the parent page, or use the GTM Hub if they have one.
 
-Fill the source plan (`Source | How we read it | Who | Last run`) from step 2. Leave Last run empty for now.
+Fill the `Business` line and the source plan (`Source | Groups | How we read it | Who | Last run`) from the plan the student approved in step 2. Last run stays empty until step 6.
 
-## Step 4. Collect
+## Step 5. Collect
 
-- Start one `dnc-collector` agent per source, in parallel. Each brief holds:
+- Start one `dnc-collector` agent per place the student named, in parallel. Each brief holds:
   - the source and how to get in;
   - the window (last 12 months for the inbox, all records for the CRM and platforms);
   - B2B or B2C;
-  - which records to read.
+  - which records to read, for the groups the student picked only.
 - Run browser sources in the main conversation, one page at a time, since the browser is shared.
-- Save the ROWS from every agent into one file, `~/do-not-contact/.private/new.csv`. Keep the UNSURE lists for step 5.
-- Add rows for anything the student typed or pasted (partners, competitors, friends, LinkedIn links), with Source manual or LinkedIn.
+- Save the ROWS from every agent into one file, `~/do-not-contact/.private/new.csv`. Keep the UNSURE lists for step 6.
+- Add rows for anything the student typed or pasted (friends, family, partners, competitors, LinkedIn links), with Source manual or LinkedIn.
 
-## Step 5. Show and approve
+## Step 6. Show and approve
 
 Run:
 
@@ -82,16 +99,16 @@ Show:
 
 Then go through the unsure list with AskUserQuestion, up to 4 per question, each one "add" or "leave out". Add the yes's as rows to `new.csv` and run the merge again, so they're cleaned and deduped too. Show the new counts.
 
-Ask once: "Save these <n> rows to your list?" On yes, write `add.csv` with the tools in `storage.md`, then confirm the new row count.
+Ask once: "Save these <n> rows to your list?" On yes, write `add.csv` with the tools in `storage.md`, then confirm the new row count. Set Last run to today for every source read in step 5, and for every row that only starts with the weekly run.
 
-## Step 6. Tell every system about it
+## Step 7. Tell every system about it
 
 - Show the pointer block from `storage.md` and write it into `~/.claude/CLAUDE.md` after one OK.
 - If they have a GTM Hub or `gtm/README.md`, offer to add the one-line link there too.
 
-## Step 7. Keep it growing
+## Step 8. Keep it growing
 
-Recommend a weekly update (Monday 08:00). Say in two lines each:
+The update reads the same places the student named in step 2, following the plan they approved. Recommend a weekly update (Monday 08:00). Say in two lines each:
 - **A scheduled task in the Claude app** (recommended): runs on their computer while the app is open, can use Claude in Chrome and read exports in `~/do-not-contact/.private/`. Create it with `create_scheduled_task`: taskId `do-not-contact-update`, cron `0 8 * * 1`, description "Weekly do-not-contact update", and the prompt below.
 - **A cloud scheduled task:** runs even when the computer is off, connectors only. It can't use Claude in Chrome or read files on their computer, so "auto (app only)" and export sources become reminders in the summary. It needs this course marketplace added in Claude under Customize > Plugins, because cloud runs don't load plugins installed with `/plugin`. Create it with the `/schedule` skill.
 

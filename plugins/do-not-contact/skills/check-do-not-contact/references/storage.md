@@ -45,7 +45,8 @@ Ask with AskUserQuestion: "Google Sheet (Recommended)" and "Notion", each with o
 3. `Read me`, which holds:
    - three lines on what the list is for;
    - the rule "Before contacting anyone, check this list. When someone says no, add them";
-   - a small table, `Source | How we read it | Who | Last run`, one row per source. "Who" is auto, auto (app only) or you. The weekly run updates `Last run`.
+   - one line, `Business: B2B` or `Business: B2C`;
+   - the source plan, a small table `Source | Groups | How we read it | Who | Last run`, one row per source. "Groups" lists the groups the student picked for that source (for example "customers, open deals"). "Who" is auto, auto (app only), you, or you (when it happens). The build fills `Last run` with the day it read the source, and the weekly run updates it.
 
 **Create it:**
 - If the Google Drive connector can create a Google Sheet, create one called "Do not contact".
@@ -77,7 +78,8 @@ Ask with AskUserQuestion: "Google Sheet (Recommended)" and "Notion", each with o
 
 **Layout: one page with two databases.** The page is called `Do not contact`. It goes under a page the student names, or under their GTM Hub if they have one. It holds:
 - a short callout: what the list is for, and the rule;
-- the `Sources` table (`Source | How we read it | Who | Last run`);
+- the line `Business: B2B` or `Business: B2C`;
+- the `Sources` table (`Source | Groups | How we read it | Who | Last run`), filled as in the Sheet's `Read me`;
 - the inline database `Do not contact list` (the columns above);
 - the inline database `To review` (the same columns plus `Why unsure`, text, and `Proposed`, select: add, remove).
 
@@ -114,6 +116,16 @@ Every later system has to find the list without asking. Add this block to `~/.cl
 ## Do-not-contact list
 - List: <Sheet link or Notion page link> (<Google Sheet | Notion>)
 - Before contacting anyone, check them with the check-do-not-contact skill. When someone says no, unsubscribes or bounces, add them with update-do-not-contact.
+<!-- do-not-contact:end -->
+```
+
+**When the CRM is the list** (`sources.md`, "When the CRM is the list"), there's no separate list. Offer this block instead, after one OK, so later systems check the CRM:
+
+```
+<!-- do-not-contact:start -->
+## Do-not-contact list
+- List: my CRM (<tool>). Off-limits contacts are marked "<status or tag>". There is no separate list.
+- Before contacting anyone, check them in the CRM. When someone says no, unsubscribes or bounces, mark them there.
 <!-- do-not-contact:end -->
 ```
 
