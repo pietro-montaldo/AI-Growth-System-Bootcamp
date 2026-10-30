@@ -46,6 +46,8 @@ Temporary files go in `~/do-not-contact/.private/`. Delete them at the end, exce
    - how many leads had no email, LinkedIn link or website. They couldn't be checked, so they're in keep.csv but flagged. Suggest finding an email or profile link before contacting them;
    - where the files are.
 
+   If `list_rows_with_unreadable_until` is above 0, add one line: that many list rows have an Until date the script can't read, so they still block. Suggest writing those dates as 2027-05-01.
+
 When another skill or agent called this, return the same three lines and the path to `keep.csv`. Then that system works from keep.csv only.
 
 ## Make a blocklist for a sending tool

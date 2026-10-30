@@ -51,6 +51,7 @@ Ask with AskUserQuestion: "Google Sheet (Recommended)" and "Notion", each with o
 - If the Google Drive connector can create a Google Sheet, create one called "Do not contact".
 - Otherwise ask the student to open `sheets.new`, name it "Do not contact" and paste the link.
 - Then add the three tabs and write the header rows with the Google Sheets connector.
+- Format the `Until` and `Added` columns (F and H) of both list tabs as dates with the pattern `yyyy-mm-dd` (`update_spreadsheet`, `repeatCell` with `numberFormat` `{"type": "DATE", "pattern": "yyyy-mm-dd"}`). Then a date typed by hand in any country's style still reads back as `2027-05-01`, which `dnc.py` needs.
 - Remind them to share it with their team only, never "anyone with the link".
 
 **Read and write with the Google Sheets connector.** Tool names vary a little by connector version.

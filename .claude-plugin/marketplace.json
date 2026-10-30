@@ -31,7 +31,7 @@
       "name": "do-not-contact",
       "source": "./plugins/do-not-contact",
       "description": "One do-not-contact list every outreach system checks first: people who said no, unsubscribed or bounced, plus customers and open deals. Collected from your inbox, CRM, sending tool and platforms, kept in a Google Sheet or Notion, updated weekly.",
-      "version": "1.0.0"
+      "version": "1.0.1"
     }
   ]
 }
