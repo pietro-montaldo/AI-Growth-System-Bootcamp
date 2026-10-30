@@ -1,6 +1,6 @@
 ---
 name: build-gtm-context
-description: "Build your whole go-to-market context layer in Notion with you. First it finds where your GTM information already lives (Notion, CRM, course or payment platform, website, calls, email) and reads it, through a connector or by browsing. Then it drafts product and offer, customers, competitors, ICP, customer language, objections and shareable logos, and asks you only about real gaps. Everything lands in one GTM Hub page. At the end it creates your own update skill, on your Claude account, that keeps the context current on a schedule. Resumes where you left off. Use for \"build my GTM context\", \"set up my GTM Hub\", \"start the context layer\", \"help me define my ICP and messaging\", \"System 1\", \"set up my GTM updates\", or the first time you use this plugin. Not for redoing one section only (use the matching gtm-* skill, for example gtm-objections)."
+description: "Build your whole go-to-market context layer in Notion with you. First it finds where your GTM information already lives (Notion, CRM, course or payment platform, website, calls, email) and reads it, through a connector or by browsing. Then it drafts product and offer, customers, competitors, ICP, customer language, objections and shareable logos, and asks you only about real gaps. Everything lands in one GTM Hub page. At the end it sets up a scheduled task of your own that keeps the context current. Resumes where you left off. Use for \"build my GTM context\", \"set up my GTM Hub\", \"start the context layer\", \"help me define my ICP and messaging\", \"System 1\", \"set up my GTM updates\", or the first time you use this plugin. Not for redoing one section only (use the matching gtm-* skill, for example gtm-objections)."
 metadata:
   version: "0.3.0"
 ---
@@ -14,9 +14,9 @@ This is the guide. It works in three moves: **find** what the user already has, 
 - `references/source-map.md`: the buckets, where they usually live, how to ask, and how to get into each source (connector, browser, export, paste).
 - `references/hub-structure.md`: the Hub, its pages and database schemas, reusing existing databases, the Notion tools, and the "For agents" section that makes the Hub its own map.
 - `references/sections.md`: what each section captures and the quality bar.
-- `references/handover.md`: the last step. Creates the student's own update plugin in a private `gtm-update` repo, adds it to their Claude account, schedules it, and removes the course plugin.
-- `references/update-skill-template.md`: the update skill the handover fills in for this student.
-- `references/update-playbook.md` and `references/mining-playbook.md`: copied into the student's update plugin.
+- `references/handover.md`: the last step. Plans where new information comes from, creates the student's own scheduled update task, writes the review guide, and removes the course plugin.
+- `references/update-task-template.md`: the task prompt and review guide the handover fills in for this student.
+- `references/update-playbook.md` and `references/mining-playbook.md`: pasted into the task prompt.
 - `references/context-home.md`: how every session finds the context (the Hub link in Claude's memory, never asked), and older setups.
 - `scripts/gtm_home.py`: checks the pointer, writes it, and finds old links files. Call it by its full path in this skill's folder.
 
@@ -93,13 +93,13 @@ When the sources already answered most of product, ICP and messaging, draft thos
    - How many items are still marked `(guess, confirm)` or `draft`, and where they are.
 3. Tell them in one line that later course systems find the Hub through Claude's memory and fetch only the pages they need.
 
-## Step 12. Hand over: your own update skill
+## Step 12. Hand over: your own scheduled update
 
-The context goes stale within weeks: prices change, new customers buy, new objections show up. From now on the user only needs to keep it current, so the build ends by giving them their own update skill and removing the course plugin. Say that in two sentences, then follow `references/handover.md` step by step:
+The context goes stale within weeks: prices change, new customers buy, new objections show up. From now on the user only needs to keep it current, so the build ends with one scheduled task of their own, and the course plugin can go. Say that in two sentences, then follow `references/handover.md` step by step:
 1. Plan where new information comes from, for every source (live or snapshot, and who gets it).
 2. Pick where and when it runs, and email or Slack for alerts.
-3. Write their `my-gtm-context` plugin, publish it as a private `gtm-update` repo, and add it to their Claude account.
-4. Create the schedule, offer a first run, then remove the course plugin.
+3. Write the task prompt and the review guide from `references/update-task-template.md`, and create the schedule.
+4. Point Claude's memory at the review guide, offer a first run, then remove the course plugin.
 
 Each step needs one OK. If they stop, they pick up later by saying "set up my GTM updates", which jumps straight here.
 

@@ -10,7 +10,7 @@ GTM Hub (page)
 ├── Competitors (page: summary on top, then the Competitors database inline)
 ├── Objections bank (database)
 ├── Customers (database)
-└── Updates to review (page, added at the handover: one child page per update report)
+└── Updates to review (page, added at the handover: the review guide, then one child page per update report)
 ```
 
 ## Reuse before you create
@@ -49,7 +49,7 @@ Editing tips that save a failed call:
 
 Title: `GTM Hub`. Content, in this order:
 
-1. A callout with the summary: what the business sells in one sentence, the primary ICP in one sentence, and the "say this" line. Updated by the guide at the end of each run. Once updates are scheduled, it ends with one more line, kept current by the student's update skill: `Last refreshed: <date> · <n> new customers, <n> objections, <n> quotes · <n> updates to review`.
+1. A callout with the summary: what the business sells in one sentence, the primary ICP in one sentence, and the "say this" line. Updated by the guide at the end of each run. Once updates are scheduled, it ends with one more line, kept current by the student's scheduled update: `Last refreshed: <date> · <n> new customers, <n> objections, <n> quotes · <n> updates to review`.
 2. A short paragraph: "Agents: read the page you need by its link below. Query the databases with a filter. Don't copy this content anywhere else."
 3. A table: `Section | Link | One-line summary | Last updated`. One row per child page and database. A new section shows "Not started" in the summary column. Extra resources the user shared (case studies, a deck, a pricing sheet) get one row each, named `Resource: <name>`, linked and never copied.
 4. At the very bottom, the collapsed "For agents: links and settings" section (format below).
@@ -135,7 +135,7 @@ Read this instead of searching. Settings only, no content. Kept current by the G
 **Best-customer rule:** <for example "came back for more, or left 2+ reviews">
 
 **Updates** (added at the handover)
-- Update skill: update-gtm-context in the my-gtm-context plugin, private repo <owner>/gtm-update
+- Update task: gtm-update (its prompt holds the source plan; review guide on the Updates to review page)
 - Runs: <Claude app scheduled task gtm-update | cloud scheduled task> · <cadence, for example every Monday 08:00>
 - Full check: first run of each month
 - Alert: <email to your own address | Slack DM to yourself> (the address or member ID is only in the scheduled prompt, never on the page)

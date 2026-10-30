@@ -15,7 +15,7 @@ The setup adds a short block to Claude's global memory file (`~/.claude/CLAUDE.m
 
 Show the user the block (`gtm_home.py pointer ... --print`) and write it after one OK, because it's their global settings. It sits between two marker lines, so later runs update it in place instead of adding a second copy.
 
-Because the Notion pointer is only a link, it works anywhere Notion is connected: another computer, Cowork, or a cloud routine. The student's own update skill has the Hub link written into it, so scheduled updates find the context without local memory.
+Because the Notion pointer is only a link, it works anywhere Notion is connected: another computer, Cowork, or a cloud routine. The student's scheduled update task has the Hub link written into its prompt, so scheduled updates find the context without local memory.
 
 ## Reading the folder from any project (GitHub version)
 

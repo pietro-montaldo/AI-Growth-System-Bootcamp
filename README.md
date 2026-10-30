@@ -141,18 +141,18 @@ About 30 minutes of your time, less if a lot already exists. You can stop at any
 8. **Customer language.** With your OK, Claude reads recent calls, webinars, emails and DMs and pulls out how buyers describe the problem in their own words.
 9. **Objections,** grouped by theme with the answers that work.
 10. **Logo permission:** which customers you may show publicly. Only the ones that said yes.
-11. **Your own update skill,** so it stays current (see below).
+11. **Your own scheduled update,** so it stays current (see below).
 
 You see every draft before anything is written. Nothing is ever sent, and in the GitHub version nothing is committed or pushed without asking. While the course plugin is installed, you can also run any section on its own, for example `/gtm-context-github:gtm-objections` to redo objections from last month's calls.
 
-### Keep it fresh: your own update skill
+### Keep it fresh: your own scheduled update
 
-Context goes stale within weeks: prices change, new customers buy, new objections show up. After the first build you only need to keep it current, so the build ends by handing you your own update skill and removing the course plugin:
+Context goes stale within weeks: prices change, new customers buy, new objections show up. After the first build you only need to keep it current, so the build ends by setting up a scheduled task of your own and removing the course plugin:
 
 1. **Plan where new information comes from.** For every source you gave, Claude works out whether it keeps updating on its own (a CRM, your inbox, your call recorder, a dashboard) or was a one-off (an uploaded file, a pasted list). For one-offs it asks where new customers or objections will show up from now on, and whether it can fetch them or you'll send them.
 2. **Pick where and when it runs.** A scheduled task in the Claude app (on your computer, can read dashboards like Maven through Claude in Chrome) or in the cloud (runs even when your computer is off, connectors only). Weekly by default, plus an email or Slack alert to yourself.
-3. **Claude writes your update skill** and saves it in a private `gtm-update` repo on your GitHub.
-4. **You add it to your Claude account** in Customize > Plugins > Add marketplace, so it works in Claude Code, Cowork and scheduled runs.
+3. **Claude writes your update task.** Its instructions are made for your context, your tools and your sources, and you can edit them any time in the Claude app (Scheduled). Nothing else gets installed.
+4. **A review guide** goes on your "Updates to review" page in Notion (or `gtm/updates/README.md` in GitHub), and Claude's memory points to it.
 5. **First run, then the course plugin goes.** You see a real report, then Claude helps you remove the course plugin (other course plugins, like voice-miner, stay).
 
 Every run:

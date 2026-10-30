@@ -1,6 +1,6 @@
 # Update playbook: keeping the GTM context current
 
-The first build is a snapshot. Prices change, cohorts start and end, new customers buy, and new objections and buyer phrases show up every week. An update reads the sources in the update skill's plan ("Where new information comes from"), adds what's new to the banks, and proposes changes to the pages.
+The first build is a snapshot. Prices change, cohorts start and end, new customers buy, and new objections and buyer phrases show up every week. An update reads the sources in the update task's plan ("Where new information comes from"), adds what's new to the banks, and proposes changes to the pages.
 
 ## What may change without the user, and what may not
 
@@ -24,7 +24,7 @@ Tag every row a scheduled run adds, so the review can find it: in a linked log, 
 
 1. **Never ask a question.** Anything that needs a decision becomes a proposed update in the report.
 2. **Never stop on one failure.** A source that can't be read (connector signed out, Chrome closed, page gone) is skipped, logged in the report under "Couldn't read", and named in the alert.
-3. **Only the planned sources.** Read the sources in the update skill's plan, and nothing else. Lines marked `auto, app only` are skipped and logged when Chrome isn't available. Lines marked `you` are read only if the user dropped a new export or pasted something; otherwise the alert reminds them when it's due. Don't go looking for new sources: only the user adds them, by changing the update settings.
+3. **Only the planned sources.** Read the sources in the update task's plan, and nothing else. Lines marked `auto, app only` are skipped and logged when Chrome isn't available. Lines marked `you` are read only if the user dropped a new export or pasted something; otherwise the alert reminds them when it's due. Don't go looking for new sources: only the user adds them, by changing the update settings.
 4. **Only what's new.** Each bucket has a "last run" date in the hub's Updates settings (the Notion Hub's "For agents" section, or `gtm/README.md` in the GitHub version). Read conversations and customers since that date. If there's no date, use the last 30 days.
 5. **Read-only browsing.** Same rules as the build: summary pages first, never click anything that changes data or sends messages, close tabs afterwards.
 6. **No personal data.** Same as the build: role and company type, never names, emails or profile URLs.
@@ -34,15 +34,15 @@ Tag every row a scheduled run adds, so the review can find it: in a linked log, 
 
 **Every run (weekly by default)**
 - **Customers:** new customers since the last run, from the customer source. Upsert at company level and apply the best-customer rule. If the sales platform shows totals (for example students per course on a dashboard), compare them with the count in the customer bank. A gap goes under "Stale" as something to check (often free seats or scholarships), never as rows guessed into the bank.
-- **Objections:** run `language-miner` on each conversation source for the window, with "extract: both". Dedupe objections with one query per batch, the same way gtm-objections does.
+- **Objections:** read each conversation source for the window (the conversation brief). Dedupe objections with one query per batch for the themes in it, comparing by meaning, not exact wording.
 - **Customer language:** take the new quotes from the same miner results. Merge repeats with quotes already on the page, keep the 5 to 10 strongest new ones, and add them to the "New quotes" section.
 - **Staleness:**
   - Dates on the pages that have passed (next cohort, launch dates, "until" offers).
-  - Sections older than the update rhythm in `sections.md`.
+  - Sections older than their rhythm: banks weekly; product, ICP, competitors and messaging monthly.
   - Items still marked `draft` or `(guess, confirm)`.
 
 **First run of each month (or when the user asks for a full check)**
-- **Offer and website:** start one `source-reader` per product source, with the current Product & offer page as the baseline. It returns only ADDED, REMOVED and CHANGED fields. Typical findings:
+- **Offer and website:** read each product source in compare mode (the compare-mode brief), with the current Product & offer page as the baseline. It returns only ADDED, REMOVED and CHANGED fields. Typical findings:
   - A new or retired offer.
   - A price, format, length or date change.
   - A new headline or claim.
@@ -53,7 +53,7 @@ Tag every row a scheduled run adds, so the review can find it: in a linked log, 
   - A group outside the ICP shows up 3 or more times.
 
   Include the evidence.
-- **Competitors** (if not skipped): rerun `competitor-researcher` on each competitor with its current row as the baseline, and report only changes.
+- **Competitors** (if not skipped): reread each competitor's public site in compare mode, with its current row as the baseline, and report only changes.
 
 When sources disagree, the source closest to the buyer wins (a live sales page beats an internal note), as in the build.
 

@@ -12,7 +12,7 @@ gtm/
 ├── competitors.csv    bank
 ├── objections.csv     bank
 ├── customers.csv      bank
-├── updates/           one report per update run (added at the handover)
+├── updates/           README.md (review guide) and one report per update run (added at the handover)
 └── .private/          raw exports while you work (gitignored, delete when done)
 ```
 
@@ -31,7 +31,7 @@ Create a CSV bank when the data has no other home, or lives only in a platform w
    - **No GitHub CLI:** keep the local repo, and say they can publish it as a private repo later (the guide's last step offers that).
 3. Check the visibility (`gh repo view --json visibility -q .visibility`, run inside `~/gtm-context`). "No git remotes found" means it's local for now: fine. If it's `PUBLIC`, stop and say so: customer and objection data shouldn't be public. Offer to make it private (the user confirms the command).
 4. Create `gtm/` and the files below. `.gitignore` gets `gtm/.private/` and `.private/`.
-5. Never commit or push without the user's OK. At the end, offer one commit with a message like `gtm: build context layer` and ask before pushing. Scheduled updates commit or push only as the user allowed at the handover (recorded in the Updates block and in their update skill).
+5. Never commit or push without the user's OK. At the end, offer one commit with a message like `gtm: build context layer` and ask before pushing. Scheduled updates commit or push only as the user allowed at the handover (recorded in the Updates block and in the task prompt).
 
 ## gtm/README.md (the hub)
 
@@ -64,7 +64,7 @@ Where the context was built from, and how to get in.
 
 ## Updates
 Added at the handover. Settings only, no content.
-- Update skill: update-gtm-context in the my-gtm-context plugin, private repo <owner>/gtm-update
+- Update task: gtm-update (its prompt holds the source plan; review guide in gtm/updates/README.md)
 - Runs: <Claude app scheduled task gtm-update | cloud scheduled task, on branch gtm-updates> · <cadence, for example every Monday 08:00>
 - Full check: first run of each month
 - Alert: <email to your own address | Slack DM to yourself> (the address or member ID is only in the scheduled prompt, never in a file)

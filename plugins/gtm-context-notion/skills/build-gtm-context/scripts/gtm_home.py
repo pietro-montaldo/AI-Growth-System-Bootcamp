@@ -10,6 +10,7 @@ Claude's global memory tells every session where it is. Standard library only.
   gtm_home.py init                        create ~/gtm-context (GitHub version, or for temporary exports)
   gtm_home.py pointer --notion-hub URL    write the pointer for the Notion version
   gtm_home.py pointer --repo OWNER/NAME   write the pointer for the GitHub version
+  gtm_home.py pointer ... --updates URL   Notion: add the line that points to the review guide
   gtm_home.py pointer ... --print         show the pointer without writing it
   gtm_home.py allow                       let Claude Code read ~/gtm-context without asking each time
 
@@ -118,11 +119,16 @@ def pointer_text(args):
                 f"- GTM Hub (Notion): {args.notion_hub} . Its links table and its \"For agents\" section "
                 "hold every page, database and setting.\n"
                 "Before any GTM, sales, outreach or content task, fetch the Hub and open only the pages you need.")
+        if args.updates:
+            body += ("\nTo review GTM updates or change their settings, follow the guide on the "
+                     f"Updates to review page: {args.updates}")
     else:
         body = (f"My go-to-market context (product, ICP, messaging, objections, customers) lives in {h}.\n"
                 f"- GitHub: private repo {args.repo}, cloned at {h}\n"
                 f"- Hub: {h}/gtm/README.md (links to every page and bank)\n"
                 "Before any GTM, sales, outreach or content task, read the hub and open only the files you need.")
+        if os.path.exists(os.path.join(home(), "gtm", "updates", "README.md")):
+            body += f"\nTo review GTM updates or change their settings, follow {h}/gtm/updates/README.md"
     return (f"{START}\n## GTM context\n{body}\n"
             "Never search for the context, and never copy it into a project.\n"
             f"{END}")
@@ -177,6 +183,7 @@ def main():
     group = pt.add_mutually_exclusive_group()
     group.add_argument("--notion-hub")
     group.add_argument("--repo")
+    pt.add_argument("--updates", help="Notion only: link of the Updates to review page (adds a review line)")
     pt.add_argument("--print", action="store_true")
     args = p.parse_args()
     {"status": cmd_status, "init": cmd_init, "pointer": cmd_pointer, "allow": cmd_allow}[args.command](args)
