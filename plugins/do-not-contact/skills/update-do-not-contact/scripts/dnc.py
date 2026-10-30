@@ -155,8 +155,26 @@ def clean_row(row, today):
 
 
 def active(row, today):
-    until = (row.get("Until") or "").strip()[:10]
-    return not until or until >= today
+    """False only for a readable Until date in the past. An unreadable date keeps blocking."""
+    until = (row.get("Until") or "").strip()
+    if not until:
+        return True
+    try:
+        return datetime.date.fromisoformat(until[:10]).isoformat() >= today
+    except ValueError:
+        return True
+
+
+def unreadable_until(rows):
+    n = 0
+    for r in rows:
+        until = (r.get("Until") or "").strip()
+        if until:
+            try:
+                datetime.date.fromisoformat(until[:10])
+            except ValueError:
+                n += 1
+    return n
 
 
 # ---------- files ----------
@@ -355,6 +373,7 @@ def cmd_check(args):
     print(json.dumps({
         "leads": len(leads), "keep": len(keep), "drop": len(drop),
         "drop_by_reason": reasons, "leads_without_any_key": no_key, "columns_used": found,
+        "list_rows_with_unreadable_until": unreadable_until(listed),
     }, indent=2))
 
 
