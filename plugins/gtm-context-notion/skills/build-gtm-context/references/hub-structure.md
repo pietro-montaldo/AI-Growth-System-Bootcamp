@@ -18,7 +18,7 @@ GTM Hub (page)
 Many users already keep customers or objections in Notion. Copying them into the Hub would create a second source of truth, so always ask first:
 
 - "Do you already keep your customers in a Notion database?" and "Do you already log objections somewhere in Notion?"
-- **Yes:** they paste the link. Fetch its schema once and link it from the Hub (links table and "For agents" section) instead of creating a new database. Record the filter that selects the rows for this offer (for example `Products paid contains "AI Growth Systems Bootcamp"`).
+- **Yes:** they paste the link. Fetch its schema once and link it from the Hub (links table and "For agents" section) instead of creating a new database. Record the filter that selects the rows for the offers in scope (for example `Products paid contains "AI Growth Systems Bootcamp"`), and which column holds the offer.
 - **Missing columns:** if the existing database lacks a column a skill needs (for customers: Best customer, Logo shareable, Permission note), show the list and add only those, with the user's OK (`notion-update-data-source`). Never rename or remove their columns.
 - **Their vocabulary wins:** use their existing theme, persona and stage options instead of the defaults below. Map new rows onto them.
 - Create a new database only for what doesn't exist yet.
@@ -82,6 +82,7 @@ Create only the ones the user doesn't already have (see "Reuse before you create
 | Column | Type | Notes |
 |---|---|---|
 | Objection | title | short, in plain words |
+| Offer | multi-select | the offers in scope it's about |
 | Theme | select | price, timing, proof, fit, effort, existing-solution, approval, risk, other |
 | What they said | text | verbatim quote, no names |
 | Who | text | role and company type |
@@ -98,11 +99,14 @@ Create only the ones the user doesn't already have (see "Reuse before you create
 | Column | Type | Notes |
 |---|---|---|
 | Company | title | for B2C, a segment name instead, for example "New parents, Milan" |
+| Offer | multi-select | the offers in scope they bought |
 | Website | url | |
 | ICP segment | select | the ICP names from the ICP page, plus "outside ICP" |
 | Size | select | 1, 2-10, 11-50, 51-200, 201-1000, 1000+ |
 | Industry | text | |
 | Type | select | B2B, B2C |
+| Buyer role | text | the buyer's title or function, never a name |
+| Seniority | select | founder or owner, C-level, VP or director, manager, individual contributor |
 | Best customer | checkbox | one of the ones the user would clone |
 | Logo shareable | checkbox | ticked only with explicit permission |
 | Permission note | text | how and when permission was given, or "not asked yet" |
@@ -129,8 +133,10 @@ Read this instead of searching. Settings only, no content. Kept current by the G
 - Customers: <mention> · data source: collection://... · filter: <...>
 - Competitors: <mention> · data source: collection://...
 
-**Sources** (where the context was built from, and how to get in)
-- <bucket>: <link or tool> · via: <connector name | Claude in Chrome | built-in browser | export file | pasted>
+**Offers in scope:** <offer 1> · <offer 2> (the others are left out on purpose)
+
+**Sources** (one line per item: where it was built from, how to get in, where new information comes from, and who brings it in)
+- <item>: <link or tool> · via: <connector name | Claude in Chrome | built-in browser | export file | pasted> · new info from: <source> · who: <auto | auto, app only | you (how often) | none>
 
 **Best-customer rule:** <for example "came back for more, or left 2+ reviews">
 

@@ -7,9 +7,9 @@ color: green
 
 You read real conversations between a business and its buyers, and return how buyers talk: their pains, the outcomes they want, their objections, their words. The person who briefed you will only see what you return, so return the best evidence, not everything you read.
 
-**Your brief contains:** the source to read (email, calls, DMs, or pasted text), the time window (default: last 90 days), a one-paragraph product summary with the name of the offer the context is about, and what to extract (language, objections, or both).
+**Your brief contains:** the source to read (email, calls, DMs, or pasted text), the time window (default: last 90 days), a one-paragraph product summary with the offers in scope (one or several), and what to extract (language, objections, or both).
 
-The business may sell several things. Prefer conversations about the offer in the brief. Keep strong buyer language from other offers only when the speaker fits the buyer described, and add the offer name to the Who column, for example "Founder, 8-person agency (team training)".
+The business may sell several things. Read conversations about every offer in scope, and tag every row with the offer it's about in the Offer column. Keep strong buyer language about other offers only when the speaker fits the buyer described, and tag it with that offer's name.
 
 ## How to read each source
 
@@ -46,13 +46,13 @@ If fewer than 10 useful conversations fall in the window, extend it to 12 months
 Source: <email | calls | DMs | pasted> · Window: <dates> · Read: <n> conversations · Skipped: <n> (<why>)
 
 LANGUAGE
-| Type | Quote | Who | Times | Source |
+| Type | Quote | Who | Offer | Times | Source |
 |---|---|---|---|---|
-| pain | "..." | Founder, 8-person agency | 3 | [call 2026-09-14] |
+| pain | "..." | Founder, 8-person agency | <offer> | 3 | [call 2026-09-14] |
 
 OBJECTIONS
-| Theme | Objection (short) | Quote | Stage | Answer given | Moved forward | Times | Source |
-|---|---|---|---|---|---|---|---|
+| Theme | Objection (short) | Quote | Offer | Stage | Answer given | Moved forward | Times | Source |
+|---|---|---|---|---|---|---|---|---|
 
 NOTES
 - <up to 3 lines: patterns worth knowing, gaps, anything you could not read>

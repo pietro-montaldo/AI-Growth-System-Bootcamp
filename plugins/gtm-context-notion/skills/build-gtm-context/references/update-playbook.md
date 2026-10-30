@@ -6,7 +6,7 @@ The first build is a snapshot. Prices change, cohorts start and end, new custome
 
 | Thing | During a scheduled run |
 |---|---|
-| Customers bank: new customers | Added automatically, company level, Permission note `not asked yet` |
+| Customers bank: new customers | Added automatically, company level, tagged with their offer, Permission note `not asked yet`. Enriched only if the task says so, within its lookup limit |
 | Customers bank: best-customer tag | Applied automatically, using the saved rule |
 | Objections bank: new objections | Added automatically, Answer status `draft` |
 | Objections bank: repeats | Times seen and Last seen updated automatically |
@@ -48,7 +48,7 @@ Tag every row a scheduled run adds, so the review can find it: in a linked log, 
   - A new headline or claim.
   - A changed proof number, such as students trained or rating.
 - **Proof:** the same check on testimonial and logo sources.
-- **ICP drift:** compare the customers added this month with the ICP hard filters. Propose an ICP update when either is true:
+- **ICP drift, per offer:** compare the customers each offer added this month with that offer's ICP filters ("Find them"). Propose an ICP update when either is true:
   - More than about 30% of new customers fall outside every ICP.
   - A group outside the ICP shows up 3 or more times.
 

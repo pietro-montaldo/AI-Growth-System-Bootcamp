@@ -18,6 +18,7 @@ A competitor here is someone who sells the same result to the same or similar bu
 1. Fetch the GTM Hub page: its link is in the "GTM context" block of Claude's memory. Its links table and "For agents" section hold every link you need. If no Hub link is known, run the build-gtm-context skill first, which sets up the Hub.
 2. You need the product summary (the first lines of the Product & offer page). Fetch that page by its link if it isn't already in the conversation.
 3. Fetch the Competitors database by its link once, to read its columns.
+4. **On its own** (not inside build-gtm-context): when you find this section's sources, also settle where new competitor information will come from and who brings it in (`auto`, `auto, app only`, `you`, `none`), as in "Where each item comes from, now and later" in `references/source-map.md`. Prefer an automatic route. Update its line in the hub's Sources list (the Hub's "For agents" section) after the user's OK.
 
 ## Steps
 

@@ -40,9 +40,11 @@ Find the Hub link: the "GTM context" block in Claude's memory, or `gtm_home.py s
 
 1. Check that a Notion connector is available. If not, stop and explain: connect Notion in Claude's connector settings, then run this skill again.
 2. See which other connectors exist from the tool names already listed in the session (for example `gmail`, `fathom`, `hubspot`, `google_drive`). Don't run one broad keyword search across all tools: it returns huge tool definitions and can miss the ones you need. Load a tool only when you use it, with a `select:` query.
-3. Show the bucket table from `source-map.md` and ask the user to reply in one message: for each bucket, a link, a tool name, or "none". Add which offer this context is about, if they sell several, and the open question about any other GTM context to include (case studies, a pitch deck, a pricing sheet).
+3. Show the bucket table from `source-map.md` and ask the user to reply in one message: for each bucket, a link, a tool name, or "none". Add the open question about any other GTM context to include (case studies, a pitch deck, a pricing sheet), and ask them to list every offer they sell (a rough list is fine).
 4. For each pointer, settle access using the order in `source-map.md`: connector, browser, export, paste. When there's no connector for a tool, say so plainly and offer to browse there (Claude in Chrome for signed-in dashboards) or to read an export.
 5. One AskUserQuestion to confirm: which conversation sources (email, call recorder, DMs) you may read, and whether to use Claude in Chrome or the built-in browser for the sources that need browsing.
+6. **Offers in scope.** Follow "Offers: one or several?" in `source-map.md`: list every offer (theirs, plus any a quick look at their website shows), then one AskUserQuestion (multiSelect): which ones should the context cover. From here on, every section covers each offer in scope.
+7. **Where each item comes from, now and later.** Follow that section in `source-map.md`: for every item, settle how it was collected, where new information will come from, and who brings it in (`auto`, `auto, app only`, `you`, `none`). Propose an automatic route for every line you can, show one table, and ask only about what's left. It's recorded in the hub's Sources list in step 2, and the handover reuses it.
 
 ## Step 2. Set up the Hub
 
@@ -51,14 +53,14 @@ Find the Hub link: the "GTM context" block in Claude's memory, or `gtm_home.py s
    - **No:** ask for the link of the page it should live under. If they don't know, run one workspace search for likely parents ("wiki", "company", "marketing") and let them pick.
 2. Customers or objections databases found in step 1 are linked, not copied. Follow "Reuse before you create" in `hub-structure.md`.
 3. Create the Hub page, the four pages and any missing databases.
-4. Write the collapsed "For agents: links and settings" section at the bottom of the Hub (format in `hub-structure.md`): data source IDs and filters, plus the "Sources" list (link and how to get in). Add one row to the Hub links table per extra resource (`Resource: <name>`). Show the Hub link.
+4. Write the collapsed "For agents: links and settings" section at the bottom of the Hub (format in `hub-structure.md`): data source IDs and filters, the offers in scope, plus the "Sources" list with the item-by-item plan from step 1 (built from, how to get in, new information from, who brings it in). Add one row to the Hub links table per extra resource (`Resource: <name>`). Show the Hub link.
 5. **Pointer in Claude's memory** (see `context-home.md`): show the block from `gtm_home.py pointer --notion-hub <Hub link> --print` and explain it in one sentence: every Claude session will know where the GTM context is, without searching. Write it with `gtm_home.py pointer --notion-hub <Hub link>` after one OK. Nothing else is saved on their computer.
 
 ## Step 3. Read everything
 
 Start all of these at once, so the user waits only once:
 - One `source-reader` agent per document, database, export or public page from step 1, in parallel, in the background.
-- One `language-miner` agent per approved conversation source (brief: see gtm-messaging step 2), in the background.
+- One `language-miner` agent per approved conversation source (brief: see gtm-messaging step 2, with the offers in scope), in the background.
 - Sources that need a signed-in browser: read them yourself in the main conversation, one page at a time, while the agents run.
 
 If conversation sources were already mined recently for the same window (the "Sources" in the Hub's "For agents" section show the date), reuse those results and mine only the new sources.
@@ -81,6 +83,8 @@ Run each section skill with the Skill tool, skipping its "Before starting" Hub c
 | 9. Objections | `gtm-objections`, with the objections from steps 3 and 8 | |
 | 10. Logo permission | `gtm-customers`, part B only. Skip if there are no customers. | |
 
+After step 9, complete the ICP cards: fill each card's "Their words", "Lead with" and "Expect" from the Messaging page and the objections, and show the filled cards in one review pass before writing.
+
 Between steps, write one line: "Done: <section>. Next: <section>." Then continue. If the user says "skip", mark the section "Skipped" in the Hub links table and move on.
 
 When the sources already answered most of product, ICP and messaging, draft those three together and show them in one review pass, with one approve-or-edit question per page. Going page by page is for when the user is answering from scratch.
@@ -96,7 +100,7 @@ When the sources already answered most of product, ICP and messaging, draft thos
 ## Step 12. Hand over: your own scheduled update
 
 The context goes stale within weeks: prices change, new customers buy, new objections show up. From now on the user only needs to keep it current, so the build ends with one scheduled task of their own, and the course plugin can go. Say that in two sentences, then follow `references/handover.md` step by step:
-1. Plan where new information comes from, for every source (live or snapshot, and who gets it).
+1. Confirm the item-by-item plan from step 1 (where new information comes from, and who brings it in), and settle anything still open.
 2. Pick where and when it runs, and email or Slack for alerts.
 3. Write the task prompt and the review guide from `references/update-task-template.md`, and create the schedule.
 4. Point Claude's memory at the review guide, offer a first run, then remove the course plugin.

@@ -19,6 +19,7 @@ Every other section builds on this page: the ICP says who it's for, messaging sa
 
 1. Fetch the GTM Hub page: its link is in the "GTM context" block of Claude's memory. Its links table and "For agents" section hold every link you need. If no Hub link is known, the Hub isn't set up yet: run the build-gtm-context skill first, which sets it up and then continues here.
 2. Fetch the Product & offer page by its link. If it already has content, summarise it in three lines and ask what changed, then update only that part.
+3. **On its own** (not inside build-gtm-context): when you find this section's sources, also settle where new product and offer information will come from and who brings it in (`auto`, `auto, app only`, `you`, `none`), as in "Where each item comes from, now and later" in `references/source-map.md`. Prefer an automatic route. Update its line in the hub's Sources list (the Hub's "For agents" section) after the user's OK.
 
 ## Steps
 
@@ -30,7 +31,7 @@ Every other section builds on this page: the ICP says who it's for, messaging sa
 
 Only if nothing is written down, ask them to dictate: talk freely for a minute about what they sell, who buys it and what changes for the buyer. Voice dictation works fine.
 
-If they sell several things, ask which one this context is for. One GTM context per main offer keeps every later agent focused. Other offers can sit in the offers table.
+If they sell several things, cover every offer in scope (inside build-gtm-context they were chosen in step 1; on its own, ask as in "Offers: one or several?" in `source-map.md`). The page gets one short section per offer in scope, plus the offers table. Offers left out get one line each in the table, marked "not in scope".
 
 ### 2. Fill the gaps
 

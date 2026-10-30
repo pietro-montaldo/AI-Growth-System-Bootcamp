@@ -29,6 +29,7 @@ source-map.md:gtm-customers
 source-map.md:gtm-competitors
 source-map.md:gtm-messaging
 source-map.md:gtm-objections
+source-map.md:gtm-icp
 update-playbook.md:build-gtm-context
 handover.md:build-gtm-context
 context-home.md:build-gtm-context

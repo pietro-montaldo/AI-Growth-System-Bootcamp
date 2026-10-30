@@ -17,12 +17,13 @@ The task is named "Weekly GTM update", with the ID `gtm-update`. Never ask. If t
 
 ## 1. Plan the updates
 
-Follow "Will each source stay current?" in `source-map.md`. Start from the hub's "Sources" (what the build read) and propose, per bucket, where new information comes from and who gets it (`auto`, `auto, app only`, `you`, `none`). Ask only about snapshots and open lines, in one message.
+The item-by-item plan was settled in build step 1 and is in the hub's "Sources" list: for every item, where new information comes from and who brings it in. Show it as one table and confirm it. If a line is missing or still open (for example a section run on its own later), settle it as in "Where each item comes from, now and later" in `source-map.md`, preferring an automatic route.
 
 Then settle, with AskUserQuestion where it's a choice:
 - **Where it runs.** If any line is `auto, app only`, recommend a scheduled task in the Claude app (runs on their computer while the app is open, can use Claude in Chrome). Otherwise offer both: the app task, or a cloud scheduled task (runs even when the computer is off, connectors only). Two lines each, then ask.
 - **When.** Default every Monday at 08:00 local time. One task: the run decides when the monthly full check is due.
 - **Alert.** Email (a Gmail or Outlook connector that can send, to their own address) or Slack (a DM to themself; find their member ID with the Slack connector). Confirm the address. Offer one test message, sent only on a clear yes.
+- **Enrich new customers?** Only if an enrichment tool is connected (Clay first). Say what it would cost per week (new customers per week from the build's numbers, times the credits per lookup) and ask once: yes with a weekly lookup limit, or no. Default no.
 - **GitHub version only: git.** "May update runs commit?" and, only if yes, "May they also push?" A cloud task must commit and push to a `gtm-updates` branch, or its work is lost, so say so instead of asking.
 
 ## 2. Prepare the hub

@@ -19,6 +19,7 @@ Every other section builds on this page: the ICP says who it's for, messaging sa
 
 1. Read `~/gtm-context/gtm/README.md`. Every `gtm/` path in this skill is inside `~/gtm-context/`, the student's private gtm-context repo, whatever project they are in. If it's missing, the folder isn't set up yet: run the build-gtm-context skill first, which sets it up and then continues here.
 2. Read `gtm/product.md`. If it already has content, summarise it in three lines and ask what changed, then update only that part.
+3. **On its own** (not inside build-gtm-context): when you find this section's sources, also settle where new product and offer information will come from and who brings it in (`auto`, `auto, app only`, `you`, `none`), as in "Where each item comes from, now and later" in `references/source-map.md`. Prefer an automatic route. Update its line in the Sources list in `gtm/README.md` after the user's OK.
 
 ## Steps
 
@@ -30,7 +31,7 @@ Every other section builds on this page: the ICP says who it's for, messaging sa
 
 Only if nothing is written down, ask them to dictate: talk freely for a minute about what they sell, who buys it and what changes for the buyer. Voice dictation works fine.
 
-If they sell several things, ask which one this context is for, or whether it covers the whole range. Other offers can sit in the offers table.
+If they sell several things, cover every offer in scope (inside build-gtm-context they were chosen in step 1; on its own, ask as in "Offers: one or several?" in `source-map.md`). The page gets one short section per offer in scope, plus the offers table. Offers left out get one line each in the table, marked "not in scope".
 
 ### 2. Fill the gaps
 

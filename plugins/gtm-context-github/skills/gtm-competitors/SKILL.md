@@ -18,6 +18,7 @@ A competitor here is someone who sells the same result to the same or similar bu
 
 1. Read `~/gtm-context/gtm/README.md`. Every `gtm/` path in this skill is inside `~/gtm-context/`, the student's private gtm-context repo, whatever project they are in. If it's missing, run the build-gtm-context skill first, which sets up the folder.
 2. You need the product summary (the first lines of `gtm/product.md`).
+3. **On its own** (not inside build-gtm-context): when you find this section's sources, also settle where new competitor information will come from and who brings it in (`auto`, `auto, app only`, `you`, `none`), as in "Where each item comes from, now and later" in `references/source-map.md`. Prefer an automatic route. Update its line in the Sources list in `gtm/README.md` after the user's OK.
 
 ## Steps
 

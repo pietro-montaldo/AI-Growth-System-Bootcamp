@@ -19,6 +19,7 @@ It has two parts. Run both when used on its own. Inside build-gtm-context, part 
 
 1. Fetch the GTM Hub page: its link is in the "GTM context" block of Claude's memory. Its links table and "For agents" section hold every link you need. If no Hub link is known, run the build-gtm-context skill first, which sets up the Hub.
 2. Fetch the Customers database by its link once, to read its columns and select options. Don't read its rows yet.
+3. **On its own** (not inside build-gtm-context): when you find this section's sources, also settle where new customers will come from and who brings it in (`auto`, `auto, app only`, `you`, `none`), as in "Where each item comes from, now and later" in `references/source-map.md`. Prefer an automatic route. Update its line in the hub's Sources list (the Hub's "For agents" section) after the user's OK.
 
 ## Part A. Collect customers
 
@@ -37,9 +38,22 @@ If it isn't clear from the data, ask: "B2B, B2C, or both?" For B2C, don't list i
 
 If they are an agency, consultant or B2B2C business, ask one more question: "Who are your clients' customers?" Save the answer for the ICP step.
 
-### A2. Fill company details
+### A2. Fill and enrich
 
-For each company, fill Website, Size, Industry and Type. Use what the user gave first. For gaps, look up the company website (WebFetch) or use an enrichment connector if one is connected (without naming it to the user). Mark anything uncertain `(guess)`. Store companies only: no contact names, emails or LinkedIn profiles.
+Use what the user gave first, then check what's missing. The ICP needs it, so the scoring works before first contact.
+
+1. **Count the gaps** with one query or one pass over the batch:
+   - **Company:** website, size, industry, location, stage or funding.
+   - **Buyer:** role or title, seniority, function, time in role.
+
+   Never collect emails, phone numbers or personal profile URLs.
+2. **Find the enrichment tool** from the tool names listed in the session: Clay first (the Clay connector or the Clay CLI), then any other enrichment connector, such as Apollo.
+3. **Ask about credits before any lookup.** Say how many companies and buyers you'd look up, and what that costs in that tool's credits. Read the cost and the remaining balance from the tool when it reports them (Clay credits and quotas, Apollo credit usage); otherwise give an estimate and say it's one. Then one AskUserQuestion: enrich all rows, the best customers plus a similar sample, or skip.
+4. **No enrichment tool connected:** check whether the data is already enough for the ICP: the best customers have size, industry and buyer role on most rows. If it is, continue without enrichment. Only if it isn't, say so in one line and offer to connect the Clay connector (Claude's connector settings), then continue once it's connected or the user says no. Without enrichment, read company websites for a small sample and mark anything uncertain `(guess)`.
+5. **Match carefully.** Look up companies by exact domain. A large company's domain also matches its subsidiaries and old brands, so keep the record with the most employees. Tiny firms (1 to 10 people) are often missing from company data: for them, the buyer's title carries the signal.
+6. **Write back.** Write company and buyer fields to the customers database. If it lacks a column you need (for example Seniority or Buyer role), show the list and add only those, with the user's OK (`notion-update-data-source`). For a linked database, use its own columns where they exist. Note where the data came from, for example "Clay, 2026-10-30".
+
+Tag each customer with the offers they bought (offers in scope). In a linked database, reuse its own column (for example "Products paid"); add an Offer column only with the user's OK. Never store contact names, emails or phone numbers in the context.
 
 ### A3. Best customers
 
@@ -53,6 +67,8 @@ Best customers drive the ICP. "Best" means they paid well, got results, came bac
 3. Apply that rule with one query. The best group is usually the top 10 to 20%. If the rule catches much more (common signals like "left a review" do), show the count for the rule as picked and for one or two tighter versions ("2 or more reviews", "both signals"), and let the user choose. Then show how the chosen group differs from everyone else (roles, company size, location, how they found you).
 4. Leave out partners, co-instructors, team members and free seats, even when they match.
 5. After approval, tick Best customer on the matching rows and record the rule itself ("came back for more or left 2+ reviews") under "Best-customer rule" in the Hub's "For agents" section, so it can be reapplied next month. Each row is a separate update, so above about 30 rows say so before starting.
+
+With several offers in scope, check whether the best buyers differ by offer. If they do, define the rule per offer (for example "course: came back for more; team training: renewed or expanded") and record each one.
 
 Either way, the result is a best group plus the reason it's best. The ICP step looks for what that group shares.
 
