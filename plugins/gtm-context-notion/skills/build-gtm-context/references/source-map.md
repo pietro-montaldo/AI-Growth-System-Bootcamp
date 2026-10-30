@@ -55,6 +55,8 @@ For each item, settle three things, using judgement instead of asking about the 
    - **you (how often):** no way to get it unattended. The user drops a fresh export or pastes it, and each update alert reminds them when it's due.
    - **none:** it doesn't change (a past case study). Never reread.
 
+A local folder (screenshots, a proof index, files on the user's computer) can only be read when that computer is connected: link it from the hub as a `Resource:` row, mark its line `auto, app only`, and keep any upkeep of the folder itself as its own separate task.
+
 Prefer automatic. For every line that would be `you`, first look for an automatic route and propose it: a connector for the same tool, notification emails the platform sends (new sale, new enrolment, new review) read through the email connector, a public page, or the origin of a hand-kept log. Only leave it as `you` when nothing else works.
 
 Show the whole plan as one table (item, how it was collected, new information from, who), with your proposal on every line, and ask only about the lines you couldn't settle, in one message. Record each line in the hub's Sources list:
