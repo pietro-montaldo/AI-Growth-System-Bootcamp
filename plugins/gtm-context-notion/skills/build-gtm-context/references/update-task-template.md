@@ -22,7 +22,7 @@ Offers in scope: {{offer 1}} · {{offer 2}}. Tag every new row and quote with it
 - **GTM Hub (Notion):** {{Hub link}}. Its links table lists every page. Its "For agents" section holds the best-customer rule and the "Last run" dates.
 - **Updates to review:** {{link}}
 - **Pages:** Product & offer {{link}} · ICP {{link}} · Messaging & customer language {{link}}
-- **Customers:** {{database link}} · data source `{{collection://...}}` · filter: {{filter, or "none"}} · columns: {{only the names that differ from the standard ones, for example Best customer = "Top customer"}}
+- **Customers:** {{database link}} · data source `{{collection://...}}` · contacts: {{kept | not kept}} · filter: {{filter, or "none"}} · columns: {{only the names that differ from the standard ones, for example Best customer = "Top customer"}}
 - **Objections:** {{database link}} · data source `{{collection://...}}` · filter: {{...}} · columns: {{...}}
 - **Competitors:** {{database link}} · data source `{{collection://...}}`
 
@@ -49,7 +49,7 @@ Follow the update rules at the end: no questions, skip and log any source that f
    - `auto (app only)` lines: read them yourself with Claude in Chrome, one page at a time, read-only. If Chrome isn't available, log the source under "Couldn't read".
    - `you` lines: read only a new file in `~/gtm-context/.private/` or pasted text. Otherwise, when one is due, add a reminder to the alert.
 4. **Update the banks (automatic):**
-   - **Customers:** dedupe with one filtered query for this batch's company names. Create new rows at company level with their offer and Permission note `not asked yet`. A company already in the database that bought another offer gets that offer added to its Offer values, not a second row. If "Enrich new customers" is yes, fill company and buyer fields for the new rows only, within the lookup limit above (never emails or phone numbers). Tick Best customer where the rule matches.
+   - **Customers:** dedupe with one filtered query for this batch's emails (company names when contacts are not kept). If contacts are kept, create one row per buyer with their name, email and LinkedIn URL from the source; otherwise one row per company. New rows get their offer and Permission note `not asked yet`. A buyer (or company) already in the database that bought another offer gets that offer added to its Offer values, not a second row. If "Enrich new customers" is yes, fill buyer and company fields for the new rows only, within the lookup limit above (never look up emails or phone numbers). Tick Best customer where the rule matches.
    - **Objections:** run one filtered query for the themes in this batch and compare by meaning, not exact wording, within the same offer. A repeat (same meaning, same offer) gets Times seen and Last seen updated (where those columns exist). The same objection about another offer is a new row. A new one gets a row with Answer status `draft`.
    - **Quotes:** add the 5 to 10 strongest new quotes to a "New quotes (unreviewed, <date>)" section at the bottom of the Messaging page, with `insert_content` at the end. Never edit the top of the page.
 5. **Find what needs a decision (proposed updates only):** every difference the compare-mode readers returned, value props or word lists that new quotes contradict, ICP drift per offer (full check), and staleness (passed dates, old drafts).
@@ -86,7 +86,7 @@ When the user says "review GTM updates" or follows an alert, in any Claude sessi
 6. **Quotes** under "New quotes": move the good ones into the right sections of the Messaging page, the rest to "All quotes" at the bottom of the page.
 7. Mark each item `applied` or `rejected` in the report, and set the Hub's "Last refreshed" line to 0 open updates.
 
-Every write is shown first. No personal names, emails or profile URLs: role and company type only.
+Every write is shown first. Contact details stay in the Customers database; everywhere else, role and company type only, never names, emails or profile URLs.
 
 ## How to change the update settings
 

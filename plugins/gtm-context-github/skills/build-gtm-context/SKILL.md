@@ -28,7 +28,7 @@ Where it lives is decided for the user, never asked: a private repository called
 Explain in three lines:
 - What they'll end up with: a private `gtm-context` repo, kept at `~/gtm-context`, with their product, ICP, competitors, customer language, objections and customers. Every project and every later course system can use it.
 - How it works: "First tell me where this already lives. I'll read it and draft, and only ask you about what's missing." About 30 minutes of their time, less if a lot already exists. They can stop at any step.
-- What you'll read only with their OK. Nothing is ever sent, nothing is pushed without asking, and no personal names are saved.
+- What you'll read only with their OK. Nothing is ever sent, nothing is pushed without asking. Customers' contact details are kept only in `customers.csv`, and only if they say yes.
 
 ## Step 0. Check what exists
 
@@ -77,7 +77,7 @@ Run each section skill with the Skill tool, skipping its "Before starting" setup
 | Step | Skill | Pass forward |
 |---|---|---|
 | 4. Product & offer | `gtm-product` | the product summary (first lines of the page) |
-| 5. Customers | `gtm-customers`, part A only | B2B or B2C, "no customers yet", the clients' customers answer, best-customer rule |
+| 5. Customers | `gtm-customers`, part A only | B2B or B2C, "no customers yet", the clients' customers answer, keep contact details, enrichment, best-customer rule |
 | 6. Competitors (optional) | `gtm-competitors`. If step 1 found none, ask once "Do buyers compare you with anyone?" and mark Skipped if not. With no customers either, recommend running it, because competitors' customers are then the only ICP evidence. | ICP evidence |
 | 7. ICP | `gtm-icp` | ICP names, and the facts from steps 3, 5 and 6 |
 | 8. Messaging | `gtm-messaging`, with the language-miner results from step 3 | the objections table |
@@ -116,4 +116,4 @@ Each step needs one OK. If they stop, they pick up later by saying "set up my GT
 - Every write is shown to the user first. Don't write on silence. Never commit or push without asking.
 - Browsing is read-only. The user signs in themselves, and you never click anything that changes data or sends messages.
 - Open files by the links in `gtm/README.md`. Query banks with the helper script, never read them whole.
-- No personal names, emails or profile URLs in any file. Raw exports stay in `gtm/.private/` and get deleted when you're done.
+- No personal names, emails or profile URLs in any file except `customers.csv`, and there only if the user chose to keep contacts. Raw exports stay in `gtm/.private/` and get deleted when you're done.

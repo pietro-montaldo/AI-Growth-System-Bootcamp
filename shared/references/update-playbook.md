@@ -6,7 +6,7 @@ The first build is a snapshot. Prices change, cohorts start and end, new custome
 
 | Thing | During a scheduled run |
 |---|---|
-| Customers bank: new customers | Added automatically, company level, tagged with their offer, Permission note `not asked yet`. Enriched only if the task says so, within its lookup limit |
+| Customers bank: new customers | Added automatically, one row per buyer with their contact details when the hub says contacts are kept (otherwise one row per company), tagged with their offer, Permission note `not asked yet`. Enriched only if the task says so, within its lookup limit |
 | Customers bank: best-customer tag | Applied automatically, using the saved rule |
 | Objections bank: new objections | Added automatically, Answer status `draft` |
 | Objections bank: repeats | Times seen and Last seen updated automatically |
@@ -27,13 +27,13 @@ Tag every row a scheduled run adds, so the review can find it: in a linked log, 
 3. **Only the planned sources.** Read the sources in the update task's plan, and nothing else. Lines marked `auto, app only` are skipped and logged when Chrome isn't available. Lines marked `you` are read only if the user dropped a new export or pasted something; otherwise the alert reminds them when it's due. Don't go looking for new sources: only the user adds them, by changing the update settings.
 4. **Only what's new.** Each bucket has a "last run" date in the hub's Updates settings (the Notion Hub's "For agents" section, or `gtm/README.md` in the GitHub version). Read conversations and customers since that date. If there's no date, use the last 30 days.
 5. **Read-only browsing.** Same rules as the build: summary pages first, never click anything that changes data or sends messages, close tabs afterwards.
-6. **No personal data.** Same as the build: role and company type, never names, emails or profile URLs.
+6. **Personal data only in the customer database.** When the hub says customer contacts are kept, new customer rows keep the buyer's name, email and LinkedIn URL from the source. Everywhere else (pages, quotes, objections, the report, the alert): role and company type, never names, emails or profile URLs.
 7. **One message out, to the user only.** The alert goes to the address or Slack DM saved at setup, and nowhere else. Never send anything to customers or prospects.
 
 ## What to check per bucket
 
 **Every run (weekly by default)**
-- **Customers:** new customers since the last run, from the customer source. Upsert at company level and apply the best-customer rule. If the sales platform shows totals (for example students per course on a dashboard), compare them with the count in the customer bank. A gap goes under "Stale" as something to check (often free seats or scholarships), never as rows guessed into the bank.
+- **Customers:** new customers since the last run, from the customer source. Upsert them (matched by email, then LinkedIn URL, then name; by company when contacts aren't kept) and apply the best-customer rule. If the sales platform shows totals (for example students per course on a dashboard), compare them with the count in the customer bank. A gap goes under "Stale" as something to check (often free seats or scholarships), never as rows guessed into the bank.
 - **Objections:** read each conversation source for the window (the conversation brief). Dedupe objections with one query per batch for the themes in it, comparing by meaning, not exact wording.
 - **Customer language:** take the new quotes from the same miner results. Merge repeats with quotes already on the page, keep the 5 to 10 strongest new ones, and add them to the "New quotes" section.
 - **Staleness:**

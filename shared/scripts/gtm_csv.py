@@ -8,10 +8,13 @@ Standard library only, so it runs anywhere Python 3 does.
   gtm_csv.py add-cols FILE --cols "Offer,Seniority"   add missing columns, empty, keep every row
   gtm_csv.py query FILE [filters] [--cols A,B] [--limit N]
   gtm_csv.py count FILE --by COL [filters]
-  gtm_csv.py upsert FILE --key COL[,COL] [--merge COL] (--row '{"Company": "Acme"}' | --rows rows.json)
+  gtm_csv.py upsert FILE --key COL[,COL | COL|COL] [--merge COL] (--row '{"Company": "Acme"}' | --rows rows.json)
 
 upsert: a row matches when every key column matches (ignoring case), so
 --key "Objection,Offer" keeps the same objection about two offers apart.
+--key "Email|LinkedIn URL|Customer" tries each column in turn (that the new
+row has a value for) and takes the first match. A matched row keeps its
+values in those columns; empty ones are filled in.
 --merge "Offer" adds new "; " values to the cell instead of replacing it.
 JSON null is written as an empty cell, true/false as yes/no, a list as "a; b".
 
@@ -191,26 +194,52 @@ def cmd_upsert(args):
         new = [new]
     if not isinstance(new, list) or not all(isinstance(r, dict) for r in new):
         sys.exit("rows must be a JSON object or a list of objects, one per row")
-    keys = names(args.key)
+    alts = names(args.key.replace("|", ",")) if "|" in args.key else []
+    if alts and "," in args.key:
+        sys.exit('--key takes either "A,B" (all must match) or "A|B" (first one with a value), not both')
+    keys = alts or names(args.key)
     merge = names(args.merge or "")
     if not keys:
         sys.exit("--key needs at least one column")
     check_cols(cols, keys + merge + [c for r in new for c in r])
     if set(keys) & set(merge):
         sys.exit("a key column can't also be a --merge column")
-    keyof = lambda r: tuple(cell_text(r.get(k)).strip().lower() for k in keys)
-    index = {keyof(r): r for r in rows}
+    norm = lambda r, k: cell_text(r.get(k)).strip().lower()
+    keyof = lambda r: tuple(norm(r, k) for k in keys)
+    index = {}
+
+    def remember(r):
+        if alts:
+            for k in alts:
+                if norm(r, k):
+                    index[(k, norm(r, k))] = r
+        else:
+            index[keyof(r)] = r
+
+    def find(r):
+        if alts:
+            for k in alts:
+                if norm(r, k) and (k, norm(r, k)) in index:
+                    return index[(k, norm(r, k))]
+            return None
+        return index.get(keyof(r))
+
+    for r in rows:
+        remember(r)
     updated = added = 0
     for item in new:
         item = {k: cell_text(v) for k, v in item.items()}
-        key = keyof(item)
-        missing = [k for k, part in zip(keys, key) if not part]
-        if missing:
-            sys.exit(f"a row is missing its {', '.join(missing)} (key: {', '.join(keys)}): {json.dumps(item)}")
-        if key in index:
-            row = index[key]
+        if alts:
+            if not any(norm(item, k) for k in alts):
+                sys.exit(f"a row needs one of {', '.join(alts)}: {json.dumps(item)}")
+        else:
+            missing = [k for k, part in zip(keys, keyof(item)) if not part]
+            if missing:
+                sys.exit(f"a row is missing its {', '.join(missing)} (key: {', '.join(keys)}): {json.dumps(item)}")
+        row = find(item)
+        if row is not None:
             for k, v in item.items():
-                if k in keys or v == "":
+                if v == "" or (k in keys and row.get(k, "").strip()):
                     continue
                 row[k] = merged(row.get(k), v) if k in merge else v
             updated += 1
@@ -218,8 +247,8 @@ def cmd_upsert(args):
             row = {c: "" for c in cols}
             row.update(item)
             rows.append(row)
-            index[key] = row
             added += 1
+        remember(row)
     write(args.file, cols, rows)
     print(f"updated {updated}, added {added}, total {len(rows)}")
 
@@ -238,7 +267,7 @@ def main():
     sub.choices["query"].add_argument("--cols")
     sub.choices["query"].add_argument("--limit", type=int)
     sub.choices["count"].add_argument("--by", required=True)
-    sub.choices["upsert"].add_argument("--key", required=True, help='one column, or several: "Objection,Offer"')
+    sub.choices["upsert"].add_argument("--key", required=True, help='one column; several that must all match: "Objection,Offer"; or alternatives: "Email|Customer"')
     sub.choices["upsert"].add_argument("--merge", help='columns whose "; " values are added to, not replaced: "Offer"')
     group = sub.choices["upsert"].add_mutually_exclusive_group(required=True)
     group.add_argument("--row")

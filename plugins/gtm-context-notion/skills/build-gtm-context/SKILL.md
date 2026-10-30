@@ -25,7 +25,7 @@ This is the guide. It works in three moves: **find** what the user already has, 
 Explain in three lines:
 - What they'll end up with: one GTM Hub in Notion with their product, ICP, competitors, customer language, objections and customers.
 - How it works: "First tell me where this already lives. I'll read it and draft, and only ask you about what's missing." About 30 minutes of their time, less if a lot already exists. They can stop at any step.
-- What you'll read only with their OK. Nothing is ever sent, and no personal names are saved.
+- What you'll read only with their OK. Nothing is ever sent. Customers' contact details are kept only in the Customers database, and only if they say yes.
 
 ## Step 0. Check what exists
 
@@ -76,7 +76,7 @@ Run each section skill with the Skill tool, skipping its "Before starting" Hub c
 | Step | Skill | Pass forward |
 |---|---|---|
 | 4. Product & offer | `gtm-product` | the product summary (first lines of the page) |
-| 5. Customers | `gtm-customers`, part A only | B2B or B2C, "no customers yet", the clients' customers answer, best-customer rule |
+| 5. Customers | `gtm-customers`, part A only | B2B or B2C, "no customers yet", the clients' customers answer, keep contact details, enrichment, best-customer rule |
 | 6. Competitors (optional) | `gtm-competitors`. If step 1 found none, ask once "Do buyers compare you with anyone?" and mark Skipped if not. With no customers either, recommend running it, because competitors' customers are then the only ICP evidence. | ICP evidence |
 | 7. ICP | `gtm-icp` | ICP names, and the facts from steps 3, 5 and 6 |
 | 8. Messaging | `gtm-messaging`, with the language-miner results from step 3 | the objections table |

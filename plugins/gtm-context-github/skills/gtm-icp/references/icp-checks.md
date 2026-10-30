@@ -8,7 +8,7 @@ Run these checks on every ICP draft before showing it to the user. Fix what fail
 
 **From customers (preferred).** Start from the best group: 3 named customers for a small B2B list, or a behaviour rule for B2C and long lists ("bought twice or more, or came back for more"). Look at what the best group shares that the rest doesn't, then check the rest of the customer list against it. The ICP is the pattern in the best customers, not the average of all customers.
 
-Look for that pattern in **public attributes**, not only in what customers said. Enrich the best group, and a sample of the rest, with the attributes in "Public signals" below (gtm-customers step A2: Clay first, credits quoted and approved before any lookup), otherwise their website and LinkedIn.
+Look for that pattern in **public attributes**, not only in what customers said. Enrich the best group, and a sample of the rest, with the attributes in "Public signals" below (gtm-customers step A2: Clay first, credits quoted and approved before any lookup), otherwise their website and LinkedIn. Enrich both people and companies: the ICP needs who the buyer is (role, seniority) and what company they're in (size, industry, stage). Without either, it can't be inferred or scored. For B2C to consumers, use situation and trigger instead.
 
 **From competitors (when there are no customers yet).** Use competitors' public case studies, logos, testimonials and "who it's for" copy. Look for the segment that shows up across 2 or more competitors. Mark every attribute that came from competitors as `(from competitors, confirm)`, because the user's own buyers may differ.
 
