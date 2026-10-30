@@ -43,6 +43,11 @@ NOTION_REFERENCES="
 hub-structure.md:build-gtm-context
 hub-structure.md:gtm-customers
 hub-structure.md:gtm-objections
+page-style.md:build-gtm-context
+page-style.md:gtm-product
+page-style.md:gtm-icp
+page-style.md:gtm-messaging
+page-style.md:gtm-competitors
 "
 GITHUB_REFERENCES="
 repo-structure.md:build-gtm-context

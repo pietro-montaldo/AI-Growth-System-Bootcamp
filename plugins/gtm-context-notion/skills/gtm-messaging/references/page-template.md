@@ -1,41 +1,85 @@
 # Messaging & customer language page template
 
-Top part: what a writing agent needs on every run. Bottom part: the longer evidence.
+Top part: what a writing agent needs on every run. Bottom part: the longer evidence, collapsed. Write it in Notion's format, following `page-style.md`. In the chat, show the same content as plain markdown.
 
-```markdown
-> **In short:** Buyers describe the problem as "<top pain quote>". They want "<top outcome quote>". Lead with <value prop 1> (<offer 1>), <value prop> (<offer 2>).
-> **Built from:** <n> calls, <n> email threads, <n> DMs, <date range>
-> Last updated: <YYYY-MM-DD>
+```
+<callout icon="💬" color="blue_bg">
+<b>In short:</b> Buyers describe the problem as <i>"<top pain quote>"</i>. They want <i>"<top outcome quote>"</i>.<br /><b>Lead with:</b> <value prop 1> (<offer 1>) · <value prop> (<offer 2>)<br /><b>Built from:</b> <n> calls, <n> email threads, <n> DMs, <date range><br /><span color="gray">Last updated: <YYYY-MM-DD></span>
+</callout>
 
 ## Value props by offer
+
 ### <offer 1>
-1. **<short name>.** <pain> → <what we do> → <proof>. Their words: "<quote>"
-2. ...
-3. ...
+
+<table header-row="true" fit-page-width="true">
+<tr color="gray_bg">
+<td>Value prop</td>
+<td>Pain → what we do → proof</td>
+<td>Their words</td>
+</tr>
+<tr>
+<td><b><short name></b></td>
+<td><pain> → <what we do> → <proof></td>
+<td><i>"<quote>"</i></td>
+</tr>
+</table>
 
 ### <offer 2>
-1. ...
+
+<same table>
 
 (One offer: drop the offer headings.)
 
-## How they describe the problem
-- "<quote>" (Founder, 8-person agency) · <offer> · seen 4x · [call 2026-09-14]
+## What they say
 
-## What they want
-- "<quote>" (...) · seen 3x · [email 2026-08-02]
+<columns>
+<column>
+**The problem, in their words**
 
-## Words they use / words to avoid
-| They say | We avoid |
-|---|---|
-| "my outbound" | "pipeline generation engine" |
+- <i>"<quote>"</i> <span color="gray">(Founder, 8-person agency · <offer> · seen 4x · call 2026-09-14)</span>
+</column>
+<column>
+**What they want**
+
+- <i>"<quote>"</i> <span color="gray">(... · seen 3x · email 2026-08-02)</span>
+</column>
+</columns>
+
+## Words to use and avoid
+
+<table header-row="true" fit-page-width="true">
+<tr color="gray_bg">
+<td>They say (use)</td>
+<td>We avoid</td>
+</tr>
+<tr>
+<td><span color="green">"my outbound"</span></td>
+<td><span color="red">"pipeline generation engine"</span></td>
+</tr>
+</table>
 
 ## Our voice
-| Attribute | Means | Doesn't mean |
-|---|---|---|
-| Direct | short sentences, one ask | blunt or cold |
+
+<table header-row="true" fit-page-width="true">
+<tr color="gray_bg">
+<td>Attribute</td>
+<td>Means</td>
+<td>Doesn't mean</td>
+</tr>
+<tr>
+<td><b>Direct</b></td>
+<td>short sentences, one ask</td>
+<td>blunt or cold</td>
+</tr>
+</table>
 
 ---
 
-## All quotes
-<the full merged table: type, quote, who, times, source>
+<toggle heading="h2">
+All quotes
+
+<the full merged table: type, quote, who, offer, times, source>
+</toggle>
 ```
+
+The scheduled update adds a "New quotes (unreviewed, <date>)" section at the very bottom with `insert_content`. The review moves the good ones up into "What they say" and the rest into "All quotes".

@@ -13,6 +13,7 @@ The ICP is what every outbound and inbound agent checks a person against. It has
 
 - `references/icp-checks.md`: how to build an ICP from customers or competitors, its structure, and the checks to run. Read it before drafting.
 - `references/page-template.md`: the page layout.
+- `references/page-style.md`: how pages look in Notion (summary callout, toggles, label tables, tokens, colours) and how to edit them safely.
 - `references/sections.md`: quality bar, and the B2B / B2C / agency differences.
 
 ## Before starting

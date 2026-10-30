@@ -15,6 +15,7 @@ This is the guide. It works in three moves: **find** what the user already has, 
 - `references/hub-structure.md`: the Hub, its pages and database schemas, reusing existing databases, the Notion tools, and the "For agents" section that makes the Hub its own map.
 - `references/sections.md`: what each section captures and the quality bar.
 - `references/handover.md`: the last step. Plans where new information comes from, creates the student's own scheduled update task, writes the review guide, and removes the course plugin.
+- `references/page-style.md`: how pages look in Notion and how to edit them safely. Read it before creating the Hub.
 - `references/update-task-template.md`: the task prompt and review guide the handover fills in for this student.
 - `references/update-playbook.md` and `references/mining-playbook.md`: pasted into the task prompt.
 - `references/context-home.md`: how every session finds the context (the Hub link in Claude's memory, never asked), and older setups.

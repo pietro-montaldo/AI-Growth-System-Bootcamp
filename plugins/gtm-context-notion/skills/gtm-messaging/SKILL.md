@@ -13,6 +13,7 @@ The best copy uses the buyer's own words. This skill finds those words in real c
 
 - `references/mining-playbook.md`: what to read, what to extract, privacy rules and objection themes.
 - `references/page-template.md`: the page layout.
+- `references/page-style.md`: how pages look in Notion (summary callout, toggles, label tables, tokens, colours) and how to edit them safely.
 - `references/source-map.md`: where buyer language usually lives and how to get in.
 
 ## Before starting

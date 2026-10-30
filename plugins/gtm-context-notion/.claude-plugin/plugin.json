@@ -1,7 +1,7 @@
 {
   "name": "gtm-context-notion",
   "displayName": "GTM Context (Notion)",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "description": "Build your go-to-market context layer in Notion with a guided interview: product, ICP, competitors, customer language, objections and shareable customers. One GTM Hub page links to everything, pages stay short, and banks are queried, never read whole. From the NotLinear AI Growth Systems Bootcamp.",
   "author": { "name": "NotLinear", "url": "https://www.notlinear.ai" },
   "homepage": "https://maven.com/pietro-montaldo/ai-growth-system-bootcamp-claude",
