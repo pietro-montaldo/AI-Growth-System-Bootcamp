@@ -22,6 +22,7 @@ Where it lives is decided for the user, never asked: a private repository called
 - `references/context-home.md`: the fixed home `~/gtm-context`, the pointer in Claude's memory, and older setups.
 - `scripts/gtm_csv.py`: reads and updates the CSV banks without reading them whole. Call it by its full path in this skill's folder.
 - `scripts/gtm_home.py`: checks and sets up `~/gtm-context`.
+- `references/setup-check.md`: checks Python, git and the GitHub CLI, and installs what's missing with the student. Run it for Python before the first script.
 
 ## Start
 
@@ -96,7 +97,7 @@ When the sources already answered most of product, ICP and messaging, draft thos
 2. Show a short status:
    - Sections done and skipped, and which sources each came from.
    - How many items are still marked `(guess, confirm)` or `draft`, and where they are.
-3. Run `git -C ~/gtm-context status` and show what changed. Ask once: "Commit this to your gtm-context repo?" On yes, commit with `gtm: build context layer`. Then ask separately before pushing. If the repo has no GitHub remote yet, offer to publish it as private (`gh repo create gtm-context --private --source ~/gtm-context --push`), only on a clear yes.
+3. Run `git -C ~/gtm-context status` and show what changed. Ask once: "Commit this to your gtm-context repo?" On yes, make sure git has their name and email (`references/setup-check.md`, "Git name and email"), then commit with `gtm: build context layer`. Then ask separately before pushing. If the repo has no GitHub remote yet, offer to publish it as private (`gh repo create gtm-context --private --source ~/gtm-context --push`), only on a clear yes.
 4. Tell them in one line that later course systems read `gtm/README.md` first and open only the files they need.
 
 ## Step 12. Hand over: your own scheduled update

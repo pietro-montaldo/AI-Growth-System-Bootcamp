@@ -15,6 +15,7 @@ Objections are the most useful context for outreach and follow-ups, and the most
 - `references/source-map.md`: where objections usually live and how to get in (connector, browser, export, paste).
 - `references/repo-structure.md`: the columns of `gtm/objections.csv`, the themes, and how the helper script writes them.
 - `scripts/gtm_csv.py`: query and update `gtm/objections.csv`. Call it by its full path in this skill's folder.
+- `references/setup-check.md`: run it before the first script. It checks Python and installs it with the student if it's missing.
 
 ## Before starting
 

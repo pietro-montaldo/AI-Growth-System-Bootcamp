@@ -9,6 +9,7 @@
 #   shared/agents/*      -> agents/ in both GTM plugins (not voice-miner)
 #   shared/scripts/*     -> the skills listed in SCRIPTS_ALL (every GTM plugin) and SCRIPTS (GitHub only)
 #   shared/do-not-contact/* -> every skill of the do-not-contact plugin
+#   shared/setup/setup-check.md -> the skills listed in SETUP, in any plugin
 #
 #   scripts/sync-shared.sh          copy
 #   scripts/sync-shared.sh --check  exit 1 if any copy is out of date
@@ -70,6 +71,20 @@ gtm_csv.py:gtm-icp
 gtm_csv.py:gtm-objections
 "
 
+# setup check : every skill that runs a script or git (plugin:skill)
+SETUP="
+voice-miner:voice-miner
+do-not-contact:build-do-not-contact
+do-not-contact:check-do-not-contact
+do-not-contact:update-do-not-contact
+gtm-context-notion:build-gtm-context
+gtm-context-github:build-gtm-context
+gtm-context-github:gtm-customers
+gtm-context-github:gtm-competitors
+gtm-context-github:gtm-icp
+gtm-context-github:gtm-objections
+"
+
 check=0
 [ "${1:-}" = "--check" ] && check=1
 stale=0
@@ -119,6 +134,10 @@ for skill in plugins/do-not-contact/skills/*/; do
     sync "$ref" "${skill}references"
   done
   sync shared/do-not-contact/scripts/dnc.py "${skill}scripts"
+done
+
+for pair in $SETUP; do
+  sync shared/setup/setup-check.md "plugins/${pair%%:*}/skills/${pair##*:}/references"
 done
 
 if [ "$check" = 1 ]; then

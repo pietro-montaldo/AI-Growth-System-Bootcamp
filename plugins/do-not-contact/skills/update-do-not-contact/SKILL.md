@@ -13,6 +13,7 @@ metadata:
 - `references/sources.md`: the groups on the list and where they are, how to get in, what counts as a no.
 - `references/rules.md`: matching, what is never deleted, what a scheduled run may do.
 - `scripts/dnc.py`: run with `python3` by its full path in this skill's folder.
+- `references/setup-check.md`: run it before the first script. It checks Python and installs it with the student if it's missing.
 
 Temporary files go in `~/do-not-contact/.private/`. Delete them at the end of every run.
 

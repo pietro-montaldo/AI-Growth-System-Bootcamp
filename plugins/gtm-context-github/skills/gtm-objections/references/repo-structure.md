@@ -27,10 +27,10 @@ Create a CSV bank when the data has no other home, or lives only in a platform w
 Only build-gtm-context does this.
 
 1. Run `gtm_home.py status`. If `~/gtm-context` is already a git repository, use it and go to step 3.
-2. Otherwise, say in one line: "I'll create a private repository called gtm-context on your GitHub and keep it at ~/gtm-context, so every project can use it." On OK:
+2. Otherwise, say in one line: "I'll create a private repository called gtm-context on your GitHub and keep it at ~/gtm-context, so every project can use it." On OK, first run the setup check (`references/setup-check.md`) for git, the GitHub CLI and GitHub sign-in. It installs whatever is missing, with the student. Then:
    - **A `gtm-context` repo already exists on their GitHub** (`gh repo view gtm-context` works): if `~/gtm-context` is missing or empty, `gh repo clone gtm-context ~/gtm-context`. If the folder already has files (for example a `.private/` folder from the Notion version), clone won't work there: run `git init ~/gtm-context`, `git -C ~/gtm-context remote add origin <its URL>`, then `git -C ~/gtm-context pull origin main`.
    - **No repo yet:** `git init ~/gtm-context` (fine if the folder already exists). With the GitHub CLI signed in (`gh auth status`), also run `gh repo create gtm-context --private --source ~/gtm-context --remote origin`. That creates the empty private repo and links it. Nothing is pushed yet.
-   - **No GitHub CLI:** keep the local repo, and say they can publish it as a private repo later (the guide's last step offers that).
+   - **No GitHub CLI** (the student said no, or the install or sign-in failed): keep the local repo, and say they can publish it as a private repo later (the guide's last step offers that).
 3. Check the visibility (`gh repo view --json visibility -q .visibility`, run inside `~/gtm-context`). "No git remotes found" means it's local for now: fine. If it's `PUBLIC`, stop and say so: customer and objection data shouldn't be public. Offer to make it private (the user confirms the command).
 4. Run `gtm_home.py init --github`: it creates `gtm/.private/` and adds `gtm/.private/` and `.private/` to `.gitignore`. Then create the files below in `gtm/`.
 5. Never commit or push without the user's OK. At the end, offer one commit with a message like `gtm: build context layer` and ask before pushing. Scheduled updates commit or push only as the user allowed at the handover (recorded in the Updates block and in the task prompt).

@@ -16,6 +16,7 @@ It has two parts. Run both when used on its own. Inside build-gtm-context, part 
 - `references/source-map.md`: where customers usually live and how to get in (connector, browser, export, paste).
 - `references/repo-structure.md`: the columns and allowed values of `gtm/customers.csv`, and how the helper script writes them.
 - `scripts/gtm_csv.py`: query and update `gtm/customers.csv`. Call it by its full path in this skill's folder. The first line of the file is the header.
+- `references/setup-check.md`: run it before the first script. It checks Python and installs it with the student if it's missing.
 
 ## Before starting
 

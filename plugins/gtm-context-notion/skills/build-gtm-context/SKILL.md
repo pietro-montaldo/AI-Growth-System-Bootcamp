@@ -20,6 +20,7 @@ This is the guide. It works in three moves: **find** what the user already has, 
 - `references/update-playbook.md` and `references/mining-playbook.md`: pasted into the task prompt.
 - `references/context-home.md`: how every session finds the context (the Hub link in Claude's memory, never asked), and older setups.
 - `scripts/gtm_home.py`: checks the pointer, writes it, and finds old links files. Call it by its full path in this skill's folder.
+- `references/setup-check.md`: run it before the first script. It checks Python and installs it with the student if it's missing.
 
 ## Start
 
