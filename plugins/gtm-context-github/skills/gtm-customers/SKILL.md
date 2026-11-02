@@ -2,7 +2,7 @@
 name: gtm-customers
 description: "Build or update your customers bank for the GTM context in your repo: who already buys from you, which ICP segment each belongs to, which ones are your best customers, and which logos you have permission to show publicly. Reads customers from wherever they live (CRM, Notion or Airtable, course or payment platform, spreadsheet) and links a connected system instead of copying it. Use for \"add my customers\", \"which logos can I show\", \"update my customer list\", \"we have a new client\", \"customers I can share publicly\", or as part of build-gtm-context. Not for leads or prospects (those belong in a lead ledger or CRM) and not for the ICP itself (use gtm-icp)."
 metadata:
-  version: "0.4.0"
+  version: "0.4.1"
 ---
 
 # Customers
@@ -20,7 +20,7 @@ It has two parts. Run both when used on its own. Inside build-gtm-context, part 
 ## Before starting
 
 1. Read `~/gtm-context/gtm/README.md`. Every `gtm/` path in this skill is inside `~/gtm-context/`, the student's private gtm-context repo, whatever project they are in. If it's missing, run the build-gtm-context skill first, which sets up the folder.
-2. Check the "Sources" list: if customers live in a connected system (CRM, Notion, Airtable, Sheets), work there and don't create `gtm/customers.csv`. Otherwise use the CSV. If it doesn't exist yet, create it with `init` and the columns from `references/repo-structure.md`.
+2. Check the "Sources" list: if customers live in a connected system (CRM, Notion, Airtable, Sheets), work there and don't create `gtm/customers.csv`. Otherwise use the CSV. If it doesn't exist yet, create it with `init` and the columns from `references/repo-structure.md`. If an older `customers.csv` lacks some of those columns (often Customer, Email, LinkedIn URL, Buyer role, Seniority, Enriched), add them with `add-cols` (it keeps every row) after the user's OK. If it had no Customer column, fill it from Company with one `upsert --key Company` batch. Do this before any other write: every later write matches on Customer.
 3. **On its own** (not inside build-gtm-context): when you find this section's sources, also settle where new customers will come from and who brings it in (`auto`, `auto, app only`, `you`, `none`), as in "Where each item comes from, now and later" in `references/source-map.md`. Prefer an automatic route. Update its line in the Sources list in `gtm/README.md` after the user's OK.
 
 ## Part A. Collect customers
@@ -70,7 +70,7 @@ Use what the user gave first, then check what's missing. The ICP is the pattern 
 5. **Ask about credits before any lookup.** Say how many people and companies you'd look up, which fields each lookup fills, and what that costs in that tool's credits. People are found by email or LinkedIn URL when contacts are kept, otherwise by name and company, which matches less often. Count unique companies, not rows: several buyers often share one company. Read the cost and the remaining balance from the tool when it reports them (Clay credits and quotas, Apollo credit usage); otherwise give an estimate and say it's one. If the balance is lower than the cost, say so and suggest the best customers first. Then one AskUserQuestion: enrich all rows, the best customers plus a similar sample, or skip. When the data isn't enough (step 3), the enrich options come first and "skip" says the ICP will be marked low confidence.
 6. **No enrichment tool connected:** if the data is enough, continue without enrichment. If it isn't, say so in one line and offer to connect the Clay connector (Claude's connector settings), then continue once it's connected. If the user says no, look up the best customers' public profiles yourself (name and company, read-only web search) for a small sample, read company websites, mark anything uncertain `(guess)`, and say the ICP will be lower confidence.
 7. **Match carefully.** Look up people by email or LinkedIn URL; a match on name alone counts only if the company matches too. Look up companies by exact domain. A large company's domain also matches its subsidiaries and old brands, so keep the record with the most employees. Tiny firms (1 to 10 people) are often missing from company data: for them, the buyer's title carries the signal.
-8. **Write back.** Write buyer and company fields, and the LinkedIn URL the lookup found when contacts are kept, with one `upsert --key "Email|LinkedIn URL|Customer" --merge Offer` batch into `customers.csv` (columns in `references/repo-structure.md`). If an older `customers.csv` lacks columns (Customer, Email, LinkedIn URL, Buyer role, Seniority, Enriched), add them first with `gtm_csv.py add-cols` (it keeps every row), after the user's OK. If it had no Customer column, fill it from Company with one `upsert --key Company` batch before anything else. Note where the data came from in Enriched, for example `Clay, 2026-10-30`.
+8. **Write back.** Write buyer and company fields, and the LinkedIn URL the lookup found when contacts are kept, with one `upsert --key "Email|LinkedIn URL|Customer" --merge Offer` batch into `customers.csv` (columns in `references/repo-structure.md`). Note where the data came from in Enriched, for example `Clay, 2026-10-30`.
 
 Fill the Offer column with the offers each customer bought (offers in scope, `; ` between several). Keep one row per buyer (or company): when one bought a second offer, `--merge Offer` adds it to the cell instead of replacing the first. Contact details go only in `customers.csv`, and only when the user chose to keep them (A1b).
 
@@ -98,6 +98,14 @@ Show the table in the chat. After approval:
 - Set Permission note to `not asked yet` and Logo shareable to `no` on new rows.
 - Delete the raw export from `gtm/.private/` once the rows are in, and say so. If contacts weren't kept, say their contact details go with it.
 - Update the Customers row in the `gtm/README.md` table.
+
+### A5. Keep the weekly update in step
+
+Only on its own, and only when `gtm/README.md` has an Updates block (the handover ran). A task made before buyers got their own rows still writes customers by company, and on a bank with one row per buyer that writes one buyer over another. So after A4:
+1. Find the task with `list_scheduled_tasks` (titled "Weekly GTM update", or the ID in the Updates block) and read its prompt. For a cloud task, use `/schedule`. If there's none, say so in one line and move on.
+2. Check its customer lines against this run: the Banks line says `contacts: kept` or `contacts: not kept`, as recorded under "Customer contacts". The CSV helper line and the Customers write step use `--key "Email|LinkedIn URL|Customer" --merge Offer`. The write step makes one row per buyer when contacts are kept (otherwise one per company, its name in Customer).
+3. If anything differs, show the old and new lines and change only those, after one OK (`update_scheduled_task`, or `/schedule` for a cloud task). Keep every other setting.
+4. If the task writes to `customers.csv`, compare `~/gtm-context/scripts/gtm_csv.py` with this skill's `scripts/gtm_csv.py`. An older copy can't read that key. If it's missing or differs, copy this one over after the same OK, and offer to commit it (ask before pushing).
 
 ## Part B. Logo permission
 

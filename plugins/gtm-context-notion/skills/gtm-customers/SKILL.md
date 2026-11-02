@@ -2,7 +2,7 @@
 name: gtm-customers
 description: "Build or update the Customers database in your Notion GTM Hub: who already buys from you, which ICP segment each belongs to, which ones you would clone, and which logos you have permission to show publicly. Takes a pasted list, a CSV, a CRM, or a description. Use for \"add my customers\", \"which logos can I show\", \"update my customer list\", \"we have a new client\", \"customers I can share publicly\", or as part of build-gtm-context. Not for leads or prospects (those belong in a lead ledger or CRM) and not for the ICP itself (use gtm-icp)."
 metadata:
-  version: "0.4.0"
+  version: "0.4.1"
 ---
 
 # Customers
@@ -97,6 +97,13 @@ Show the table in the chat. After approval:
 - Set Permission note to `not asked yet` on new rows, Logo shareable unticked.
 - Delete the raw export from `~/gtm-context/.private/` once the rows are in, and say so. If contacts weren't kept, say their contact details go with it.
 - Update the Customers row in the Hub links table.
+
+### A5. Keep the weekly update in step
+
+Only on its own, and only when the Hub's "For agents" section has an Updates block (the handover ran). A task made before buyers got their own rows still dedupes customers by company name, so a new buyer at a company already listed is never added. So after A4:
+1. Find the task with `list_scheduled_tasks` (titled "Weekly GTM update", or the ID in the Updates block) and read its prompt. For a cloud task, use `/schedule`. If there's none, say so in one line and move on.
+2. Check its customer lines against this run: the Customers line says `contacts: kept` or `contacts: not kept`, as recorded under "Customer contacts". When contacts are kept, the Customers write step dedupes by the batch's emails and creates one row per buyer with their name, email and LinkedIn URL from the source (otherwise it dedupes by company name, one row per company).
+3. If anything differs, show the old and new lines and change only those, after one OK (`update_scheduled_task`, or `/schedule` for a cloud task). Keep every other setting.
 
 ## Part B. Logo permission
 
