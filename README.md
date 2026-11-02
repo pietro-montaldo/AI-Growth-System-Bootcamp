@@ -112,6 +112,8 @@ This plugin builds that context with you. Most people already have a lot of it s
 
 Both work the same way and produce the same six sections. Only where the result is stored differs.
 
+Want to see a finished one first? [gtm-context-example](https://github.com/pietro-montaldo/gtm-context-example) is a worked example of the GitHub version, built from a real business's context: the hub, every page, sample CSV banks, a weekly update report, and the commands agents use to read it.
+
 ### Install
 
 In Claude Code, add this repo as a plugin marketplace once:
