@@ -2,7 +2,7 @@
 name: voice-miner
 description: "Mine a person's real voice from their sent emails and sales call transcripts, filter out anything AI-written, and turn it into a personal \"<name>-voice\" skill that writes email replies, cold emails, follow-ups, LinkedIn posts and DMs that sound like them and not like AI. Use when someone says \"learn my voice\", \"clone my writing style\", \"make Claude write like me\", \"build my tone of voice\", \"mine my emails\", \"analyze how I talk on calls\", \"my drafts sound like ChatGPT\", \"set up my voice skill\", or wants Claude to answer emails or write posts and outreach as them. Also use to refresh an existing voice skill with new emails, calls or corrections. Not for company brand guidelines (use a brand voice skill) or for cleaning one draft (use a humanizer skill)."
 metadata:
-  version: "1.1.0"
+  version: "1.2.0"
 ---
 
 # Voice miner
@@ -30,7 +30,7 @@ Then tell them what happens to the data. Raw emails and transcripts stay in a lo
 
 ## Process
 
-Run the script by its full path: `python3 "<skill-folder>/scripts/voice_mine.py"`, where `<skill-folder>` is the folder that holds this SKILL.md. Keep the quotes, since paths often have spaces.
+Run the script by its full path: `python3 "<skill-folder>/scripts/voice_mine.py"`, where `<skill-folder>` is the folder that holds this SKILL.md. Keep the quotes, since paths often have spaces. Before the first command, follow `references/setup-check.md` for Python. It installs Python with the person if it's missing, and says which command to use on Windows.
 
 ### 1. Pull sent email
 

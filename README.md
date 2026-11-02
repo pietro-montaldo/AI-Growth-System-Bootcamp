@@ -10,6 +10,16 @@ Claude skills from the AI Growth Systems Bootcamp by [Pietro Montaldo](https://w
 | [GTM context](#gtm-context) (plugin) | Builds your go-to-market context layer with you: what you sell, your ideal customer, competitors, how your buyers talk, objections and shareable customers. It reads what you already have first, then asks only about gaps. Lives in Notion or in your own GitHub repo. |
 | [do-not-contact](#do-not-contact) (plugin) | Builds one list of everyone your outreach must skip, starting from your own description: people who said no, unsubscribed or bounced, customers, open deals, friends, family and partners. It reads only the places you point it to, keeps the list in a Google Sheet or Notion, updates every week, and checks every lead list before you send. If your CRM already holds all of it, it tells you that's your list. |
 
+### Missing tools
+
+Some skills run small scripts or save to GitHub, so they need Python, git or the GitHub CLI on your computer. You don't need to install anything first. Before the first step that needs a tool, Claude checks for it. If it's missing, Claude asks, then installs it with you in the same session:
+
+- **Mac:** Python and git come with Apple's free Command Line Tools. A window from Apple opens: click Install, then Agree. It takes 5 to 15 minutes. The GitHub CLI comes from GitHub's own installer, and your Mac asks for your password in its own window.
+- **Windows:** Claude installs them with `winget`, which is built into Windows. Click Yes if Windows asks to allow changes.
+- **GitHub sign-in:** Claude shows you a link and a one-time code. You sign in on github.com yourself.
+
+You never type a command, and you never share a password in the chat.
+
 ---
 
 ## voice-miner
@@ -59,7 +69,7 @@ Then ask Claude: "Learn my voice from my sent emails and sales calls."
 
 ### Requirements
 
-- Python 3. The script uses only the standard library, so there's nothing to install.
+- Python 3. If your computer doesn't have it, Claude installs it with you the first time (see [Missing tools](#missing-tools)). The script uses only the standard library, so nothing else is needed.
 - An email source: a Gmail or Outlook connector, or an export (.mbox, .eml).
 - Optional but recommended: a call recorder connector, or transcript files (.txt, .vtt, .srt).
 

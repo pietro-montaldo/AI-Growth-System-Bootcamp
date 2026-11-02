@@ -17,6 +17,7 @@ Write the way {{FIRSTNAME}} actually writes and sells. The rules here come from 
    ```bash
    python3 "<this skill's folder>/scripts/voice_mine.py" check draft.txt --fingerprint "<this skill's folder>/fingerprint.json" --kind <cold|followup|reply|new|post|dm|comment>
    ```
+   If `python3` isn't found, try `python`, then `py -3` (Windows). If there's no Python at all, skip the script for this draft, say so in one line, and check by hand against the numbers in the profile and `references/ai-tells.md`.
    Fix every AI tell and every off-voice note. Read any warnings: they say which checks were skipped, for example when there are no numbers for this language or for posts. Your [placeholders] come back under "fill in before sending", not as AI tells. Then reread it against `references/ai-tells.md`, since the script can't catch everything.
 6. **Read it as {{FIRSTNAME}}.** Would they say each sentence out loud to this person? If a line sounds like a press release, a chatbot, or a LinkedIn guru, rewrite it.
 7. **Show only the draft.** No preamble, no list of changes. For email, offer to save it as a draft in their mailbox. Never send.

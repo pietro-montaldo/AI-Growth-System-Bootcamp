@@ -14,6 +14,7 @@ A competitor here is someone who sells the same result to the same or similar bu
 - `references/source-map.md`: where competitor notes usually live and how to get in.
 - `references/repo-structure.md`: the columns of `gtm/competitors.csv` and how the helper script writes them.
 - `scripts/gtm_csv.py`: query and update `gtm/competitors.csv`. Call it by its full path in this skill's folder.
+- `references/setup-check.md`: run it before the first script. It checks Python and installs it with the student if it's missing.
 
 ## Before starting
 

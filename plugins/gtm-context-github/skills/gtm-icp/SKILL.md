@@ -15,6 +15,7 @@ The ICP is what every outbound and inbound agent checks a person against. It has
 - `references/page-template.md`: the page layout.
 - `references/sections.md`: quality bar, and the B2B / B2C / agency differences.
 - `scripts/gtm_csv.py`: query the customers and competitors banks. Call it by its full path in this skill's folder.
+- `references/setup-check.md`: run it before the first script. It checks Python and installs it with the student if it's missing.
 
 ## Before starting
 

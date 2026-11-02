@@ -15,6 +15,7 @@ One list that every outreach system checks before it contacts anyone. The studen
 - `references/storage.md`: Google Sheet or Notion, with the pros and cons table, the columns, the tabs or databases, the tools, and the pointer block.
 - `references/rules.md`: matching, what is never deleted, approvals, privacy, and sending tools.
 - `scripts/dnc.py`: cleans keys, merges new rows without duplicates, checks lead lists and writes blocklists. Run it with `python3` by its full path in this skill's folder. `--help` lists the commands.
+- `references/setup-check.md`: run it before the first script. It checks Python and installs it with the student if it's missing.
 
 Temporary files go in `~/do-not-contact/.private/` (create it). Delete them at the end.
 

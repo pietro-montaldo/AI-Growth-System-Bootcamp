@@ -14,6 +14,7 @@ Run this before every send, so the rule lives in one place. Other skills and age
 - `references/storage.md`: how to read only the key columns of the Sheet, or query Notion by keys.
 - `references/rules.md`: how matching works and what to say about leads that can't be checked.
 - `scripts/dnc.py`: run with `python3` by its full path in this skill's folder.
+- `references/setup-check.md`: run it before the first script. It checks Python and installs it with the student if it's missing.
 
 Temporary files go in `~/do-not-contact/.private/`. Delete them at the end, except the keep and drop files the student asked for.
 
