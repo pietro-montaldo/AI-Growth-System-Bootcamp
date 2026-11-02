@@ -2,7 +2,7 @@
 name: gtm-icp
 description: "Define or refine your ideal customer profile (ICP) in gtm/icp.md in your repo, using your best existing customers, or your competitors' customers when you have none. Produces one battlecard per ICP: hard filters and public scoring signals you can check before any contact, buying triggers, their words, what to lead with, the objection to expect, an anti-ICP and a one-line hook, checked for specificity before you approve it. Use for \"define my ICP\", \"who is my ideal customer\", \"refine my ICP\", \"my ICP is too broad\", \"who should I target\", or as part of build-gtm-context. Not for scoring a specific lead list (that is the outbound system's job)."
 metadata:
-  version: "0.3.0"
+  version: "0.3.1"
 ---
 
 # ICP
@@ -66,7 +66,7 @@ Apply edits. Don't write on silence.
 ### 5. Write
 
 - Write `gtm/icp.md` with the approved draft. Add a changelog line at the bottom.
-- If the ICP names changed, update the ICP segment values in `gtm/customers.csv` with one `upsert --key "Email|LinkedIn URL|Customer"` batch, after asking. If customers live in a connected system with its own segment or persona field, don't add a new one: write on the ICP page which of its values map to each ICP.
+- If the ICP names changed, update the ICP segment values in `gtm/customers.csv` with one `upsert --key "Email|LinkedIn URL|Customer"` batch, after asking. On an older file with one row per company and no Customer column, `upsert` stops with "unknown column": use `--key Company` instead. If customers live in a connected system with its own segment or persona field, don't add a new one: write on the ICP page which of its values map to each ICP.
 - Update the ICP row in the `gtm/README.md` table.
 
 ## Rules
